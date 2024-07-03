@@ -34,7 +34,7 @@ const Shopify = () => {
             </IconButton>
           </Stack>
           <Typography mt={2}>
-            Connect CryptoPay Server to your Shopify checkout experience to accept Bitcoin.
+            Connect CryptoPay Server to your Shopify checkout experience to accept Crypto.
           </Typography>
 
           <Box mt={3}>

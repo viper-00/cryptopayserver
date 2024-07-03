@@ -74,7 +74,6 @@ const HomeSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [toggled, setToggled] = useState(false);
   const [broken, setBroken] = useState(false);
-  const [rtl, setRtl] = useState(false);
   const [hasImage, setHasImage] = useState(false);
   const [theme, setTheme] = useState<Theme>('light');
 
@@ -125,8 +124,8 @@ const HomeSidebar = () => {
       onBackdropClick={() => setToggled(false)}
       onBreakPoint={setBroken}
       // image="https://user-images.githubusercontent.com/25878302/144499035-2911184c-76d3-4611-86e7-bc4e8ff84ff5.jpg"
-      rtl={rtl}
       breakPoint="md"
+      rtl={false}
       // backgroundColor={hexToRgba(themes[theme].sidebar.backgroundColor, hasImage ? 0.9 : 1)}
       // rootStyles={{
       //   color: themes[theme].sidebar.color,
@@ -142,7 +141,7 @@ const HomeSidebar = () => {
         borderRight={1}
         borderColor={'#efefef'}
       >
-        <SidebarHeader rtl={rtl} style={{ marginBottom: 20, marginTop: 30 }} />
+        <SidebarHeader style={{ marginBottom: 20, marginTop: 30 }} />
         <Box flex={1} mt={2}>
           <Menu menuItemStyles={menuItemStyles}>
             <MenuItem

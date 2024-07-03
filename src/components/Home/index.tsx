@@ -18,9 +18,20 @@ import { Box, Stack } from '@mui/material';
 import Footer from './Footer';
 import Account from 'components/Account';
 import Notifications from 'components/Notifications';
+import { useEffect, useState } from 'react';
 
 const Home = () => {
   const router = useRouter();
+
+  const [login, setLogin] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!login) {
+      window.location.href = '/login';
+    } else if (login && router.pathname === '/') {
+      window.location.href = '/dashboard';
+    }
+  }, [login]);
 
   const routerComponents: any = {
     '/dashboard': <Dashboard />,
@@ -42,19 +53,23 @@ const Home = () => {
 
   return (
     <Box height={'100%'}>
-      <MetaTags title="Home" />
+      {login && (
+        <>
+          <MetaTags title="Home" />
 
-      <Stack direction={'row'} height={'100%'}>
-        <HomeSidebar />
+          <Stack direction={'row'} height={'100%'}>
+            <HomeSidebar />
 
-        <Box width={'100%'}>
-          {routerComponents[router.pathname] || null}
+            <Box width={'100%'}>
+              {routerComponents[router.pathname] || null}
 
-          <Box>
-            <Footer />
-          </Box>
-        </Box>
-      </Stack>
+              <Box>
+                <Footer />
+              </Box>
+            </Box>
+          </Stack>
+        </>
+      )}
     </Box>
   );
 };

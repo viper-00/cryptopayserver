@@ -14,7 +14,7 @@ import MetaTags from 'components/Common/MetaTags';
 import Footer from 'components/Home/Footer';
 import { CustomLogo } from 'components/Logo/CustomLogo';
 
-const Login = () => {
+const Register = () => {
   return (
     <Box>
       <MetaTags title="Login" />
@@ -24,10 +24,13 @@ const Login = () => {
           <Typography variant="h5" fontWeight={'bold'} mt={4}>
             Welcome to your CryptoPay Server
           </Typography>
+          <Typography mt={2}>
+            A self-hosted, open-source crypto payment processor. It is secure, private, censorship-resistant and free.
+          </Typography>
 
           <Card sx={{ minWidth: 450, mt: 4, padding: 2 }}>
             <CardContent>
-              <Typography variant="h5">Sign in</Typography>
+              <Typography variant="h5">Create account</Typography>
               <Box mt={3}>
                 <Typography>Email</Typography>
                 <Box mt={1}>
@@ -35,10 +38,7 @@ const Login = () => {
                 </Box>
               </Box>
               <Box mt={3}>
-                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                  <Typography>Password</Typography>
-                  <Button>Forgot password?</Button>
-                </Stack>
+                <Typography>Password</Typography>
                 <Box mt={1}>
                   <TextField
                     fullWidth
@@ -51,22 +51,31 @@ const Login = () => {
                 </Box>
               </Box>
               <Box mt={3}>
-                <FormControlLabel control={<Checkbox />} label="Remember me" />
+                <Typography>Confirm Password</Typography>
+                <Box mt={1}>
+                  <TextField
+                    fullWidth
+                    hiddenLabel
+                    type={'password'}
+                    id="filled-hidden-label-small"
+                    defaultValue=""
+                    size="small"
+                  />
+                </Box>
               </Box>
-
               <Box mt={3}>
                 <Button fullWidth variant={'contained'} size={'large'}>
-                  Sign in
+                  Create account
                 </Button>
               </Box>
 
               <Box mt={3} textAlign={'center'}>
                 <Button
                   onClick={() => {
-                    window.location.href = '/register';
+                    window.location.href = '/login';
                   }}
                 >
-                  Create your account
+                  Log in
                 </Button>
               </Box>
             </CardContent>
@@ -79,4 +88,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

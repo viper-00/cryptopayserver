@@ -34,7 +34,7 @@ const Payout = () => {
           </Box>
 
           <Box mt={5}>
-            <Typography variant="h6">Automated Bitcoin Sender</Typography>
+            <Typography variant="h6">Automated Crypto Sender</Typography>
 
             <Box mt={4}>
               <StorePayoutTable />
