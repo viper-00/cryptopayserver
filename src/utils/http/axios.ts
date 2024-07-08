@@ -22,14 +22,13 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => {
-    if (response && response.status === 200 && response.data.code === 10200) {
-      return response.data;
+    if (response && response.status === 200) {
+      return Promise.resolve(response.data);
     }
     return Promise.reject(response);
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      // reset status of user
       window.location.href = '/';
     } else {
       return Promise.reject(error);

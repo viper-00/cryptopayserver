@@ -12,12 +12,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 
 const Notifications = () => {
   return (
     <Box>
-      <MetaTags title="Notifications" />
       <Container>
         <Box pt={5}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>

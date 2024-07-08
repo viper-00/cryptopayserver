@@ -12,7 +12,6 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 
 const Shopify = () => {
@@ -20,7 +19,6 @@ const Shopify = () => {
 
   return (
     <Box>
-      <MetaTags title="Shopify" />
       <Container>
         <Box>
           <Stack direction={'row'} alignItems={'center'} pt={5}>

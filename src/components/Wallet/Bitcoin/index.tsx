@@ -14,7 +14,6 @@ import {
   Switch,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 
 const Bitcoin = () => {
@@ -22,7 +21,6 @@ const Bitcoin = () => {
 
   return (
     <Box>
-      <MetaTags title="Bitcoin" />
       <Container>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
           <Box>

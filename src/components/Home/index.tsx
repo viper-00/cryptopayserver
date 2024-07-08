@@ -14,26 +14,57 @@ import Shopify from 'components/Plugins/Shopify';
 import Pointofsale from 'components/Plugins/Pointofsale';
 import Paybutton from 'components/Plugins/Paybutton';
 import Crowdfund from 'components/Plugins/Crowdfund';
-import { Box, Stack } from '@mui/material';
+import { Alert, Box, Snackbar, Stack } from '@mui/material';
 import Footer from './Footer';
 import Account from 'components/Account';
 import Notifications from 'components/Notifications';
 import { useEffect, useState } from 'react';
+import Login from 'components/Login';
+import Register from 'components/Register';
+import CreateStore from 'components/Stores/create';
+import { useSnackPresistStore } from 'lib/store/snack';
+import { useUserPresistStore } from 'lib/store/user';
 
 const Home = () => {
   const router = useRouter();
 
-  const [login, setLogin] = useState<boolean>(true);
+  const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { userEmail } = useUserPresistStore((state) => state);
+
+  const [login, setLogin] = useState<boolean>(false);
+
+  const unLoginWhiteList: any = {
+    '/login': true,
+    '/register': true,
+    '/stores/create': true,
+  };
 
   useEffect(() => {
-    if (!login) {
-      window.location.href = '/login';
-    } else if (login && router.pathname === '/') {
+    const isLogin = userEmail !== '';
+    setLogin(isLogin);
+
+    if (isLogin && router.pathname === '/') {
       window.location.href = '/dashboard';
+      return;
     }
-  }, [login]);
+
+    if (!isLogin) {
+      if (unLoginWhiteList[router.pathname]) {
+        return;
+      }
+
+      if (router.pathname !== '/login') {
+        window.location.href = '/login';
+        return;
+      }
+    }
+  }, [router.pathname]);
 
   const routerComponents: any = {
+    '/login': <Login />,
+    '/register': <Register />,
+    '/stores/create': <CreateStore />,
+
     '/dashboard': <Dashboard />,
     '/settings': <Settings />,
     '/wallet/bitcoin': <Bitcoin />,
@@ -53,10 +84,10 @@ const Home = () => {
 
   return (
     <Box height={'100%'}>
-      {login && (
-        <>
-          <MetaTags title="Home" />
+      <MetaTags title="Home" />
 
+      {login ? (
+        <>
           <Stack direction={'row'} height={'100%'}>
             <HomeSidebar />
 
@@ -69,7 +100,30 @@ const Home = () => {
             </Box>
           </Stack>
         </>
+      ) : (
+        <>
+          <Box width={'100%'}>
+            {routerComponents[router.pathname] || null}
+
+            <Box>
+              <Footer />
+            </Box>
+          </Box>
+        </>
       )}
+
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackOpen}>
+        <Alert
+          onClose={() => {
+            setSnackOpen(false);
+          }}
+          severity={snackSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

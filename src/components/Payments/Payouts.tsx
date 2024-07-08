@@ -1,6 +1,5 @@
 import { ReportGmailerrorred } from '@mui/icons-material';
 import { Box, Container, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 import PayoutAwaitingApprovalDataGrid from './payout/awaitingApproval';
 
@@ -15,7 +14,6 @@ const Payouts = () => {
 
   return (
     <Box>
-      <MetaTags title="Payouts" />
       <Container>
         <Box>
           <Stack direction={'row'} alignItems={'center'} pt={5}>

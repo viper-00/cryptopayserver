@@ -18,7 +18,6 @@ import {
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 
 const Requests = () => {
@@ -27,7 +26,6 @@ const Requests = () => {
 
   return (
     <Box>
-      <MetaTags title="Reporting" />
       <Container>
         {openCreateRequest ? (
           <Box>

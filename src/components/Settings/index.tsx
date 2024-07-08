@@ -1,5 +1,4 @@
 import { Box, Container, Tab, Tabs, TextField, Typography } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 import AccessToken from './accessToken';
 import Checkout from './checkout';
@@ -21,7 +20,6 @@ const Settings = () => {
 
   return (
     <Box>
-      <MetaTags title="Settings" />
       <Container>
         <Typography variant="h6" pt={5}>
           Store Settings

@@ -10,7 +10,7 @@ export default function MyDocument(props: any) {
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
       </Head>
-      <body style={{'backgroundColor': '#f8f9fa'}}>
+      <body style={{ backgroundColor: '#f8f9fa' }}>
         <Main />
         <NextScript />
       </body>

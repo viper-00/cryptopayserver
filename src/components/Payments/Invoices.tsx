@@ -18,7 +18,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 import InvoiceDataGrid from './invoice/InvoiceDataGrid';
 
@@ -28,7 +27,6 @@ const Invoices = () => {
 
   return (
     <Box>
-      <MetaTags title="Invoices" />
       <Container>
         {openCreateInvoice ? (
           <Box>

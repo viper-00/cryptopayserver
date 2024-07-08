@@ -10,12 +10,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 
 const Lightning = () => {
   return (
     <Box>
-      <MetaTags title="Lightning" />
       <Container>
         <Box pt={10}>
           <Typography variant="h4" fontWeight={'bold'} textAlign={'center'}>

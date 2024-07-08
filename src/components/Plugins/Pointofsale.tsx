@@ -1,10 +1,8 @@
 import { Box, Button, Container, FormControl, OutlinedInput, Typography } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 
 const Pointofsale = () => {
   return (
     <Box>
-      <MetaTags title="Pointofsale" />
       <Container>
         <Typography variant="h6" pt={5}>
           Create a new PointOfSale

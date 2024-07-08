@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -6,18 +7,40 @@ import {
   Checkbox,
   Container,
   FormControlLabel,
+  Snackbar,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
-import Footer from 'components/Home/Footer';
+
 import { CustomLogo } from 'components/Logo/CustomLogo';
+import { APP_TEST_EMAIL, APP_TEST_PASS } from 'packages/constants';
+import { useEffect, useState } from 'react';
 
 const Login = () => {
+  const [email, setEmail] = useState<string>(APP_TEST_EMAIL);
+  const [password, setPassword] = useState<string>(APP_TEST_PASS);
+  const [openSnack, setOpenSnack] = useState<boolean>(false);
+  const [snackMessage, setSnackMessage] = useState<string>('');
+  const [snackSeverity, setSnackSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success');
+
+  const onLogin = () => {
+    if (email === APP_TEST_EMAIL && password === APP_TEST_PASS) {
+    } else {
+      setSnackSeverity('error');
+      setSnackMessage('The account is incorrect, please try it out');
+      setOpenSnack(true);
+    }
+  };
+
+  async function init() {}
+
+  useEffect(() => {
+    init();
+  }, []);
+
   return (
     <Box>
-      <MetaTags title="Login" />
       <Container>
         <Stack alignItems={'center'} mt={8}>
           <CustomLogo style={{ width: 50, height: 50 }}>C</CustomLogo>
@@ -31,7 +54,16 @@ const Login = () => {
               <Box mt={3}>
                 <Typography>Email</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel id="filled-hidden-label-small" defaultValue="" size="small" />
+                  <TextField
+                    fullWidth
+                    hiddenLabel
+                    id="filled-hidden-label-small"
+                    size="small"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
                 </Box>
               </Box>
               <Box mt={3}>
@@ -45,8 +77,11 @@ const Login = () => {
                     hiddenLabel
                     type={'password'}
                     id="filled-hidden-label-small"
-                    defaultValue=""
                     size="small"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
                   />
                 </Box>
               </Box>
@@ -55,7 +90,7 @@ const Login = () => {
               </Box>
 
               <Box mt={3}>
-                <Button fullWidth variant={'contained'} size={'large'}>
+                <Button fullWidth variant={'contained'} size={'large'} onClick={onLogin}>
                   Sign in
                 </Button>
               </Box>
@@ -72,9 +107,20 @@ const Login = () => {
             </CardContent>
           </Card>
         </Stack>
-
-        <Footer />
       </Container>
+
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={openSnack}>
+        <Alert
+          onClose={() => {
+            setOpenSnack(false);
+          }}
+          severity={snackSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

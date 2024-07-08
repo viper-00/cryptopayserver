@@ -1,5 +1,4 @@
 import { Box, Container, Tab, Tabs, Typography } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 import MainAccount from './account';
 import ApiKey from './apikey';
@@ -17,7 +16,6 @@ const Account = () => {
 
   return (
     <Box>
-      <MetaTags title="Account" />
       <Container>
         <Typography variant="h5" pt={5}>
           Account Settings

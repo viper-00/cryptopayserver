@@ -1,23 +1,56 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Container,
-  FormControlLabel,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
-import Footer from 'components/Home/Footer';
+import { Box, Button, Card, CardContent, Container, Stack, TextField, Typography } from '@mui/material';
 import { CustomLogo } from 'components/Logo/CustomLogo';
+import { useSnackPresistStore } from 'lib/store/snack';
+import { useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const Register = () => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+
+  const onRegister = async () => {
+    try {
+      if (email !== '' && password !== '' && confirmPassword !== '' && password === confirmPassword) {
+        const find_user_resp: any = await axios.get(Http.find_user, {
+          params: {
+            email: email,
+          },
+        });
+        if (find_user_resp.result && find_user_resp.data.length > 0) {
+          setSnackSeverity('error');
+          setSnackMessage('User already exists!');
+          setSnackOpen(true);
+          return;
+        }
+
+        // create user
+        const create_user_resp: any = await axios.post(Http.create_user, {
+          email: email,
+          password: password,
+        });
+        if (create_user_resp.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Successful creation!');
+          setSnackOpen(true);
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 3000);
+        }
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('The input content is incorrect, please check!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <Box>
-      <MetaTags title="Login" />
       <Container>
         <Stack alignItems={'center'} mt={8}>
           <CustomLogo style={{ width: 50, height: 50 }}>C</CustomLogo>
@@ -34,7 +67,16 @@ const Register = () => {
               <Box mt={3}>
                 <Typography>Email</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel id="filled-hidden-label-small" defaultValue="" size="small" />
+                  <TextField
+                    fullWidth
+                    hiddenLabel
+                    id="filled-hidden-label-small"
+                    size="small"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
                 </Box>
               </Box>
               <Box mt={3}>
@@ -45,8 +87,11 @@ const Register = () => {
                     hiddenLabel
                     type={'password'}
                     id="filled-hidden-label-small"
-                    defaultValue=""
                     size="small"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
                   />
                 </Box>
               </Box>
@@ -58,13 +103,16 @@ const Register = () => {
                     hiddenLabel
                     type={'password'}
                     id="filled-hidden-label-small"
-                    defaultValue=""
                     size="small"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                    }}
                   />
                 </Box>
               </Box>
               <Box mt={3}>
-                <Button fullWidth variant={'contained'} size={'large'}>
+                <Button fullWidth variant={'contained'} size={'large'} onClick={onRegister}>
                   Create account
                 </Button>
               </Box>
@@ -81,8 +129,6 @@ const Register = () => {
             </CardContent>
           </Card>
         </Stack>
-
-        <Footer />
       </Container>
     </Box>
   );

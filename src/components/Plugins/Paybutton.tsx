@@ -1,10 +1,8 @@
 import { Box, Container, Typography } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 
 const Paybutton = () => {
   return (
     <Box>
-      <MetaTags title="Paybutton" />
       <Container>
         <Typography variant="h6" pt={5}>
           Pay Button

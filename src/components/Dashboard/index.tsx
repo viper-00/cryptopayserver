@@ -13,7 +13,6 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import BalanceBars from './balance';
 import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
 import TransactionDataGrid from './transaction';
@@ -23,7 +22,6 @@ const Dashboard = () => {
 
   return (
     <Box>
-      <MetaTags title="dashboard" />
       <Container>
         <Typography variant="h5" pt={5}>
           Test

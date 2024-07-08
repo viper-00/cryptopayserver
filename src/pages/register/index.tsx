@@ -1,3 +1,3 @@
-import Register from 'components/Register';
+import Home from "components/Home";
 
-export default Register;
+export default Home;

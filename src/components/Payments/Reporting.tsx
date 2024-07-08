@@ -11,7 +11,6 @@ import {
   Typography,
 } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers-pro';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -21,7 +20,6 @@ const Reporting = () => {
 
   return (
     <Box>
-      <MetaTags title="Reporting" />
       <Container>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
           <Stack direction={'row'} alignItems={'center'}>

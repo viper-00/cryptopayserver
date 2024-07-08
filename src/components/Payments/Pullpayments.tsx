@@ -20,7 +20,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import MetaTags from 'components/Common/MetaTags';
 import { useState } from 'react';
 import PullPaymentActiveDataGrid from './pullpayment/active';
 
@@ -36,7 +35,6 @@ const Pullpayments = () => {
 
   return (
     <Box>
-      <MetaTags title="Pullpayments" />
       <Container>
         {openCreatePullPayment ? (
           <Box>
