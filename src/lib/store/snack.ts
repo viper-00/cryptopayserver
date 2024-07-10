@@ -43,7 +43,7 @@ export const useSnackPresistStore = create(
       },
     }),
     {
-      name: 'cryptopayserver.user.store',
+      name: 'cryptopayserver.store.snack',
     },
   ),
 );

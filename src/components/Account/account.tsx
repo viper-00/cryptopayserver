@@ -15,7 +15,7 @@ const MainAccount = () => {
               inputProps={{
                 'aria-label': 'weight',
               }}
-              value={'example@gmail.com'}
+              value={''}
               disabled
             />
           </FormControl>

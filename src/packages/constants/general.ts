@@ -19,7 +19,3 @@ export const IS_DEVELOPMENT = process.env.NEXT_PUBLIC_ENVIRONMENT === 'developme
 export const IS_PRODUCATION = !IS_DEVELOPMENT;
 
 export const STATIC_ASSETS = '';
-
-// Account
-export const APP_TEST_EMAIL = 'example@gmail.com';
-export const APP_TEST_PASS = '123123';

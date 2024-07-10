@@ -14,22 +14,62 @@ import {
 } from '@mui/material';
 
 import { CustomLogo } from 'components/Logo/CustomLogo';
-import { APP_TEST_EMAIL, APP_TEST_PASS } from 'packages/constants';
+import { useSnackPresistStore } from 'lib/store/snack';
+import { useUserPresistStore } from 'lib/store/user';
 import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const Login = () => {
-  const [email, setEmail] = useState<string>(APP_TEST_EMAIL);
-  const [password, setPassword] = useState<string>(APP_TEST_PASS);
-  const [openSnack, setOpenSnack] = useState<boolean>(false);
-  const [snackMessage, setSnackMessage] = useState<string>('');
-  const [snackSeverity, setSnackSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
-  const onLogin = () => {
-    if (email === APP_TEST_EMAIL && password === APP_TEST_PASS) {
-    } else {
-      setSnackSeverity('error');
-      setSnackMessage('The account is incorrect, please try it out');
-      setOpenSnack(true);
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { setUserId, setUserEmail, setUsername, setIsLogin, setUseStoreId } = useUserPresistStore((state) => state);
+
+  const onLogin = async () => {
+    try {
+      if (email !== '' && password !== '') {
+        const login_resp: any = await axios.post(Http.login, {
+          email: email,
+          password: password,
+        });
+        if (login_resp.result && login_resp.data.length === 1) {
+
+          setUserId(login_resp.data[0].id)
+          setUserEmail(login_resp.data[0].email)
+          setUsername(login_resp.data[0].email)
+
+          const store_resp: any = await axios.get(Http.find_store, {
+            params: {
+              user_id: login_resp.data[0].id
+            }
+          })
+
+          if (store_resp.result) {
+            if (store_resp.data.length > 0) {
+              setUseStoreId(store_resp.data[0].id)
+              window.location.href = "/"
+            } else {
+              window.location.href = "/stores/create"
+            }
+          } else {
+            setSnackSeverity('error');
+            setSnackMessage('Can not find the store on site!');
+            setSnackOpen(true);
+          }
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('User not exists!');
+          setSnackOpen(true);
+        }
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('The input content is incorrect, please check!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -108,19 +148,6 @@ const Login = () => {
           </Card>
         </Stack>
       </Container>
-
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={openSnack}>
-        <Alert
-          onClose={() => {
-            setOpenSnack(false);
-          }}
-          severity={snackSeverity}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {snackMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

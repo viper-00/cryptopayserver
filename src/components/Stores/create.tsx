@@ -11,16 +11,48 @@ import {
   Typography,
 } from '@mui/material';
 import { CustomLogo } from 'components/Logo/CustomLogo';
+import { useSnackPresistStore } from 'lib/store/snack';
+import { useUserPresistStore } from 'lib/store/user';
+import { useStorePresistStore } from 'lib/store/store';
 import { CURRENCY, PRICE_RESOURCE } from 'packages/constants';
 import { useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const CreateStore = () => {
   const [name, setName] = useState<string>('');
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
   const [priceSource, setPriceSource] = useState<string>(PRICE_RESOURCE[0]);
 
-  const onCreateStore = () => {
-    if (name !== '' && currency !== '' && priceSource !== '') {
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { setUseStoreId, userId } = useUserPresistStore((state) => state);
+  const { setStoreId, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
+
+  const onCreateStore = async () => {
+    try {
+      if (name !== '' && currency !== '' && priceSource !== '') {
+        // create store
+        const create_store_resp: any = await axios.post(Http.create_store, {
+          user_id: userId,
+          name: name,
+          currency: currency,
+          price_source: priceSource,
+        });
+        if (create_store_resp.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Successful creation!');
+          setSnackOpen(true);
+          // setTimeout(() => {
+          //   window.location.href = '/login';
+          // }, 3000);
+        }
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('The input content is incorrect, please check!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 

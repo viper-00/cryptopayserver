@@ -7,6 +7,13 @@ export class Http {
   // test
   static test = this.httpPath + '/test';
   static test_db_conn = this.httpPath + '/test_db_conn';
+
+  // user
   static find_user = this.httpPath + '/find_user';
   static create_user = this.httpPath + '/create_user';
+  static login = this.httpPath + '/login';
+
+  // store
+  static find_store = this.httpPath + '/find_store'
+  static create_store = this.httpPath + '/create_store'
 }

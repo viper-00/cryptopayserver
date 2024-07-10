@@ -29,9 +29,9 @@ const Home = () => {
   const router = useRouter();
 
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { userEmail } = useUserPresistStore((state) => state);
+  const { isLogin } = useUserPresistStore((state) => state);
 
-  const [login, setLogin] = useState<boolean>(false);
+  // const [login, setLogin] = useState<boolean>(false);
 
   const unLoginWhiteList: any = {
     '/login': true,
@@ -40,8 +40,8 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const isLogin = userEmail !== '';
-    setLogin(isLogin);
+    // const isLogin = userEmail !== '';
+    // setLogin(isLogin);
 
     if (isLogin && router.pathname === '/') {
       window.location.href = '/dashboard';
@@ -86,7 +86,7 @@ const Home = () => {
     <Box height={'100%'}>
       <MetaTags title="Home" />
 
-      {login ? (
+      {isLogin ? (
         <>
           <Stack direction={'row'} height={'100%'}>
             <HomeSidebar />
