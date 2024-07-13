@@ -45,13 +45,7 @@ const AccessToken = () => {
         <Box mt={3}>
           <Typography>API Key</Typography>
           <Stack direction={'row'} alignItems={'center'} gap={2} mt={1}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              id="filled-hidden-label-small"
-              defaultValue=""
-              size="small"
-            />
+            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
             <Button>Generate</Button>
           </Stack>
         </Box>

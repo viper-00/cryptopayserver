@@ -10,7 +10,6 @@ const Password = () => {
           <FormControl variant="outlined" fullWidth>
             <OutlinedInput
               size={'small'}
-              id="outlined-adornment-weight"
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
@@ -27,7 +26,6 @@ const Password = () => {
           <FormControl variant="outlined" fullWidth>
             <OutlinedInput
               size={'small'}
-              id="outlined-adornment-weight"
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
@@ -44,7 +42,6 @@ const Password = () => {
           <FormControl variant="outlined" fullWidth>
             <OutlinedInput
               size={'small'}
-              id="outlined-adornment-weight"
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',

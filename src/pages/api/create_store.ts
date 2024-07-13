@@ -14,9 +14,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const currency = req.body.currency;
         const priceSource = req.body.price_source;
 
-        const query = 'INSERT INTO stores (user_id, name, currency, price_source, status) VALUES (?, ?, ?, ?, ?)';
-        const values = [user_id, name, currency, priceSource, 1];
-        const [rows] = await connection.query(query, values);
+        const createQuery = 'INSERT INTO stores (user_id, name, currency, price_source, status) VALUES (?, ?, ?, ?, ?)';
+        const createValues = [user_id, name, currency, priceSource, 1];
+        const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
+        const storeId = ResultSetHeader.insertId 
+        if (storeId === 0) {
+          return res.status(200).json({ message: 'Something wrong', result: false, data: null });
+        }
+
+        const findQuery = 'SELECT * FROM stores where id = ? and status = ?';
+        const findValues = [storeId, 1];
+        const [rows] = await connection.query(findQuery, findValues);
         return res.status(200).json({ message: '', result: true, data: rows });
       default:
         throw 'no support the method of api';

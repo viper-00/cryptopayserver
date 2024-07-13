@@ -1,13 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface UserPerisistState {
+type UserPerisistState = {
   userId: number;
   userEmail: string;
   username: string;
   isLogin: boolean;
-  useStoreId: number;
+  userTheme: 'auto' | 'light' | 'dark';
+  userHideSensitiveInfo: boolean;
+};
 
+type UserPerisistAction = {
   setUserId: (userId: number) => void;
   getUserId: () => number;
   setUserEmail: (userEmail: string) => void;
@@ -16,20 +19,27 @@ interface UserPerisistState {
   getUsername: () => string;
   setIsLogin: (isLogin: boolean) => void;
   getIsLogin: () => boolean;
-  setUseStoreId: (useStoreId: number) => void;
-  getUseStoreId: () => number;
+  setUserTheme: (theme: 'auto' | 'light' | 'dark') => void;
+  getUserTheme: () => string;
+  setUserHideSensitiveInfo: (userHideSensitiveInfo: boolean) => void;
+  getUserHideSensitiveInfo: () => boolean;
 
   resetUser: () => void;
-}
+};
+
+const initialUserState: UserPerisistState = {
+  userId: 0,
+  userEmail: '',
+  username: '',
+  isLogin: false,
+  userTheme: 'auto',
+  userHideSensitiveInfo: false,
+};
 
 export const useUserPresistStore = create(
-  persist<UserPerisistState>(
+  persist<UserPerisistState & UserPerisistAction>(
     (set, get) => ({
-      userId: 0,
-      userEmail: '',
-      username: '',
-      isLogin: false,
-      useStoreId: 0,
+      ...initialUserState,
 
       setUserId: (value) => set(() => ({ userId: value })),
       getUserId: () => get().userId,
@@ -39,21 +49,13 @@ export const useUserPresistStore = create(
       getUsername: () => get().username,
       setIsLogin: (value) => set(() => ({ isLogin: value })),
       getIsLogin: () => get().isLogin,
-      setUseStoreId: (value) => set(() => ({ useStoreId: value })),
-      getUseStoreId: () => get().useStoreId,
+      setUserTheme: (value) => set(() => ({ userTheme: value })),
+      getUserTheme: () => get().userTheme,
+      setUserHideSensitiveInfo: (value) => set(() => ({ userHideSensitiveInfo: value })),
+      getUserHideSensitiveInfo: () => get().userHideSensitiveInfo,
 
       resetUser: () => {
-        set((state) => {
-          return {
-            ...state,
-
-            userId: 0,
-            userEmail: '',
-            username: '',
-            isLogin: false,
-            useStoreId: 0,
-          };
-        });
+        set(initialUserState);
       },
     }),
     {

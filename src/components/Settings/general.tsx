@@ -40,37 +40,19 @@ const General = () => {
         <Box mt={4}>
           <Typography>Store ID</Typography>
           <Box mt={1}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              id="filled-hidden-label-small"
-              defaultValue=""
-              size="small"
-            />
+            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
           </Box>
         </Box>
         <Box mt={2}>
           <Typography>Store Name</Typography>
           <Box mt={1}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              id="filled-hidden-label-small"
-              defaultValue=""
-              size="small"
-            />
+            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
           </Box>
         </Box>
         <Box mt={2}>
           <Typography>Store Website </Typography>
           <Box mt={1}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              id="filled-hidden-label-small"
-              defaultValue=""
-              size="small"
-            />
+            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
           </Box>
         </Box>
       </Box>
@@ -186,7 +168,6 @@ const General = () => {
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   type="number"
                   endAdornment={<InputAdornment position="end">minutes</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
@@ -210,7 +191,6 @@ const General = () => {
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   endAdornment={<InputAdornment position="end">percent</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
@@ -233,7 +213,6 @@ const General = () => {
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   type="number"
                   endAdornment={<InputAdornment position="end">days</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"

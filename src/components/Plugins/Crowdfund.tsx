@@ -13,7 +13,6 @@ const Crowdfund = () => {
             <FormControl fullWidth variant="outlined">
               <OutlinedInput
                 size={'small'}
-                id="outlined-adornment-weight"
                 aria-describedby="outlined-weight-helper-text"
                 inputProps={{
                   'aria-label': 'weight',

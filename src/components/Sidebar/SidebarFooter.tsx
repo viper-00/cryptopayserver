@@ -17,6 +17,8 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Brightness4, DarkMode, PermIdentity, WbSunny } from '@mui/icons-material';
+import { useUserPresistStore } from 'lib/store/user';
+import { useStorePresistStore } from 'lib/store/store';
 
 interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -71,21 +73,44 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
 
   const switchlabel = { inputProps: { 'aria-label': 'Switch demo' } };
 
+  const { getUsername, getUserTheme, getUserHideSensitiveInfo, setUserHideSensitiveInfo, setUserTheme, resetUser } =
+    useUserPresistStore((state) => state);
+  const { resetStore } = useStorePresistStore((state) => state);
+
+  const handleChangeUserHideSensitiveInfo = (e: any) => {
+    setUserHideSensitiveInfo(e.target.checked);
+  };
+
   const AccountDrawer = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleAccountDrawer(false)} p={2}>
-      <Typography mb={2}>aur-014@hotmail.com</Typography>
+      <Typography mb={2}>{getUsername()}</Typography>
       <Divider />
       <Box my={2}>
         <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
           <Typography>Theme</Typography>
           <Stack direction={'row'} alignItems={'center'}>
-            <IconButton>
+            <IconButton
+              color={getUserTheme() === 'auto' ? 'primary' : 'default'}
+              onClick={() => {
+                setUserTheme('auto');
+              }}
+            >
               <Brightness4 />
             </IconButton>
-            <IconButton>
+            <IconButton
+              color={getUserTheme() === 'light' ? 'primary' : 'default'}
+              onClick={() => {
+                setUserTheme('light');
+              }}
+            >
               <WbSunny />
             </IconButton>
-            <IconButton>
+            <IconButton
+              color={getUserTheme() === 'dark' ? 'primary' : 'default'}
+              onClick={() => {
+                setUserTheme('dark');
+              }}
+            >
               <DarkMode />
             </IconButton>
           </Stack>
@@ -93,7 +118,11 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
         <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} mt={2}>
           <Typography>Hide Sensitive Info</Typography>
           <Box>
-            <Switch {...switchlabel} />
+            <Switch
+              {...switchlabel}
+              checked={getUserHideSensitiveInfo()}
+              onChange={handleChangeUserHideSensitiveInfo}
+            />
           </Box>
         </Stack>
       </Box>
@@ -111,7 +140,12 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
       <Box my={1}>
         <Button
           onClick={() => {
-            window.location.href = '/login';
+            resetUser();
+            resetStore();
+
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 1000);
           }}
         >
           Logout

@@ -72,13 +72,7 @@ const Emails = () => {
             </Menu>
           </Stack>
           <Box mt={1}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              id="filled-hidden-label-small"
-              defaultValue=""
-              size="small"
-            />
+            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
           </Box>
         </Box>
 
@@ -88,7 +82,6 @@ const Emails = () => {
             <FormControl fullWidth variant="outlined">
               <OutlinedInput
                 size={'small'}
-                id="outlined-adornment-weight"
                 type="number"
                 aria-describedby="outlined-weight-helper-text"
                 inputProps={{
@@ -104,7 +97,6 @@ const Emails = () => {
             <FormControl fullWidth variant="outlined">
               <OutlinedInput
                 size={'small'}
-                id="outlined-adornment-weight"
                 aria-describedby="outlined-weight-helper-text"
                 inputProps={{
                   'aria-label': 'weight',
@@ -119,7 +111,6 @@ const Emails = () => {
             <FormControl fullWidth variant="outlined">
               <OutlinedInput
                 size={'small'}
-                id="outlined-adornment-weight"
                 aria-describedby="outlined-weight-helper-text"
                 inputProps={{
                   'aria-label': 'weight',
@@ -136,7 +127,6 @@ const Emails = () => {
               <OutlinedInput
                 size={'small'}
                 type={'password'}
-                id="outlined-adornment-weight"
                 aria-describedby="outlined-weight-helper-text"
                 inputProps={{
                   'aria-label': 'weight',
@@ -163,7 +153,6 @@ const Emails = () => {
             <FormControl fullWidth variant="outlined">
               <OutlinedInput
                 size={'small'}
-                id="outlined-adornment-weight"
                 aria-describedby="outlined-weight-helper-text"
                 inputProps={{
                   'aria-label': 'weight',

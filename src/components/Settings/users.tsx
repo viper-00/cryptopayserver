@@ -24,13 +24,7 @@ const Users = () => {
           Give other registered CryptoPay Server users access to your store. See the roles for granted permissions.
         </Typography>
         <Stack direction={'row'} alignItems={'center'} gap={3} mt={1}>
-          <TextField
-            fullWidth
-            hiddenLabel
-            id="filled-hidden-label-small"
-            defaultValue=""
-            size="small"
-          />
+          <TextField fullWidth hiddenLabel defaultValue="" size="small" />
           <Select
             size={'small'}
             inputProps={{ 'aria-label': 'Without label' }}

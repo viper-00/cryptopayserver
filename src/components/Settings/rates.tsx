@@ -63,7 +63,6 @@ const Rates = () => {
               <FormControl fullWidth variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   endAdornment={<InputAdornment position="end">%</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
@@ -81,13 +80,7 @@ const Rates = () => {
         <Box mt={4}>
           <Typography>Currency pairs to test against your rule (e.g. DOGE_USD,DOGE_CAD,BTC_CAD,BTC_USD)</Typography>
           <Stack direction={'row'} alignItems={'center'} gap={2} mt={1}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              id="filled-hidden-label-small"
-              defaultValue=""
-              size="small"
-            />
+            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
             <Button>Test</Button>
           </Stack>
         </Box>
@@ -96,13 +89,7 @@ const Rates = () => {
       <Box mt={5}>
         <Typography variant="h6">Default Currency Pairs</Typography>
         <Box mt={1}>
-          <TextField
-            fullWidth
-            hiddenLabel
-            id="filled-hidden-label-small"
-            defaultValue=""
-            size="small"
-          />
+          <TextField fullWidth hiddenLabel defaultValue="" size="small" />
         </Box>
       </Box>
 

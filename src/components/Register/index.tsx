@@ -38,7 +38,7 @@ const Register = () => {
           setSnackOpen(true);
           setTimeout(() => {
             window.location.href = '/login';
-          }, 3000);
+          }, 2000);
         }
       } else {
         setSnackSeverity('error');
@@ -70,7 +70,6 @@ const Register = () => {
                   <TextField
                     fullWidth
                     hiddenLabel
-                    id="filled-hidden-label-small"
                     size="small"
                     value={email}
                     onChange={(e) => {
@@ -86,7 +85,6 @@ const Register = () => {
                     fullWidth
                     hiddenLabel
                     type={'password'}
-                    id="filled-hidden-label-small"
                     size="small"
                     value={password}
                     onChange={(e) => {
@@ -102,7 +100,6 @@ const Register = () => {
                     fullWidth
                     hiddenLabel
                     type={'password'}
-                    id="filled-hidden-label-small"
                     size="small"
                     value={confirmPassword}
                     onChange={(e) => {

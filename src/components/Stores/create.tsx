@@ -12,8 +12,8 @@ import {
 } from '@mui/material';
 import { CustomLogo } from 'components/Logo/CustomLogo';
 import { useSnackPresistStore } from 'lib/store/snack';
-import { useUserPresistStore } from 'lib/store/user';
 import { useStorePresistStore } from 'lib/store/store';
+import { useUserPresistStore } from 'lib/store/user';
 import { CURRENCY, PRICE_RESOURCE } from 'packages/constants';
 import { useState } from 'react';
 import axios from 'utils/http/axios';
@@ -25,15 +25,15 @@ const CreateStore = () => {
   const [priceSource, setPriceSource] = useState<string>(PRICE_RESOURCE[0]);
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { setUseStoreId, userId } = useUserPresistStore((state) => state);
-  const { setStoreId, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
 
   const onCreateStore = async () => {
     try {
       if (name !== '' && currency !== '' && priceSource !== '') {
         // create store
         const create_store_resp: any = await axios.post(Http.create_store, {
-          user_id: userId,
+          user_id: getUserId(),
           name: name,
           currency: currency,
           price_source: priceSource,
@@ -42,9 +42,15 @@ const CreateStore = () => {
           setSnackSeverity('success');
           setSnackMessage('Successful creation!');
           setSnackOpen(true);
-          // setTimeout(() => {
-          //   window.location.href = '/login';
-          // }, 3000);
+
+          setStoreId(create_store_resp.data[0].id);
+          setStoreName(create_store_resp.data[0].name);
+          setStoreCurrency(create_store_resp.data[0].currency);
+          setStorePriceSource(create_store_resp.data[0].price_source);
+
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 2000);
         }
       } else {
         setSnackSeverity('error');
@@ -76,7 +82,6 @@ const CreateStore = () => {
                   <TextField
                     fullWidth
                     hiddenLabel
-                    id="filled-hidden-label-small"
                     size="small"
                     value={name}
                     onChange={(e) => {

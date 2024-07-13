@@ -1,6 +1,9 @@
 import { Box, Button, FormControl, OutlinedInput, Stack, Typography } from '@mui/material';
+import { useUserPresistStore } from 'lib/store/user';
 
 const MainAccount = () => {
+  const { getUserEmail, getUsername } = useUserPresistStore((state) => state);
+
   return (
     <Box>
       <Typography variant={'h6'}>Update your account</Typography>
@@ -10,12 +13,11 @@ const MainAccount = () => {
           <FormControl style={{ width: 400 }} variant="outlined">
             <OutlinedInput
               size={'small'}
-              id="outlined-adornment-weight"
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
               }}
-              value={''}
+              value={getUsername()}
               disabled
             />
           </FormControl>
@@ -28,11 +30,11 @@ const MainAccount = () => {
           <FormControl style={{ width: 400 }} variant="outlined">
             <OutlinedInput
               size={'small'}
-              id="outlined-adornment-weight"
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
               }}
+              value={getUserEmail()}
             />
           </FormControl>
           <Button variant={'contained'}>Send verification email</Button>

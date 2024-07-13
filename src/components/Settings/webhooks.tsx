@@ -58,13 +58,7 @@ const Webhooks = () => {
           <Box mt={2}>
             <Typography>Payload URL</Typography>
             <Box mt={1}>
-              <TextField
-                fullWidth
-                hiddenLabel
-                id="filled-hidden-label-small"
-                defaultValue=""
-                size="small"
-              />
+              <TextField fullWidth hiddenLabel defaultValue="" size="small" />
             </Box>
           </Box>
           <Box mt={3}>
@@ -72,7 +66,6 @@ const Webhooks = () => {
             <FormControl fullWidth>
               <OutlinedInput
                 size={'small'}
-                id="outlined-adornment-weight"
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
@@ -92,8 +85,8 @@ const Webhooks = () => {
               />
             </FormControl>
             <Typography mt={1}>
-              The endpoint receiving the payload must validate the payload by checking that the HTTP header CryptoPay-SIG
-              of the callback matches the HMAC256 of the secret on the payload's body bytes.
+              The endpoint receiving the payload must validate the payload by checking that the HTTP header
+              CryptoPay-SIG of the callback matches the HMAC256 of the secret on the payload's body bytes.
             </Typography>
             <Stack mt={4} direction={'row'} alignItems={'center'}>
               <Switch />

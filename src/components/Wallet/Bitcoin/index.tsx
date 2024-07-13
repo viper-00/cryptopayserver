@@ -84,7 +84,6 @@ const Bitcoin = () => {
                   <FormControl variant="outlined">
                     <OutlinedInput
                       size={'small'}
-                      id="outlined-adornment-weight"
                       aria-describedby="outlined-weight-helper-text"
                       inputProps={{
                         'aria-label': 'weight',
@@ -100,7 +99,6 @@ const Bitcoin = () => {
                   <FormControl sx={{ width: '500px' }} variant="outlined">
                     <OutlinedInput
                       size={'small'}
-                      id="outlined-adornment-weight"
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton aria-label="toggle password visibility" onClick={() => {}} edge="end">
@@ -136,7 +134,6 @@ const Bitcoin = () => {
                   <FormControl variant="outlined" fullWidth>
                     <OutlinedInput
                       size={'small'}
-                      id="outlined-adornment-weight"
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton aria-label="toggle password visibility" onClick={() => {}} edge="end">
@@ -163,7 +160,6 @@ const Bitcoin = () => {
                       <FormControl variant="outlined">
                         <OutlinedInput
                           size={'small'}
-                          id="outlined-adornment-weight"
                           aria-describedby="outlined-weight-helper-text"
                           inputProps={{
                             'aria-label': 'weight',
@@ -178,7 +174,6 @@ const Bitcoin = () => {
                       <FormControl variant="outlined">
                         <OutlinedInput
                           size={'small'}
-                          id="outlined-adornment-weight"
                           aria-describedby="outlined-weight-helper-text"
                           inputProps={{
                             'aria-label': 'weight',
@@ -203,7 +198,6 @@ const Bitcoin = () => {
                     <FormControl variant="outlined">
                       <OutlinedInput
                         size={'small'}
-                        id="outlined-adornment-weight"
                         type="number"
                         endAdornment={<InputAdornment position="end">minutes</InputAdornment>}
                         aria-describedby="outlined-weight-helper-text"
@@ -250,7 +244,6 @@ const Bitcoin = () => {
                   <FormControl variant="outlined">
                     <OutlinedInput
                       size={'small'}
-                      id="outlined-adornment-weight"
                       type="number"
                       aria-describedby="outlined-weight-helper-text"
                       inputProps={{

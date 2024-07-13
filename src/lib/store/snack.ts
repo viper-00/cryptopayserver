@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface SnackPerisistState {
+type SnackPerisistState = {
   snackOpen: boolean;
   snackMessage: string;
   snackSeverity: 'success' | 'info' | 'warning' | 'error';
+};
 
+type SnackPerisistAction = {
   setSnackOpen: (snackOpen: boolean) => void;
   getSnackOpen: () => boolean;
   setSnackMessage: (message: string) => void;
@@ -14,14 +16,18 @@ interface SnackPerisistState {
   getSnackSeverity: () => 'success' | 'info' | 'warning' | 'error';
 
   resetSnack: () => void;
-}
+};
+
+const initialSnackState: SnackPerisistState = {
+  snackOpen: false,
+  snackMessage: '',
+  snackSeverity: 'success',
+};
 
 export const useSnackPresistStore = create(
-  persist<SnackPerisistState>(
+  persist<SnackPerisistState & SnackPerisistAction>(
     (set, get) => ({
-      snackOpen: false,
-      snackMessage: '',
-      snackSeverity: 'success',
+      ...initialSnackState,
 
       setSnackOpen: (value) => set(() => ({ snackOpen: value })),
       getSnackOpen: () => get().snackOpen,
@@ -31,15 +37,7 @@ export const useSnackPresistStore = create(
       getSnackSeverity: () => get().snackSeverity,
 
       resetSnack: () => {
-        set((state) => {
-          return {
-            ...state,
-
-            snackOpen: false,
-            snackMessage: '',
-            snackSeverity: 'success',
-          };
-        });
+        set(initialSnackState);
       },
     }),
     {

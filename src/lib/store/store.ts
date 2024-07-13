@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface StorePerisistState {
+type StorePerisistState = {
   storeId: number;
   storeName: string;
   storeCurrency: string;
   storePriceSource: string;
+};
 
+type StorePerisistAction = {
   setStoreId: (storeId: number) => void;
   getStoreId: () => number;
   setStoreName: (storeName: string) => void;
@@ -17,15 +19,19 @@ interface StorePerisistState {
   getStorePriceSource: () => string;
 
   resetStore: () => void;
-}
+};
+
+const initialStoreState: StorePerisistState = {
+  storeId: 0,
+  storeName: '',
+  storeCurrency: '',
+  storePriceSource: '',
+};
 
 export const useStorePresistStore = create(
-  persist<StorePerisistState>(
+  persist<StorePerisistState & StorePerisistAction>(
     (set, get) => ({
-      storeId: 0,
-      storeName: '',
-      storeCurrency: '',
-      storePriceSource: '',
+      ...initialStoreState,
 
       setStoreId: (value) => set(() => ({ storeId: value })),
       getStoreId: () => get().storeId,
@@ -37,16 +43,7 @@ export const useStorePresistStore = create(
       getStorePriceSource: () => get().storePriceSource,
 
       resetStore: () => {
-        set((state) => {
-          return {
-            ...state,
-
-            storeId: 0,
-            storeName: '',
-            storeCurrency: '',
-            storePriceSource: '',
-          };
-        });
+        set(initialStoreState);
       },
     }),
     {

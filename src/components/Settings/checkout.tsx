@@ -62,13 +62,7 @@ const Checkout = () => {
               </Select>
             </Box>
             <Box ml={2}>
-              <TextField
-                hiddenLabel
-                id="filled-hidden-label-small"
-                defaultValue=""
-                size="small"
-                placeholder="6.15 USD"
-              />
+              <TextField hiddenLabel defaultValue="" size="small" placeholder="6.15 USD" />
             </Box>
           </Stack>
         </Box>
@@ -116,26 +110,14 @@ const Checkout = () => {
           <Box mt={3}>
             <Typography>Custom HTML title to display on Checkout page</Typography>
             <Box mt={1}>
-              <TextField
-                fullWidth
-                hiddenLabel
-                id="filled-hidden-label-small"
-                defaultValue=""
-                size="small"
-              />
+              <TextField fullWidth hiddenLabel defaultValue="" size="small" />
             </Box>
           </Box>
 
           <Box mt={3}>
             <Typography>Support URL</Typography>
             <Box mt={1}>
-              <TextField
-                fullWidth
-                hiddenLabel
-                id="filled-hidden-label-small"
-                defaultValue=""
-                size="small"
-              />
+              <TextField fullWidth hiddenLabel defaultValue="" size="small" />
             </Box>
             <Typography mt={1}>
               For support requests related to partially paid invoices. A "Contact Us" button with this link will be

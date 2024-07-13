@@ -40,7 +40,7 @@ const Invoices = () => {
                 <Box mt={5}>
                   <Typography>Amount</Typography>
                   <Box mt={1}>
-                    <TextField fullWidth hiddenLabel id="filled-hidden-label-small" defaultValue="" size="small" />
+                    <TextField fullWidth hiddenLabel defaultValue="" size="small" />
                   </Box>
                 </Box>
                 <Box ml={5}>
@@ -68,14 +68,14 @@ const Invoices = () => {
               <Box mt={4}>
                 <Typography>Order Id</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel id="filled-hidden-label-small" defaultValue="" size="small" />
+                  <TextField fullWidth hiddenLabel defaultValue="" size="small" />
                 </Box>
               </Box>
 
               <Box mt={4}>
                 <Typography>Item Description</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel id="filled-hidden-label-small" defaultValue="" size="small" />
+                  <TextField fullWidth hiddenLabel defaultValue="" size="small" />
                 </Box>
               </Box>
 
@@ -115,7 +115,7 @@ const Invoices = () => {
               <Box mt={4}>
                 <Typography>Buyer Email</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel id="filled-hidden-label-small" defaultValue="" size="small" />
+                  <TextField fullWidth hiddenLabel defaultValue="" size="small" />
                 </Box>
                 <Box mt={4}>
                   <Typography>Require Refund Email</Typography>
@@ -185,7 +185,6 @@ const Invoices = () => {
               <FormControl sx={{ width: 500 }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
                     'aria-label': 'weight',

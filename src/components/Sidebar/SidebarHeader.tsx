@@ -13,8 +13,13 @@ import {
   SelectChangeEvent,
   Stack,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CustomLogo } from 'components/Logo/CustomLogo';
+import { useStorePresistStore } from 'lib/store/store';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { useUserPresistStore } from 'lib/store/user';
+import { useSnackPresistStore } from 'lib/store/snack';
 
 interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -29,11 +34,86 @@ const StyledSidebarHeader = styled.div`
   }
 `;
 
+interface StoreProps {
+  id: number;
+  name: string;
+  currency: string;
+  price_source: string;
+}
+
 export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest }) => {
-  const [store, setStore] = useState('');
-  const handleChangeStore = (event: SelectChangeEvent) => {
-    setStore(event.target.value as string);
-  };
+
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
+
+  const [stores, setStores] = useState<StoreProps[]>([]);
+
+  async function getStore() {
+    if (getUserId() === 0) {
+      return;
+    }
+
+    const store_result: any = await axios.get(Http.find_store, {
+      params: {
+        user_id: getUserId(),
+      },
+    });
+
+    if (store_result.result && store_result.data.length > 0) {
+      let store_list: Array<StoreProps> = [];
+
+      store_result.data.map((item: any) => {
+        store_list.push({
+          id: item.id,
+          name: item.name,
+          currency: item.currency,
+          price_source: item.price_source,
+        });
+      });
+      setStores(store_list);
+    } else {
+      setSnackSeverity('error');
+      setSnackMessage("Can't find the store, please to create a new one.");
+      setSnackOpen(true);
+
+      setTimeout(() => {
+        window.location.href = '/stores/create';
+      }, 2000);
+    }
+  }
+
+  async function onClickStore(id: number) {
+    const store_result: any = await axios.get(Http.find_store_by_id, {
+      params: {
+        id: id,
+      },
+    });
+
+    if (store_result.result && store_result.data.length === 1) {
+      setStoreId(store_result.data[0].id);
+      setStoreName(store_result.data[0].name);
+      setStoreCurrency(store_result.data[0].currency);
+      setStorePriceSource(store_result.data[0].price_source);
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000)
+    } else {
+      setSnackSeverity('error');
+      setSnackMessage("Can't find the store, please try again later.");
+      setSnackOpen(true);
+    }
+  }
+
+  async function init() {
+    await getStore();
+  }
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <StyledSidebarHeader {...rest}>
@@ -67,11 +147,20 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
             size={'small'}
             inputProps={{ 'aria-label': 'Without label' }}
             id="demo-simple-select-helper"
-            defaultValue={1}
+            defaultValue={getStoreId()}
           >
-            <MenuItem value={1}>USD</MenuItem>
-            <MenuItem value={2}>AAA</MenuItem>
-            <MenuItem value={3}>BBB</MenuItem>
+            {stores &&
+              stores.map((item, index) => (
+                <MenuItem
+                  value={item.id}
+                  key={index}
+                  onClick={() => {
+                    onClickStore(item.id);
+                  }}
+                >
+                  {item.name}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
       </Box>

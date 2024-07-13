@@ -15,6 +15,7 @@ import {
 
 import { CustomLogo } from 'components/Logo/CustomLogo';
 import { useSnackPresistStore } from 'lib/store/snack';
+import { useStorePresistStore } from 'lib/store/store';
 import { useUserPresistStore } from 'lib/store/user';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -25,7 +26,8 @@ const Login = () => {
   const [password, setPassword] = useState<string>('');
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { setUserId, setUserEmail, setUsername, setIsLogin, setUseStoreId } = useUserPresistStore((state) => state);
+  const { setUserId, setUserEmail, setUsername, setIsLogin } = useUserPresistStore((state) => state);
+  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
 
   const onLogin = async () => {
     try {
@@ -35,23 +37,26 @@ const Login = () => {
           password: password,
         });
         if (login_resp.result && login_resp.data.length === 1) {
-
-          setUserId(login_resp.data[0].id)
-          setUserEmail(login_resp.data[0].email)
-          setUsername(login_resp.data[0].email)
+          setUserId(login_resp.data[0].id);
+          setUserEmail(login_resp.data[0].email);
+          setUsername(login_resp.data[0].username);
+          setIsLogin(true);
 
           const store_resp: any = await axios.get(Http.find_store, {
             params: {
-              user_id: login_resp.data[0].id
-            }
-          })
+              user_id: login_resp.data[0].id,
+            },
+          });
 
           if (store_resp.result) {
             if (store_resp.data.length > 0) {
-              setUseStoreId(store_resp.data[0].id)
-              window.location.href = "/"
+              setStoreId(store_resp.data[0].id);
+              setStoreName(store_resp.data[0].name);
+              setStoreCurrency(store_resp.data[0].currency);
+              setStorePriceSource(store_resp.data[0].price_source);
+              window.location.href = '/dashboard';
             } else {
-              window.location.href = "/stores/create"
+              window.location.href = '/stores/create';
             }
           } else {
             setSnackSeverity('error');
@@ -97,7 +102,6 @@ const Login = () => {
                   <TextField
                     fullWidth
                     hiddenLabel
-                    id="filled-hidden-label-small"
                     size="small"
                     value={email}
                     onChange={(e) => {
@@ -116,7 +120,6 @@ const Login = () => {
                     fullWidth
                     hiddenLabel
                     type={'password'}
-                    id="filled-hidden-label-small"
                     size="small"
                     value={password}
                     onChange={(e) => {

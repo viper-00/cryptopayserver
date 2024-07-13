@@ -29,40 +29,16 @@ const Home = () => {
   const router = useRouter();
 
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { isLogin } = useUserPresistStore((state) => state);
+  const { getIsLogin } = useUserPresistStore((state) => state);
 
-  // const [login, setLogin] = useState<boolean>(false);
+  const [isLogin, setLogin] = useState<boolean>(false);
 
   const unLoginWhiteList: any = {
-    '/login': true,
-    '/register': true,
-    '/stores/create': true,
-  };
-
-  useEffect(() => {
-    // const isLogin = userEmail !== '';
-    // setLogin(isLogin);
-
-    if (isLogin && router.pathname === '/') {
-      window.location.href = '/dashboard';
-      return;
-    }
-
-    if (!isLogin) {
-      if (unLoginWhiteList[router.pathname]) {
-        return;
-      }
-
-      if (router.pathname !== '/login') {
-        window.location.href = '/login';
-        return;
-      }
-    }
-  }, [router.pathname]);
-
-  const routerComponents: any = {
     '/login': <Login />,
     '/register': <Register />,
+  };
+
+  const loginWhiteList: any = {
     '/stores/create': <CreateStore />,
 
     '/dashboard': <Dashboard />,
@@ -82,6 +58,45 @@ const Home = () => {
     '/notifications': <Notifications />,
   };
 
+  const allPageWhiteList: any = {
+    '/stores/create': true,
+  };
+
+  useEffect(() => {
+    setLogin(getIsLogin());
+
+    // console.log('sdfsdf', getIsLogin());
+
+    if (getIsLogin()) {
+      if (router.pathname === '/') {
+        window.location.href = '/dashboard';
+        return;
+      }
+
+      if (unLoginWhiteList[router.pathname]) {
+        window.location.href = '/';
+        return;
+      }
+    } else {
+      if (loginWhiteList[router.pathname]) {
+        window.location.href = '/login';
+        return;
+      }
+      // if (unLoginWhiteList[router.pathname]) {
+      //   console.log('sdfsd1f', isLogin);
+
+      //   return;
+      // }
+
+      // console.log('sdfs2df', isLogin);
+
+      // if (router.pathname !== '/login') {
+      //   window.location.href = '/login';
+      //   return;
+      // }
+    }
+  }, [router.pathname]);
+
   return (
     <Box height={'100%'}>
       <MetaTags title="Home" />
@@ -89,10 +104,10 @@ const Home = () => {
       {isLogin ? (
         <>
           <Stack direction={'row'} height={'100%'}>
-            <HomeSidebar />
+            {allPageWhiteList[router.pathname] ? null : <HomeSidebar />}
 
             <Box width={'100%'}>
-              {routerComponents[router.pathname] || null}
+              {loginWhiteList[router.pathname] || null}
 
               <Box>
                 <Footer />
@@ -103,8 +118,7 @@ const Home = () => {
       ) : (
         <>
           <Box width={'100%'}>
-            {routerComponents[router.pathname] || null}
-
+            {unLoginWhiteList[router.pathname] || null}
             <Box>
               <Footer />
             </Box>

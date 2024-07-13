@@ -56,7 +56,6 @@ const Pullpayments = () => {
                 <FormControl sx={{ width: 500 }} variant="outlined">
                   <OutlinedInput
                     size={'small'}
-                    id="outlined-adornment-weight"
                     aria-describedby="outlined-weight-helper-text"
                     inputProps={{
                       'aria-label': 'weight',
@@ -73,7 +72,6 @@ const Pullpayments = () => {
                   <FormControl sx={{ width: 500 }} variant="outlined">
                     <OutlinedInput
                       size={'small'}
-                      id="outlined-adornment-weight"
                       type="number"
                       aria-describedby="outlined-weight-helper-text"
                       inputProps={{
@@ -133,7 +131,6 @@ const Pullpayments = () => {
                       <FormControl sx={{ width: '25ch' }} variant="outlined">
                         <OutlinedInput
                           size={'small'}
-                          id="outlined-adornment-weight"
                           type="number"
                           endAdornment={<InputAdornment position="end">days</InputAdornment>}
                           aria-describedby="outlined-weight-helper-text"

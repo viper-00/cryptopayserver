@@ -30,7 +30,9 @@ const Payout = () => {
         <Box>
           <Box>
             <Typography variant="h6">Payout Processors</Typography>
-            <Typography mt={2}>Payout Processors allow CryptoPay Server to handle payouts in an automated way.</Typography>
+            <Typography mt={2}>
+              Payout Processors allow CryptoPay Server to handle payouts in an automated way.
+            </Typography>
           </Box>
 
           <Box mt={5}>
@@ -55,7 +57,6 @@ const Payout = () => {
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   endAdornment={<InputAdornment position="end">minutes</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
@@ -71,7 +72,6 @@ const Payout = () => {
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   type="number"
                   endAdornment={<InputAdornment position="end">blocks</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
@@ -88,7 +88,6 @@ const Payout = () => {
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   endAdornment={<InputAdornment position="end">BTC</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{

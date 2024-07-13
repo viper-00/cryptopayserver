@@ -29,13 +29,7 @@ const Lightning = () => {
           <Box mt={5}>
             <Typography>Connection configuration for your custom Lightning node:</Typography>
             <Stack direction={'row'} alignItems={'center'} gap={2} mt={1}>
-              <TextField
-                fullWidth
-                hiddenLabel
-                id="filled-hidden-label-small"
-                defaultValue=""
-                size="small"
-              />
+              <TextField fullWidth hiddenLabel defaultValue="" size="small" />
               <Button variant={'contained'} style={{ width: 250 }}>
                 Test connection
               </Button>
@@ -86,7 +80,9 @@ const Lightning = () => {
           </Box>
 
           <Box mt={5}>
-            <Button variant={'contained'} size={'large'}>Save</Button>
+            <Button variant={'contained'} size={'large'}>
+              Save
+            </Button>
           </Box>
         </Box>
       </Container>

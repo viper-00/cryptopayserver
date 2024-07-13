@@ -31,9 +31,7 @@ const Shopify = () => {
               <ReportGmailerrorred />
             </IconButton>
           </Stack>
-          <Typography mt={2}>
-            Connect CryptoPay Server to your Shopify checkout experience to accept Crypto.
-          </Typography>
+          <Typography mt={2}>Connect CryptoPay Server to your Shopify checkout experience to accept Crypto.</Typography>
 
           <Box mt={3}>
             <Typography>Shop Name</Typography>
@@ -41,7 +39,6 @@ const Shopify = () => {
               <FormControl variant="outlined" fullWidth>
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   endAdornment={<InputAdornment position="end">.myshopify.com</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
@@ -58,7 +55,6 @@ const Shopify = () => {
               <FormControl fullWidth variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
                     'aria-label': 'weight',
@@ -74,7 +70,6 @@ const Shopify = () => {
               <FormControl fullWidth variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  id="outlined-adornment-weight"
                   type="password"
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
@@ -86,7 +81,9 @@ const Shopify = () => {
           </Box>
 
           <Box mt={5}>
-            <Button variant={'contained'} size={'large'}>Save</Button>
+            <Button variant={'contained'} size={'large'}>
+              Save
+            </Button>
           </Box>
         </Box>
       </Container>
