@@ -7,14 +7,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     await CorsMiddleware(req, res, CorsMethod);
 
     switch (req.method) {
-      case 'GET':
+      case 'PUT':
         const connection = await connectDatabase();
-        const userId = req.query.user_id;
+        const userId = req.body.user_id;
+        const notifyId = req.body.notify_id;
+        const status = req.body.status;
 
-        const query = 'SELECT * FROM notifications where user_id = ?';
-        const values = [userId];
-        const [rows] = await connection.query(query, values);
-        return res.status(200).json({ message: '', result: true, data: rows });
+        const query = 'UPDATE notifications set status = ? where notify_id = ? and user_id = ?';
+        const values = [status, notifyId, userId];
+        await connection.query(query, values);
+        return res.status(200).json({ message: '', result: true, data: null });
       case 'POST':
         break;
       default:

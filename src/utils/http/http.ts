@@ -17,4 +17,8 @@ export class Http {
   static find_store = this.httpPath + '/find_store'
   static find_store_by_id = this.httpPath + '/find_store_by_id'
   static create_store = this.httpPath + '/create_store'
+
+  // notification
+  static find_notification = this.httpPath + '/find_notification'
+  static update_notification = this.httpPath + '/update_notification'
 }

@@ -2,7 +2,7 @@ import Cors from 'cors';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export const CorsMethod = Cors({
-  methods: ['POST', 'GET', 'HEAD'],
+  methods: ['POST', 'GET', 'PUT', 'DELETE', 'HEAD'],
 });
 
 export function CorsMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {
