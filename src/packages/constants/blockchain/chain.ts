@@ -1,61 +1,78 @@
-export const CHAINIDS = {
-  BITCOIN: 2,
-  BITCOIN_TESTNET: 3,
+export enum CHAINIDS {
+  BITCOIN = 2,
+  BITCOIN_TESTNET = 3,
 
-  LITECOIN: 4,
-  LITECOIN_TESTNET: 5,
+  LITECOIN = 4,
+  LITECOIN_TESTNET = 5,
 
-  XRP: 6,
-  XRP_TESTNET: 7,
+  XRP = 6,
+  XRP_TESTNET = 7,
 
-  BITCOINCASH: 8,
-  BITCOINCASH_TESTNET: 9,
+  BITCOINCASH = 8,
+  BITCOINCASH_TESTNET = 9,
 
-  ETHEREUM: 1,
-  ETHEREUM_SEPOLIA: 11155111,
+  ETHEREUM = 1,
+  ETHEREUM_SEPOLIA = 11155111,
 
-  TRON: 728126428,
-  TRON_NILE: 3448148188,
+  TRON = 728126428,
+  TRON_NILE = 3448148188,
 
-  SOLANA: 101,
-  SOLANA_DEVNET: 103,
+  SOLANA = 101,
+  SOLANA_DEVNET = 103,
 
-  BSC: 56,
-  BSC_TESTNET: 97,
+  BSC = 56,
+  BSC_TESTNET = 97,
 
-  ARBITRUM_ONE: 42161,
-  ARBITRUM_NOVA: 42170,
-  ARBITRUM_SEPOLIA: 421614,
+  ARBITRUM_ONE = 42161,
+  ARBITRUM_NOVA = 42170,
+  ARBITRUM_SEPOLIA = 421614,
 
-  AVALANCHE: 43114,
-  AVALANCHE_TESTNET: 43113,
+  AVALANCHE = 43114,
+  AVALANCHE_TESTNET = 43113,
 
-  POLYGON: 137,
-  POLYGON_TESTNET: 80001,
+  POLYGON = 137,
+  POLYGON_TESTNET = 80001,
 
-  BASE: 8453,
-  BASE_SEPOLIA: 84532,
+  BASE = 8453,
+  BASE_SEPOLIA = 84532,
 
-  OPTIMISM: 10,
-  OPTIMISM_SEPOLIA: 11155420,
+  OPTIMISM = 10,
+  OPTIMISM_SEPOLIA = 11155420,
 
-  TON: 1100,
-  TON_TESTNET: 1101,
-};
+  TON = 1100,
+  TON_TESTNET = 1101,
+}
 
-export const CHAINS = {
-  BITCOIN: 'Bitcoin',
-  LITECOIN: 'Litecoin',
-  XRP: 'XRP',
-  BITCOINCASH: 'Bitcoin Cash',
-  ETHEREUM: 'Ethereum',
-  TRON: 'Tron',
-  SOLANA: 'Solana',
-  BSC: 'Binance smart chain',
-  ARBITRUM: 'Arbitrum',
-  AVALANCHE: 'Avalanche',
-  POLYGON: 'Polygon',
-  BASE: 'Base',
-  OPTIMISM: 'Optimism',
-  TON: 'Ton',
-};
+export enum CHAINNAMES {
+  BITCOIN = 'Bitcoin',
+  LITECOIN = 'Litecoin',
+  XRP = 'XRP',
+  BITCOINCASH = 'Bitcoin Cash',
+  ETHEREUM = 'Ethereum',
+  TRON = 'Tron',
+  SOLANA = 'Solana',
+  BSC = 'Binance smart chain',
+  ARBITRUM = 'Arbitrum',
+  AVALANCHE = 'Avalanche',
+  POLYGON = 'Polygon',
+  BASE = 'Base',
+  OPTIMISM = 'Optimism',
+  TON = 'Ton',
+}
+
+export enum CHAINS {
+  BITCOIN = 1,
+  LITECOIN = 2,
+  XRP = 3,
+  BITCOINCASH = 4,
+  ETHEREUM = 5,
+  TRON = 6,
+  SOLANA = 7,
+  BSC = 8,
+  ARBITRUM = 9,
+  AVALANCHE = 10,
+  POLYGON = 11,
+  BASE = 12,
+  OPTIMISM = 13,
+  TON = 14,
+}

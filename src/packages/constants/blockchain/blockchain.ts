@@ -1,10 +1,10 @@
-import { CHAINS, CHAINIDS } from './chain';
+import { CHAINNAMES, CHAINIDS } from './chain';
 import { COINS } from './coin';
 
 type COIN = {
-  name: string;
+  name: COINS;
   isMainCoin: boolean;
-  symbol: string;
+  symbol: COINS;
   contractAddress?: string;
   decimals: number;
   displayDecimals: number;
@@ -146,8 +146,8 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
 ];
 
 type BLOCKCHAIN = {
-  name: string;
-  chainId: number;
+  name: CHAINNAMES;
+  chainId: CHAINIDS;
   explorerUrl?: string;
   websiteUrl?: string;
   isMainnet: boolean;
@@ -156,9 +156,9 @@ type BLOCKCHAIN = {
   coins: COIN[];
 };
 
-export const BLOCKCHAINS: BLOCKCHAIN[] = [
+export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   {
-    name: CHAINS.BITCOIN,
+    name: CHAINNAMES.BITCOIN,
     chainId: CHAINIDS.BITCOIN,
     explorerUrl: '',
     websiteUrl: '',
@@ -166,7 +166,7 @@ export const BLOCKCHAINS: BLOCKCHAIN[] = [
     coins: BITCOIN_COINS,
   },
   {
-    name: CHAINS.BITCOIN,
+    name: CHAINNAMES.BITCOIN,
     chainId: CHAINIDS.BITCOIN_TESTNET,
     explorerUrl: '',
     websiteUrl: '',
@@ -174,25 +174,21 @@ export const BLOCKCHAINS: BLOCKCHAIN[] = [
     coins: BITCOIN_COINS,
   },
   {
-    name: CHAINS.ETHEREUM,
+    name: CHAINNAMES.ETHEREUM,
     chainId: CHAINIDS.ETHEREUM,
     explorerUrl: '',
     websiteUrl: '',
     isMainnet: true,
     coins: ETHEREUM_COINS,
-    rpc: [
-        "https://ethereum.publicnode.com"
-    ]
+    rpc: ['https://ethereum.publicnode.com'],
   },
   {
-    name: CHAINS.ETHEREUM,
+    name: CHAINNAMES.ETHEREUM,
     chainId: CHAINIDS.ETHEREUM_SEPOLIA,
     explorerUrl: '',
     websiteUrl: '',
     isMainnet: false,
     coins: ETHEREUM_SEPOLIA_COINS,
-    rpc: [
-        "https://ethereum-sepolia.publicnode.com"
-    ]
+    rpc: ['https://ethereum-sepolia.publicnode.com'],
   },
 ];

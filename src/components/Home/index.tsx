@@ -24,6 +24,9 @@ import Register from 'components/Register';
 import CreateStore from 'components/Stores/create';
 import { useSnackPresistStore } from 'lib/store/snack';
 import { useUserPresistStore } from 'lib/store/user';
+import CreateWallet from 'components/Wallets/create';
+import ImportWallet from 'components/Wallets/import';
+import GenerateWallet from 'components/Wallets/generate';
 
 const Home = () => {
   const router = useRouter();
@@ -39,8 +42,6 @@ const Home = () => {
   };
 
   const loginWhiteList: any = {
-    '/stores/create': <CreateStore />,
-
     '/dashboard': <Dashboard />,
     '/settings': <Settings />,
     '/wallet/bitcoin': <Bitcoin />,
@@ -56,10 +57,18 @@ const Home = () => {
     '/plugins/crowdfund': <Crowdfund />,
     '/account': <Account />,
     '/notifications': <Notifications />,
+
+    '/stores/create': <CreateStore />,
+    '/wallets/create': <CreateWallet />,
+    '/wallets/import': <ImportWallet />,
+    '/wallets/generate': <GenerateWallet />,
   };
 
   const allPageWhiteList: any = {
     '/stores/create': true,
+    '/wallets/create': true,
+    '/wallets/import': true,
+    '/wallets/generate': true,
   };
 
   useEffect(() => {
