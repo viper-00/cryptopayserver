@@ -10,13 +10,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     // const connection = await connectDatabase();
     // await connection.query('SELECT * FROM users;');
-    const me = Bip39.generateMnemonic()
-    console.log("me", me)
-    const seed = await Bip39.generateSeed(me)
-    console.log("seed", seed)
+    // const me = Bip39.generateMnemonic()
+    // console.log("me", me)
+    // const seed = await Bip39.generateSeed(me)
+    // console.log("seed", seed)
 
-    const accounts = BTC.createAccountBySeed(seed)
-    console.log("accounts", accounts)
+    // const accounts = BTC.createAccountBySeed(seed)
+    // console.log("accounts", accounts)
     
     return res.status(200).json({ message: '', result: true, data: null });
   } catch (e) {

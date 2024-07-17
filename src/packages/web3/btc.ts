@@ -12,6 +12,8 @@ export class BTC {
 
   // four type: Native Segwit, Nested Segwit, Taproot, Legacy
   static createAccountBySeed(seed: Buffer): ChainAccountType[] {
+    bitcoin.initEccLib(ecc);
+
     let accounts: Array<ChainAccountType> = [];
 
     const nativeSegwitPath = IS_MAINNET ? `m/84'/0'/0'/0/0` : `m/84'/1'/0'/0/0`;
@@ -24,7 +26,7 @@ export class BTC {
     const node = bip32.fromSeed(seed, this.BTC_NETWORK);
 
     const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
-    const nativeSegwitAddress = this.getAddressBech32FromPrivateKey(nativeSegwitPrivateKey as string);
+    const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
 
     accounts.push({
       chain: this.chain,
@@ -35,7 +37,7 @@ export class BTC {
 
     // nestedSegwit
     const nestedSegwitPrivateKey = node.derivePath(nestedSegwitPath).privateKey?.toString('hex');
-    const nestedSegwitAddress = this.getAddressP2SHFromPrivateKey(nestedSegwitPrivateKey as string);
+    const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(nestedSegwitPrivateKey as string);
 
     accounts.push({
       chain: this.chain,
@@ -46,7 +48,7 @@ export class BTC {
 
     // taproot
     const taprootPrivateKey = node.derivePath(taprootPath).privateKey?.toString('hex');
-    const taprootAddress = this.getAddressBech32FromPrivateKey(taprootPrivateKey as string);
+    const taprootAddress = this.getAddressP2trFromPrivateKey(taprootPrivateKey as string);
 
     accounts.push({
       chain: this.chain,
@@ -57,7 +59,7 @@ export class BTC {
 
     // legacy
     const legacyPrivateKey = node.derivePath(legacyPath).privateKey?.toString('hex');
-    const legacyAddress = this.getAddressP2SHFromPrivateKey(legacyPrivateKey as string);
+    const legacyAddress = this.getAddressP2pkhFromPrivateKey(legacyPrivateKey as string);
 
     accounts.push({
       chain: this.chain,
@@ -76,21 +78,42 @@ export class BTC {
     return keyPair.toWIF();
   }
 
-  static getAddressP2SHFromPrivateKey(privateKey: string) {
+  // p2wpkh
+  static getAddressP2wpkhFromPrivateKey(privateKey: string) {
     const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
-    const p2sh = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK }),
-      network: this.BTC_NETWORK,
-    });
-    return p2sh.address;
-  }
-
-  static getAddressBech32FromPrivateKey(privateKey: string) {
-    const ECPair = ECPairFactory(ecc);
-
     const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
     const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
     return p2wpkh.address;
+  }
+
+  // p2sh-p2wpkh
+  static getAddressP2shP2wpkhFromPrivateKey(privateKey: string) {
+    const ECPair = ECPairFactory(ecc);
+    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
+    const p2 = bitcoin.payments.p2sh({
+      redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK }),
+      network: this.BTC_NETWORK,
+    });
+    return p2.address;
+  }
+
+  // p2tr
+  static getAddressP2trFromPrivateKey(privateKey: string) {
+    const ECPair = ECPairFactory(ecc);
+    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
+    const p2tr = bitcoin.payments.p2tr({
+      internalPubkey: keyPair.publicKey.subarray(1, 33),
+      network: this.BTC_NETWORK,
+    });
+
+    return p2tr.address;
+  }
+
+  // p2pkh
+  static getAddressP2pkhFromPrivateKey(privateKey: string) {
+    const ECPair = ECPairFactory(ecc);
+    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
+    const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+    return p2pkh.address;
   }
 }
