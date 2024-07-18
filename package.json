@@ -37,6 +37,8 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "ecpair": "^2.1.0",
+    "ethereum-cryptography": "^2.2.1",
+    "ethers": "^6.13.1",
     "framer-motion": "^11.2.11",
     "mysql2": "^3.10.2",
     "next": "14.2.4",
