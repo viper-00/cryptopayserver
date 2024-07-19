@@ -14,9 +14,10 @@ export class ETH {
 
     try {
       const hdkey = HDKey.fromMasterSeed(Uint8Array.from(seed)).derive(path);
-      const wallet = new Wallet(hdkey.privateKey?.toString() as string);
+
+      const privateKey = Buffer.from(hdkey.privateKey as Uint8Array).toString('hex');
+      const wallet = new Wallet(privateKey);
       const address = wallet.address;
-      const privateKey = wallet.privateKey;
 
       return {
         chain: this.chain,
