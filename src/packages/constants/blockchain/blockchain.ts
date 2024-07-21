@@ -1,7 +1,7 @@
 import { CHAINNAMES, CHAINIDS } from './chain';
 import { COINS } from './coin';
 
-type COIN = {
+export type COIN = {
   name: COINS;
   isMainCoin: boolean;
   symbol: COINS;

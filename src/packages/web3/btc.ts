@@ -1,5 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import { CHAINS, COINS } from 'packages/constants/blockchain';
+import { CHAINIDS, CHAINS, COINS } from 'packages/constants/blockchain';
 import {
   BTCFeeRate,
   ChainAccountType,
@@ -16,6 +16,7 @@ import axios from 'axios';
 
 export class BTC {
   static chain = CHAINS.BITCOIN;
+  static chainIds = IS_MAINNET ? CHAINIDS.BITCOIN : CHAINIDS.BITCOIN_TESTNET;
   static BTC_NETWORK = IS_MAINNET ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
   static NODE_API = IS_MAINNET ? 'https://mempool.space/api' : 'https://mempool.space/testnet/api';
   static BLOCKCHAIN_URL = IS_MAINNET ? 'https://mempool.space/zh/tx' : 'https://mempool.space/zh/testnet/tx';
@@ -32,54 +33,59 @@ export class BTC {
     const taprootPath = IS_MAINNET ? `m/86'/0'/0'/0/0` : `m/86'/1'/0'/0/0`;
     const legacyPath = IS_MAINNET ? `m/44'/0'/0'/0/0` : `m/44'/1'/0'/0/0`;
 
-    // nativeSegwit
-    const bip32 = BIP32Factory(ecc);
-    const node = bip32.fromSeed(seed, this.BTC_NETWORK);
+    try {
+      // nativeSegwit
+      const bip32 = BIP32Factory(ecc);
+      const node = bip32.fromSeed(seed, this.BTC_NETWORK);
 
-    const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
-    const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
+      const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
+      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
 
-    accounts.push({
-      chain: this.chain,
-      address: nativeSegwitAddress as string,
-      privateKey: nativeSegwitPrivateKey,
-      note: 'Native Segwit',
-    });
+      accounts.push({
+        chain: this.chain,
+        address: nativeSegwitAddress as string,
+        privateKey: nativeSegwitPrivateKey,
+        note: 'Native Segwit',
+      });
 
-    // nestedSegwit
-    const nestedSegwitPrivateKey = node.derivePath(nestedSegwitPath).privateKey?.toString('hex');
-    const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(nestedSegwitPrivateKey as string);
+      // nestedSegwit
+      const nestedSegwitPrivateKey = node.derivePath(nestedSegwitPath).privateKey?.toString('hex');
+      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(nestedSegwitPrivateKey as string);
 
-    accounts.push({
-      chain: this.chain,
-      address: nestedSegwitAddress as string,
-      privateKey: nestedSegwitPrivateKey,
-      note: 'Nested Segwit',
-    });
+      accounts.push({
+        chain: this.chain,
+        address: nestedSegwitAddress as string,
+        privateKey: nestedSegwitPrivateKey,
+        note: 'Nested Segwit',
+      });
 
-    // taproot
-    const taprootPrivateKey = node.derivePath(taprootPath).privateKey?.toString('hex');
-    const taprootAddress = this.getAddressP2trFromPrivateKey(taprootPrivateKey as string);
+      // taproot
+      const taprootPrivateKey = node.derivePath(taprootPath).privateKey?.toString('hex');
+      const taprootAddress = this.getAddressP2trFromPrivateKey(taprootPrivateKey as string);
 
-    accounts.push({
-      chain: this.chain,
-      address: taprootAddress as string,
-      privateKey: taprootPrivateKey,
-      note: 'Taproot',
-    });
+      accounts.push({
+        chain: this.chain,
+        address: taprootAddress as string,
+        privateKey: taprootPrivateKey,
+        note: 'Taproot',
+      });
 
-    // legacy
-    const legacyPrivateKey = node.derivePath(legacyPath).privateKey?.toString('hex');
-    const legacyAddress = this.getAddressP2pkhFromPrivateKey(legacyPrivateKey as string);
+      // legacy
+      const legacyPrivateKey = node.derivePath(legacyPath).privateKey?.toString('hex');
+      const legacyAddress = this.getAddressP2pkhFromPrivateKey(legacyPrivateKey as string);
 
-    accounts.push({
-      chain: this.chain,
-      address: legacyAddress as string,
-      privateKey: legacyPrivateKey,
-      note: 'Legacy',
-    });
+      accounts.push({
+        chain: this.chain,
+        address: legacyAddress as string,
+        privateKey: legacyPrivateKey,
+        note: 'Legacy',
+      });
 
-    return accounts;
+      return accounts;
+    } catch (e) {
+      console.error(e);
+      throw new Error('can not create a wallet of btc');
+    }
   }
 
   static toWifStaring(privateKey: string): string {
@@ -301,7 +307,7 @@ export class BTC {
 
           txs.push({
             hash: item.txid,
-            value: value,
+            value: value.toString(),
             asset: COINS.BTC,
             fee: item.fee,
             type: txType,
@@ -361,18 +367,18 @@ export class BTC {
           blockNumber = response.data.status.block_height;
         }
 
-        const url = `${this.BLOCKCHAIN_URL}/${response.data.txid}`;
+        const explorerUrl = `${this.BLOCKCHAIN_URL}/${response.data.txid}`;
 
         return {
           hash: response.data.txid,
-          value: value,
+          value: value.toString(),
           asset: COINS.BTC,
           fee: response.data.fee,
           type: txType,
           status: status,
           blockTimestamp: blockTimestamp,
           blockNumber: blockNumber,
-          url: url,
+          url: explorerUrl,
         };
       }
 
