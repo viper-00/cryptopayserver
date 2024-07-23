@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import InvoiceDataGrid from './invoice/InvoiceDataGrid';
+import InvoiceDataGrid from './Invoice/InvoiceDataGrid';
 
 const Invoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);

@@ -13,9 +13,9 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import BalanceBars from './balance';
+import BalanceBars from './Balance';
 import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
-import TransactionDataGrid from './transaction';
+import TransactionDataGrid from './Transaction';
 
 const Dashboard = () => {
   const onChangeToggle = () => {};

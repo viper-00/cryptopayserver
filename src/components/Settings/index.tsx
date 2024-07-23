@@ -1,15 +1,15 @@
 import { Box, Container, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
-import AccessToken from './accessToken';
-import Checkout from './checkout';
-import Emails from './email';
-import Forms from './forms';
-import General from './general';
-import Payout from './payout';
-import Rates from './rates';
-import Roles from './roles';
-import Users from './users';
-import Webhooks from './webhooks';
+import AccessToken from './AccessToken';
+import Checkout from './Checkout';
+import Emails from './Email';
+import Forms from './Forms';
+import General from './General';
+import Payout from './Payout';
+import Rates from './Rates';
+import Roles from './Roles';
+import Users from './Users';
+import Webhooks from './Webhooks';
 
 const Settings = () => {
   const [value, setValue] = useState(0);

@@ -9,13 +9,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     switch (req.method) {
       case 'POST':
         const connection = await connectDatabase();
-        const user_id = req.body.user_id;
+        const userId = req.body.user_id;
         const name = req.body.name;
         const currency = req.body.currency;
         const priceSource = req.body.price_source;
 
         const createQuery = 'INSERT INTO stores (user_id, name, currency, price_source, status) VALUES (?, ?, ?, ?, ?)';
-        const createValues = [user_id, name, currency, priceSource, 1];
+        const createValues = [userId, name, currency, priceSource, 1];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
         const storeId = ResultSetHeader.insertId 
         if (storeId === 0) {

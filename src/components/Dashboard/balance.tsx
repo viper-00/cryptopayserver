@@ -1,7 +1,7 @@
 import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack } from '@mui/material';
 import { axisClasses, BarChart } from '@mui/x-charts';
 import { useState } from 'react';
-import { dataset } from './dataset';
+import { dataset } from './Dataset';
 
 type TickParamsSelectorProps = {
   tickPlacement: 'end' | 'start' | 'middle' | 'extremities';

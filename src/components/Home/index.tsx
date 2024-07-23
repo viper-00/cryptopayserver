@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Dashboard from 'components/Dashboard';
 import Settings from 'components/Settings';
 import Bitcoin from 'components/Wallet/Bitcoin';
-import Lightning from 'components/Wallet/Bitcoin/lightning';
+import Lightning from 'components/Wallet/Bitcoin/Lightning';
 import Invoices from 'components/Payments/Invoices';
 import Reporting from 'components/Payments/Reporting';
 import Requests from 'components/Payments/Requests';
@@ -21,12 +21,16 @@ import Notifications from 'components/Notifications';
 import { useEffect, useState } from 'react';
 import Login from 'components/Login';
 import Register from 'components/Register';
-import CreateStore from 'components/Stores/create';
+import CreateStore from 'components/Stores/Create';
 import { useSnackPresistStore } from 'lib/store/snack';
 import { useUserPresistStore } from 'lib/store/user';
-import CreateWallet from 'components/Wallets/create';
-import ImportWallet from 'components/Wallets/import';
-import GenerateWallet from 'components/Wallets/generate';
+import CreateWallet from 'components/Wallets/Create';
+import ImportWallet from 'components/Wallets/Import';
+import GenerateWallet from 'components/Wallets/Generate';
+import SetPassword from 'components/Wallets/SetPassword';
+import PhraseIntro from 'components/Wallets/Phrase/Intro';
+import PhraseBack from 'components/Wallets/Phrase/Backup';
+import PhraseBackupConfirm from 'components/Wallets/Phrase/Backup/confirm';
 
 const Home = () => {
   const router = useRouter();
@@ -62,6 +66,10 @@ const Home = () => {
     '/wallets/create': <CreateWallet />,
     '/wallets/import': <ImportWallet />,
     '/wallets/generate': <GenerateWallet />,
+    '/wallets/setPassword': <SetPassword />,
+    '/wallets/phrase/intro': <PhraseIntro />,
+    '/wallets/phrase/backup': <PhraseBack />,
+    '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 
   const allPageWhiteList: any = {
@@ -69,6 +77,10 @@ const Home = () => {
     '/wallets/create': true,
     '/wallets/import': true,
     '/wallets/generate': true,
+    '/wallets/setPassword': true,
+    '/wallets/phrase/intro': true,
+    '/wallets/phrase/backup': true,
+    '/wallets/phrase/backup/confirm': true,
   };
 
   useEffect(() => {

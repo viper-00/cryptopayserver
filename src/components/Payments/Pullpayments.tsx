@@ -21,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import PullPaymentActiveDataGrid from './pullpayment/active';
+import PullPaymentActiveDataGrid from './Pullpayment/Active';
 
 const Pullpayments = () => {
   const [openPullPayment, setOpenPullPayment] = useState<boolean>(false);

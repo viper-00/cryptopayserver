@@ -1,11 +1,11 @@
 import { Box, Container, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
-import MainAccount from './account';
-import ApiKey from './apikey';
-import Authentication from './authentication';
-import LoginCodes from './loginCodes';
-import Notification from './notification';
-import Password from './password';
+import MainAccount from './Account';
+import ApiKey from './Apikey';
+import Authentication from './Authentication';
+import LoginCodes from './LoginCodes';
+import Notification from './Notification';
+import Password from './Password';
 
 const Account = () => {
   const [value, setValue] = useState(0);
