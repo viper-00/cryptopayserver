@@ -7,7 +7,7 @@ export class Bip39 {
     return this.isMnemonicValid(mnemonic) ? mnemonic : this.generateMnemonic();
   }
 
-  static isMnemonicValid(mnemonic: string) {
+  static isMnemonicValid(mnemonic: string): boolean {
     // Prevent repetition
     const words = mnemonic.split(' ');
     const wordSet = new Set(words);
@@ -18,7 +18,7 @@ export class Bip39 {
     return false;
   }
 
-  static validateMnemonic(mnemonic: string) {
+  static validateMnemonic(mnemonic: string): boolean {
     return bip39.validateMnemonic(mnemonic);
   }
 

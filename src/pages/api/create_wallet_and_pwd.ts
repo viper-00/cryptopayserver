@@ -3,9 +3,6 @@ import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import CryptoJS from 'crypto-js';
 import { NOTIFICATIONS } from 'packages/constants';
-import { Bip39 } from 'packages/web3/bip39';
-import { BTC } from 'packages/web3/btc';
-import { ETH } from 'packages/web3/eth';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -20,10 +17,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse<R
         const isBackup = 2;
         const storeId = req.body.store_id;
 
-        const me = Bip39.generateMnemonic();
-        const mnemonic = await Bip39.generateSeed(me);
-        // BTC.createAccountBySeed()
-
+        const mnemonic = '';
         // user
         const query =
           'INSERT INTO wallets (user_id, store_id, mnemonic, password, is_backup, status) VALUES (?, ?, ?, ?, ?, ?)';
@@ -35,10 +29,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse<R
         }
 
         // notification
-        const aQuery = 'INSERT INTO addresses (user_id, wallet_id, address, address_type, private_key, note, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const aQuery =
+          'INSERT INTO addresses (user_id, wallet_id, address, address_type, private_key, note, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
         for (const nKey in NOTIFICATIONS) {
           const nValue = [userId, walletId, 1];
-        //   await connection.query(nQuery, nValue);
+          //   await connection.query(nQuery, nValue);
         }
 
         return res.status(200).json({ message: '', result: true, data: null });

@@ -1,5 +1,11 @@
 import { CHAINIDS, CHAINS, COINS } from 'packages/constants/blockchain';
 
+export type WalletAccountType = {
+  isGenerate: boolean;
+  mnemonic: string;
+  account: Array<ChainAccountType>;
+};
+
 export type ChainAccountType = {
   chain: CHAINS;
   address: string;

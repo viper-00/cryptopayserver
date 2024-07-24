@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
+import { WEB3 } from 'packages/web3';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
-import { Bip39 } from 'packages/web3/bip39';
-import { BTC } from 'packages/web3/btc';
-import { ETH } from 'packages/web3/eth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -14,10 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // const me = Bip39.generateMnemonic();
     // const seed = await Bip39.generateSeed(me);
 
-    // const accounts = BTC.createAccountBySeed(seed)
-    // console.log("accounts", accounts)
-    // const accounts = ETH.createAccountBySeed(seed);
-    // console.log('accounts', accounts);
+    const a = await WEB3.generateWallet()
+    console.log("aaaaaa", a)
 
     return res.status(200).json({ message: '', result: true, data: null });
   } catch (e) {
