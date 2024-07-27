@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { Brightness4, DarkMode, PermIdentity, WbSunny } from '@mui/icons-material';
 import { useUserPresistStore } from 'lib/store/user';
 import { useStorePresistStore } from 'lib/store/store';
+import { useWalletPresistStore } from 'lib/store/wallet';
 
 interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -76,6 +77,7 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
   const { getUsername, getUserTheme, getUserHideSensitiveInfo, setUserHideSensitiveInfo, setUserTheme, resetUser } =
     useUserPresistStore((state) => state);
   const { resetStore } = useStorePresistStore((state) => state);
+  const { resetWallet } = useWalletPresistStore((state) => state);
 
   const handleChangeUserHideSensitiveInfo = (e: any) => {
     setUserHideSensitiveInfo(e.target.checked);
@@ -142,6 +144,7 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
           onClick={() => {
             resetUser();
             resetStore();
+            resetWallet();
 
             setTimeout(() => {
               window.location.href = '/login';

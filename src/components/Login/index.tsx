@@ -14,9 +14,7 @@ import {
 } from '@mui/material';
 
 import { CustomLogo } from 'components/Logo/CustomLogo';
-import { useSnackPresistStore } from 'lib/store/snack';
-import { useStorePresistStore } from 'lib/store/store';
-import { useUserPresistStore } from 'lib/store/user';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -28,6 +26,7 @@ const Login = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { setUserId, setUserEmail, setUsername, setIsLogin } = useUserPresistStore((state) => state);
   const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
+  const { setWalletId, setIsWallet } = useWalletPresistStore((state) => state);
 
   const onLogin = async () => {
     try {
@@ -54,7 +53,26 @@ const Login = () => {
               setStoreName(store_resp.data[0].name);
               setStoreCurrency(store_resp.data[0].currency);
               setStorePriceSource(store_resp.data[0].price_source);
-              window.location.href = '/dashboard';
+
+              // search wallet
+              const wallet_resp: any = await axios.get(Http.find_wallet, {
+                params: {
+                  store_id: store_resp.data[0].id,
+                },
+              });
+              if (wallet_resp.result) {
+                if (wallet_resp.data.length > 0) {
+                  setWalletId(wallet_resp[0].id);
+                  setIsWallet(true);
+                  window.location.href = '/dashboard';
+                } else {
+                  window.location.href = '/wallets/create';
+                }
+              } else {
+                setSnackSeverity('error');
+                setSnackMessage('Can not find the wallet on site!');
+                setSnackOpen(true);
+              }
             } else {
               window.location.href = '/stores/create';
             }

@@ -17,9 +17,15 @@ import {
 import { useEffect, useState } from 'react';
 import { useSnackPresistStore } from 'lib/store/snack';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 
 const SetPassword = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { getWalletId } = useWalletPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -34,16 +40,33 @@ const SetPassword = () => {
     event.preventDefault();
   };
 
-  const onClickConfirm = () => {
-    const pwd = password.trim();
-    const comPwd = confirmPassword.trim();
-    if (pwd.length > 8 && pwd === comPwd) {
-      // create password and wallet
-      window.location.href = '/wallets/phrase/intro';
-    } else {
-      setSnackMessage('Input is wrong');
-      setSnackSeverity('error');
-      setSnackOpen(true);
+  const onClickConfirm = async () => {
+    try {
+      const pwd = password.trim();
+      const comPwd = confirmPassword.trim();
+      if (pwd.length > 8 && pwd === comPwd) {
+        // create password and wallet
+        const resp: any = await axios.put(Http.update_pwd_by_wallet_id, {
+          user_id: getUserId(),
+          wallet_id: getWalletId(),
+          store_id: getStoreId(),
+          password: pwd,
+        });
+        if (resp.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Successful update!');
+          setSnackOpen(true);
+          setTimeout(() => {
+            window.location.href = '/wallets/phrase/intro';
+          }, 2000);
+        }
+      } else {
+        setSnackMessage('Input is wrong');
+        setSnackSeverity('error');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 

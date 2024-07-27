@@ -12,8 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // const me = Bip39.generateMnemonic();
     // const seed = await Bip39.generateSeed(me);
 
-    const a = await WEB3.generateWallet()
-    console.log("aaaaaa", a)
+    // const a = await WEB3.generateWallet()
+    // console.log("aaaaaa", a)
 
     return res.status(200).json({ message: '', result: true, data: null });
   } catch (e) {

@@ -2,10 +2,16 @@ import { Box, Button, Card, CardContent, Container, Icon, Stack, Typography } fr
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useEffect, useState } from 'react';
 import { useSnackPresistStore } from 'lib/store/snack';
+import { useWalletPresistStore } from 'lib/store';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const PhraseBack = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const [isDisable, setIsDisable] = useState<boolean>(true);
+  const { getIsWallet, getWalletId } = useWalletPresistStore((state) => state);
+
+  const [phrase, setPhrase] = useState<string>('');
 
   const onClickBackup = () => {
     window.location.href = '/wallets/phrase/backup';
@@ -15,7 +21,31 @@ const PhraseBack = () => {
     window.location.href = '/dashboard';
   };
 
-  useEffect
+  async function init() {
+    try {
+      if (getIsWallet()) {
+        const resp: any = await axios.get(Http.find_wallet_by_id, {
+          params: {
+            id: getWalletId(),
+          },
+        });
+
+        if (resp.result && resp.data.length === 1) {
+          setPhrase(resp.data[0].mnemonic);
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage("Can't find the wallet, please try again later.");
+          setSnackOpen(true);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Box>
@@ -30,7 +60,9 @@ const PhraseBack = () => {
           <Box mt={5} width={500}>
             <Card variant="outlined">
               <CardContent>
-                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}></Stack>
+                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                  <Typography>{phrase}</Typography>
+                </Stack>
               </CardContent>
             </Card>
           </Box>

@@ -18,6 +18,12 @@ export class Http {
   static find_store_by_id = this.httpPath + '/find_store_by_id'
   static create_store = this.httpPath + '/create_store'
 
+  // wallet
+  static find_wallet = this.httpPath + '/find_wallet'
+  static find_wallet_by_id = this.httpPath + '/find_wallet_by_id'
+  static create_wallet = this.httpPath + '/create_wallet'
+  static update_pwd_by_wallet_id = this.httpPath + '/update_pwd_by_wallet_id'
+
   // notification
   static find_notification = this.httpPath + '/find_notification'
   static update_notification = this.httpPath + '/update_notification'

@@ -3,12 +3,35 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useEffect } from 'react';
 import { useSnackPresistStore } from 'lib/store/snack';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 
 const GenerateWallet = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { setWalletId, setIsWallet } = useWalletPresistStore((state) => state);
 
-  const onClickMnemonicPhrase = () => {
-    window.location.href = '/wallets/setPassword';
+  const onClickMnemonicPhrase = async () => {
+    try {
+      const create_wallet_resp: any = await axios.post(Http.create_wallet, {
+        user_id: getUserId(),
+        store_id: getStoreId(),
+      });
+      if (create_wallet_resp.result) {
+        setWalletId(create_wallet_resp.data.wallet_id);
+        setIsWallet(true);
+        setSnackSeverity('success');
+        setSnackMessage('Successful creation!');
+        setSnackOpen(true);
+        setTimeout(() => {
+          window.location.href = '/wallets/setPassword';
+        }, 2000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onClickHardwareWallet = () => {

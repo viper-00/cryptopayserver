@@ -22,8 +22,6 @@ import { useEffect, useState } from 'react';
 import Login from 'components/Login';
 import Register from 'components/Register';
 import CreateStore from 'components/Stores/Create';
-import { useSnackPresistStore } from 'lib/store/snack';
-import { useUserPresistStore } from 'lib/store/user';
 import CreateWallet from 'components/Wallets/Create';
 import ImportWallet from 'components/Wallets/Import';
 import GenerateWallet from 'components/Wallets/Generate';
@@ -31,14 +29,18 @@ import SetPassword from 'components/Wallets/SetPassword';
 import PhraseIntro from 'components/Wallets/Phrase/Intro';
 import PhraseBack from 'components/Wallets/Phrase/Backup';
 import PhraseBackupConfirm from 'components/Wallets/Phrase/Backup/confirm';
+import { useWalletPresistStore, useSnackPresistStore, useUserPresistStore, useStorePresistStore } from 'lib/store';
 
 const Home = () => {
   const router = useRouter();
 
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getIsLogin } = useUserPresistStore((state) => state);
+  const { getIsLogin, resetUser } = useUserPresistStore((state) => state);
+  const { getIsWallet, resetWallet } = useWalletPresistStore((state) => state);
+  const { resetStore } = useStorePresistStore((state) => state);
 
   const [isLogin, setLogin] = useState<boolean>(false);
+  // const [isWallet, setWallet] = useState<boolean>(false);
 
   const unLoginWhiteList: any = {
     '/login': <Login />,
@@ -46,6 +48,7 @@ const Home = () => {
   };
 
   const loginWhiteList: any = {
+    '/': <Dashboard />,
     '/dashboard': <Dashboard />,
     '/settings': <Settings />,
     '/wallet/bitcoin': <Bitcoin />,
@@ -72,6 +75,16 @@ const Home = () => {
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 
+  const createWalletWhiteList: any = {
+    '/wallets/create': <CreateWallet />,
+    '/wallets/import': <ImportWallet />,
+    '/wallets/generate': <GenerateWallet />,
+    '/wallets/setPassword': <SetPassword />,
+    '/wallets/phrase/intro': <PhraseIntro />,
+    '/wallets/phrase/backup': <PhraseBack />,
+    '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
+  };
+
   const allPageWhiteList: any = {
     '/stores/create': true,
     '/wallets/create': true,
@@ -85,10 +98,17 @@ const Home = () => {
 
   useEffect(() => {
     setLogin(getIsLogin());
-
-    // console.log('sdfsdf', getIsLogin());
+    // setWallet(getIsWallet());
 
     if (getIsLogin()) {
+      // Is has wallet
+      if (!getIsWallet()) {
+        if (router.pathname !== '/wallets/create' && !createWalletWhiteList[router.pathname]) {
+          window.location.href = '/wallets/create';
+          return;
+        }
+      }
+
       if (router.pathname === '/') {
         window.location.href = '/dashboard';
         return;
@@ -99,6 +119,10 @@ const Home = () => {
         return;
       }
     } else {
+      resetStore();
+      resetUser();
+      resetWallet();
+
       if (loginWhiteList[router.pathname]) {
         window.location.href = '/login';
         return;
