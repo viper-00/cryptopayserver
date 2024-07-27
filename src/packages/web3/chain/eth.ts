@@ -8,15 +8,16 @@ import {
   ERC20TransactionDetail,
   ETHGasPrice,
   ETHMaxPriorityFeePerGas,
+  SendTransaction,
   TransactionDetail,
   TRANSACTIONFUNCS,
   TransactionRequest,
   TRANSACTIONSTATUS,
-} from './types';
+} from '../types';
 import { HDKey } from 'ethereum-cryptography/hdkey.js';
 import { ethers, Wallet, Contract } from 'ethers';
-import { RPC } from './rpc';
-import { ERC20Abi } from './abi/erc20';
+import { RPC } from '../rpc';
+import { ERC20Abi } from '../abi/erc20';
 import { findDecimalsByChainIdsAndContractAddress, findTokenByChainIdsAndContractAddress } from 'utils/web3';
 import { BigMul } from 'utils/number';
 import Big from 'big.js';
@@ -131,7 +132,7 @@ export class ETH {
 
   static async getAssetBalance(address: string): Promise<AssetBalance> {
     try {
-      let items: AssetBalance = {};
+      let items = {} as AssetBalance;
       items.ETH = await this.getETHBalance(address);
 
       const coins = BLOCKCHAINNAMES.find((item) => item.chainId === this.chainIds)?.coins;
@@ -550,18 +551,29 @@ export class ETH {
     }
   }
 
-  static async sendTransaction(request: CreateTransaction): Promise<string> {
+  static async sendTransaction(request: SendTransaction): Promise<string> {
     if (!request.privateKey || request.privateKey === '') {
       throw new Error('can not get private key of eth');
     }
 
-    let tx = await this.createTransaction(request);
+    const cRequest: CreateTransaction = {
+      chainId: request.coin.chainId,
+      from: request.from,
+      to: request.to,
+      privateKey: request.privateKey,
+      value: request.value,
+      gasPrice: request.gasPrice as string,
+      gasLimit: request.gasLimit as number,
+      maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+    };
+
+    let tx = await this.createTransaction(cRequest);
     tx.nonce = await this.getNonce(tx.from);
 
     try {
       const provider = await this.getProvider();
       const wallet = new ethers.Wallet(request.privateKey, provider);
-      const response = await wallet.sendTransaction(request);
+      const response = await wallet.sendTransaction(cRequest);
       if (response) {
         return response.hash;
       }

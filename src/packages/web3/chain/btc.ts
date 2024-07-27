@@ -1,18 +1,24 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { CHAINIDS, CHAINS, COINS } from 'packages/constants/blockchain';
 import {
+  AssetBalance,
   BTCFeeRate,
+  BTCTYPE,
   ChainAccountType,
+  SendTransaction,
   TransactionDetail,
   TRANSACTIONSTATUS,
   TRANSACTIONTYPE,
   UnspentTransactionOutput,
-} from './types';
+} from '../types';
 import { IS_MAINNET } from 'packages/constants';
 import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import { ECPairFactory } from 'ecpair';
 import axios from 'axios';
+import { BigAdd, BigSub, BigDiv, BigMul } from 'utils/number';
+import { ethers } from 'ethers';
+import Big from 'big.js';
 
 export class BTC {
   static chain = CHAINS.BITCOIN;
@@ -45,7 +51,7 @@ export class BTC {
         chain: this.chain,
         address: nativeSegwitAddress as string,
         privateKey: nativeSegwitPrivateKey,
-        note: 'Native Segwit',
+        note: BTCTYPE.NATIVESEGWIT,
       });
 
       // nestedSegwit
@@ -56,7 +62,7 @@ export class BTC {
         chain: this.chain,
         address: nestedSegwitAddress as string,
         privateKey: nestedSegwitPrivateKey,
-        note: 'Nested Segwit',
+        note: BTCTYPE.NESTEDSEGWIT,
       });
 
       // taproot
@@ -67,7 +73,7 @@ export class BTC {
         chain: this.chain,
         address: taprootAddress as string,
         privateKey: taprootPrivateKey,
-        note: 'Taproot',
+        note: BTCTYPE.TAPROOT,
       });
 
       // legacy
@@ -78,6 +84,57 @@ export class BTC {
         chain: this.chain,
         address: legacyAddress as string,
         privateKey: legacyPrivateKey,
+        note: BTCTYPE.LEGACY,
+      });
+
+      return accounts;
+    } catch (e) {
+      console.error(e);
+      throw new Error('can not create a wallet of btc');
+    }
+  }
+
+  static createAccountByPrivateKey(privateKey: string): Array<ChainAccountType> {
+    try {
+      let accounts: Array<ChainAccountType> = [];
+
+      // nativeSegwit
+      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(privateKey);
+
+      accounts.push({
+        chain: this.chain,
+        address: nativeSegwitAddress as string,
+        privateKey: privateKey,
+        note: 'Native Segwit',
+      });
+
+      // nestedSegwit
+      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(privateKey);
+
+      accounts.push({
+        chain: this.chain,
+        address: nestedSegwitAddress as string,
+        privateKey: privateKey,
+        note: 'Nested Segwit',
+      });
+
+      // taproot
+      const taprootAddress = this.getAddressP2trFromPrivateKey(privateKey);
+
+      accounts.push({
+        chain: this.chain,
+        address: taprootAddress as string,
+        privateKey: privateKey,
+        note: 'Taproot',
+      });
+
+      // legacy
+      const legacyAddress = this.getAddressP2pkhFromPrivateKey(privateKey);
+
+      accounts.push({
+        chain: this.chain,
+        address: legacyAddress as string,
+        privateKey: privateKey,
         note: 'Legacy',
       });
 
@@ -131,6 +188,7 @@ export class BTC {
     const ECPair = ECPairFactory(ecc);
     const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
     const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+    p2pkh.output;
     return p2pkh.address as string;
   }
 
@@ -179,23 +237,29 @@ export class BTC {
     }
   }
 
-  static async getBalance(address: string, toBTC: boolean = true): Promise<number> {
+  static async getAssetBalance(address: string, toBTC: boolean = true): Promise<AssetBalance> {
+    let items = {} as AssetBalance;
+    items.BTC = await this.getBalance(address, toBTC);
+    return items;
+  }
+
+  static async getBalance(address: string, toBTC: boolean = true): Promise<string> {
     try {
       const url = `${this.NODE_API}/address/${address}/utxo`;
       const response = await axios.get(url);
 
       if (response.data.length > 0) {
-        let balance = 0;
+        let balance = '0';
         response.data.map((utxo: any) => {
           if (utxo.status.confirmed) {
-            balance += parseInt(utxo.value);
+            balance = BigAdd(balance, parseInt(utxo.value).toString());
           }
         });
 
-        return toBTC ? balance / 100000000 : balance;
+        return toBTC ? BigDiv(balance, '100000000') : balance;
       }
 
-      return 0;
+      return '0';
     } catch (e) {
       console.error(e);
       throw new Error('can not get the balance of btc');
@@ -328,7 +392,7 @@ export class BTC {
     }
   }
 
-  static async getTransactionDetail(hash: string, address: string): Promise<TransactionDetail> {
+  static async getTransactionDetail(hash: string, address?: string): Promise<TransactionDetail> {
     try {
       const url = `${this.NODE_API}/tx/${hash}`;
       const response = await axios.get(url);
@@ -340,25 +404,31 @@ export class BTC {
 
         let txType;
         let value = 0;
-        response.data.vin.map((vinItem: any) => {
-          if (
-            vinItem.prevout.scriptpubkey_address &&
-            address.toLowerCase() === vinItem.prevout.scriptpubkey_address.toLowerCase()
-          ) {
-            txType = TRANSACTIONTYPE.SEND;
-            value += parseInt(vinItem.prevout.value);
-          }
-        });
 
-        if (txType !== TRANSACTIONTYPE.SEND) {
-          txType = TRANSACTIONTYPE.RECEIVED;
+        if (address) {
+          response.data.vin.map((vinItem: any) => {
+            if (
+              vinItem.prevout.scriptpubkey_address &&
+              address.toLowerCase() === vinItem.prevout.scriptpubkey_address.toLowerCase()
+            ) {
+              txType = TRANSACTIONTYPE.SEND;
+              value += parseInt(vinItem.prevout.value);
+            }
+          });
+
+          if (txType !== TRANSACTIONTYPE.SEND) {
+            txType = TRANSACTIONTYPE.RECEIVED;
+          }
+
+          response.data.vout.map((voutItem: any) => {
+            if (
+              voutItem.scriptpubkey_address &&
+              address.toLowerCase() === voutItem.scriptpubkey_address.toLowerCase()
+            ) {
+              value -= parseInt(voutItem.value);
+            }
+          });
         }
-
-        response.data.vout.map((voutItem: any) => {
-          if (voutItem.scriptpubkey_address && address.toLowerCase() === voutItem.scriptpubkey_address.toLowerCase()) {
-            value -= parseInt(voutItem.value);
-          }
-        });
 
         let blockTimestamp = 0,
           blockNumber = 0;
@@ -369,23 +439,120 @@ export class BTC {
 
         const explorerUrl = `${this.BLOCKCHAIN_URL}/${response.data.txid}`;
 
-        return {
-          hash: response.data.txid,
-          value: value.toString(),
-          asset: COINS.BTC,
-          fee: response.data.fee,
-          type: txType,
-          status: status,
-          blockTimestamp: blockTimestamp,
-          blockNumber: blockNumber,
-          url: explorerUrl,
-        };
+        if (address) {
+          return {
+            hash: response.data.txid,
+            value: value.toString(),
+            asset: COINS.BTC,
+            fee: response.data.fee,
+            type: txType,
+            status: status,
+            blockTimestamp: blockTimestamp,
+            blockNumber: blockNumber,
+            url: explorerUrl,
+          };
+        } else {
+          return {
+            hash: response.data.txid,
+            asset: COINS.BTC,
+            fee: response.data.fee,
+            status: status,
+            blockTimestamp: blockTimestamp,
+            blockNumber: blockNumber,
+            url: explorerUrl,
+          };
+        }
       }
 
       throw new Error('can not get the transaction of btc');
     } catch (e) {
       console.error(e);
       throw new Error('can not get the transaction of btc');
+    }
+  }
+
+  static async sendTransaction(req: SendTransaction): Promise<string> {
+    try {
+      const ECPair = ECPairFactory(ecc);
+      const keyPair = ECPair.fromWIF(this.toWifStaring(req.privateKey), this.BTC_NETWORK);
+
+      let script: Buffer;
+      switch (req.btcType) {
+        case BTCTYPE.NATIVESEGWIT:
+          const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+          script = p2wpkh.output as Buffer;
+        case BTCTYPE.NESTEDSEGWIT:
+          const p2 = bitcoin.payments.p2sh({
+            redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK }),
+            network: this.BTC_NETWORK,
+          });
+          script = p2.output as Buffer;
+          break;
+        case BTCTYPE.TAPROOT:
+          const p2tr = bitcoin.payments.p2tr({
+            internalPubkey: keyPair.publicKey.subarray(1, 33),
+            network: this.BTC_NETWORK,
+          });
+          script = p2tr.output as Buffer;
+          break;
+        case BTCTYPE.LEGACY:
+          const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+          script = p2pkh.output as Buffer;
+          break;
+        default:
+          throw new Error('can not create the transactions of btc');
+      }
+
+      const txb = new bitcoin.Psbt({ network: this.BTC_NETWORK });
+      txb.setVersion(2);
+      txb.setLocktime(0);
+
+      let totalBalance = '0';
+      const utxos = await this.getAddressUtxo(req.from);
+      utxos &&
+        utxos.length > 0 &&
+        utxos.forEach((item) => {
+          totalBalance = BigAdd(totalBalance, item.value.toString());
+          txb.addInput({
+            hash: item.txid,
+            index: item.vout,
+            witnessUtxo: {
+              script: script,
+              value: item.value,
+            },
+          });
+        });
+
+      const sendBalance = new Big(ethers.parseUnits(req.value, 8).toString()).toNumber();
+      txb.addOutput({
+        address: req.to,
+        value: sendBalance,
+      });
+
+      // feeRate * vSize
+      const feeRate = req.feeRate ? req.feeRate : (await this.getCurrentFeeRate()).normal;
+      const size = txb.extractTransaction().virtualSize() + 90;
+      const feeBalance = BigMul(size.toString(), feeRate.toString());
+
+      const remainValue = parseFloat(BigSub(BigSub(totalBalance, sendBalance.toString()), feeBalance));
+      if (remainValue < 0) {
+        throw new Error('can not create the transactions of btc');
+      }
+
+      txb.addOutput({
+        address: req.from,
+        value: remainValue,
+      });
+
+      txb.signAllInputs(keyPair);
+      txb.finalizeAllInputs();
+
+      const tx = txb.extractTransaction();
+      const txid = await this.broadcastTransaction(tx.toHex());
+      return txid;
+    } catch (e) {
+      console.error(e);
+      throw new Error('can not create the transactions of btc');
     }
   }
 }

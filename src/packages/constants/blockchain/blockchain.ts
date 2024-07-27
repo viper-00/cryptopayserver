@@ -1,7 +1,8 @@
-import { CHAINNAMES, CHAINIDS } from './chain';
+import { CHAINNAMES, CHAINS, CHAINIDS } from './chain';
 import { COINS } from './coin';
 
 export type COIN = {
+  chainId: CHAINS;
   name: COINS;
   isMainCoin: boolean;
   symbol: COINS;
@@ -13,6 +14,7 @@ export type COIN = {
 
 export const BITCOIN_COINS: COIN[] = [
   {
+    chainId: CHAINS.BITCOIN,
     name: COINS.BTC,
     isMainCoin: true,
     symbol: COINS.BTC,
@@ -24,6 +26,7 @@ export const BITCOIN_COINS: COIN[] = [
 
 export const ETHEREUM_COINS: COIN[] = [
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -33,6 +36,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -42,6 +46,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -51,6 +56,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.DAI,
     isMainCoin: false,
     symbol: COINS.DAI,
@@ -60,6 +66,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.SHIB,
     isMainCoin: false,
     symbol: COINS.SHIB,
@@ -69,6 +76,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.LINK,
     isMainCoin: false,
     symbol: COINS.LINK,
@@ -78,6 +86,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.UNI,
     isMainCoin: false,
     symbol: COINS.UNI,
@@ -87,6 +96,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.WBTC,
     isMainCoin: false,
     symbol: COINS.WBTC,
@@ -96,6 +106,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.WETH,
     isMainCoin: false,
     symbol: COINS.WETH,
@@ -108,6 +119,7 @@ export const ETHEREUM_COINS: COIN[] = [
 
 export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -117,6 +129,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -126,6 +139,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -135,6 +149,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     icon: '',
   },
   {
+    chainId: CHAINS.ETHEREUM,
     name: COINS.DAI,
     isMainCoin: false,
     symbol: COINS.DAI,

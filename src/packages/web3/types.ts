@@ -1,4 +1,4 @@
-import { CHAINIDS, CHAINS, COINS } from 'packages/constants/blockchain';
+import { CHAINIDS, CHAINS, COIN, COINS } from 'packages/constants/blockchain';
 
 export type WalletAccountType = {
   isGenerate: boolean;
@@ -12,6 +12,13 @@ export type ChainAccountType = {
   privateKey?: string;
   note?: string;
 };
+
+export enum BTCTYPE {
+  NATIVESEGWIT = 'NATIVESEGWIT',
+  NESTEDSEGWIT = 'NESTEDSEGWIT',
+  TAPROOT = 'TAPROOT',
+  LEGACY = 'LEGACY',
+}
 
 export type UnspentTransactionOutput = {
   txid: string;
@@ -41,7 +48,7 @@ export type TransactionDetail = {
   hash: string;
   from?: string;
   to?: string;
-  value: string;
+  value?: string;
   asset: string;
   fee: string;
   type?: TRANSACTIONTYPE;
@@ -52,7 +59,7 @@ export type TransactionDetail = {
 };
 
 export enum TRANSACTIONTYPE {
-  RECEIVED = 'Received',
+  RECEIVED = 'RECEIVED',
   SEND = 'SEND',
   SWAP = 'SWAP',
 }
@@ -64,7 +71,7 @@ export enum TRANSACTIONSTATUS {
 }
 
 export type AssetBalance = {
-  [key: string]: string;
+  [key in COINS]: string;
 };
 
 export enum TRANSACTIONFUNCS {
@@ -112,8 +119,8 @@ export type CreateTransaction = {
   to: string;
   value: string;
   contractAddress?: string;
-  type: number;
-  chainId: CHAINIDS;
+  type?: number;
+  chainId: CHAINS;
   data?: string;
   nonce?: number;
 
@@ -122,4 +129,17 @@ export type CreateTransaction = {
 
   gasLimit: number;
   maxPriorityFeePerGas?: string;
+};
+
+export type SendTransaction = {
+  coin: COIN;
+  from: string;
+  to: string;
+  value: string;
+  privateKey: string;
+  gasPrice?: string;
+  gasLimit?: number;
+  maxPriorityFeePerGas?: string;
+  feeRate?: number;
+  btcType?: BTCTYPE;
 };
