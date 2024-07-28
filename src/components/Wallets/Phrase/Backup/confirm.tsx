@@ -1,48 +1,53 @@
-import { Box, Button, Card, CardContent, Container, Icon, Stack, Typography } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { useEffect } from 'react';
+import { Box, Button, Card, CardContent, Chip, Container, Icon, Skeleton, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useSnackPresistStore } from 'lib/store/snack';
-
+import { useWalletPresistStore } from 'lib/store';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 const PhraseBackupConfirm = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { getIsWallet, getWalletId } = useWalletPresistStore((state) => state);
 
-  const onClickBackup = () => {
-    window.location.href = '/wallets/phrase/backup';
-  };
+  const [phrase, setPhrase] = useState<string[]>([]);
 
-  const onClickBackupLater = () => {
-    window.location.href = '/dashboard';
-  };
+  async function init() {
+    try {
+      if (getIsWallet()) {
+        const resp: any = await axios.get(Http.find_wallet_by_id, {
+          params: {
+            id: getWalletId(),
+          },
+        });
+
+        if (resp.result && resp.data.length === 1) {
+          setPhrase(resp.data[0].mnemonic.split(' '));
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage("Can't find the wallet, please try again later.");
+          setSnackOpen(true);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Box>
       <Container>
         <Stack mt={20}>
-          <Typography variant="h4">
-            Before recording the mnemonic phrase, please remember the following security tips.
-          </Typography>
+          <Typography variant="h4">Confirm your mnemonic phrase again</Typography>
+          <Typography mt={5}>Please select your mnemonic phrase in order</Typography>
 
-          <Stack direction={'row'} mt={10}>
-            <Icon component={CheckCircleIcon} fontSize={'small'} color="success" />
-            <Typography pl={1}>The mnemonic phrase is the only way to recover wallet assets.</Typography>
-          </Stack>
-          <Stack direction={'row'} mt={5}>
-            <Icon component={CheckCircleIcon} fontSize={'small'} color="success" />
-            <Typography pl={1}>Do not share your mnemonic phrase with anyone.</Typography>
-          </Stack>
-          <Stack direction={'row'} mt={5}>
-            <Icon component={CheckCircleIcon} fontSize={'small'} color="success" />
-            <Typography pl={1}>Handwrite the mnemonic phrase and store it in a secure place.</Typography>
-          </Stack>
-        </Stack>
-
-        <Stack direction={'row'} mt={16}>
-          <Button variant={'contained'} size={'large'} onClick={onClickBackupLater}>
-            Back up the mnemonic phrase.
-          </Button>
-          <Button variant={'contained'} size={'large'} color="error" onClick={onClickBackup} style={{ marginLeft: 10 }}>
-            Backup later.
-          </Button>
+          <Box mt={5} width={500}>
+            <Card variant="outlined">
+              <CardContent></CardContent>
+            </Card>
+          </Box>
         </Stack>
       </Container>
     </Box>

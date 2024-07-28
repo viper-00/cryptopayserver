@@ -27,8 +27,8 @@ import ImportWallet from 'components/Wallets/Import';
 import GenerateWallet from 'components/Wallets/Generate';
 import SetPassword from 'components/Wallets/SetPassword';
 import PhraseIntro from 'components/Wallets/Phrase/Intro';
-import PhraseBack from 'components/Wallets/Phrase/Backup';
-import PhraseBackupConfirm from 'components/Wallets/Phrase/Backup/confirm';
+import PhraseBackup from 'components/Wallets/Phrase/Backup';
+import PhraseBackupConfirm from 'components/Wallets/Phrase/Backup/Confirm';
 import { useWalletPresistStore, useSnackPresistStore, useUserPresistStore, useStorePresistStore } from 'lib/store';
 
 const Home = () => {
@@ -71,7 +71,7 @@ const Home = () => {
     '/wallets/generate': <GenerateWallet />,
     '/wallets/setPassword': <SetPassword />,
     '/wallets/phrase/intro': <PhraseIntro />,
-    '/wallets/phrase/backup': <PhraseBack />,
+    '/wallets/phrase/backup': <PhraseBackup />,
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 
@@ -81,7 +81,7 @@ const Home = () => {
     '/wallets/generate': <GenerateWallet />,
     '/wallets/setPassword': <SetPassword />,
     '/wallets/phrase/intro': <PhraseIntro />,
-    '/wallets/phrase/backup': <PhraseBack />,
+    '/wallets/phrase/backup': <PhraseBackup />,
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 

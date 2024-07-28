@@ -1,25 +1,26 @@
-import { Box, Button, Card, CardContent, Container, Icon, Stack, Typography } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Box, Button, Card, CardContent, Chip, Container, Icon, Skeleton, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSnackPresistStore } from 'lib/store/snack';
 import { useWalletPresistStore } from 'lib/store';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-const PhraseBack = () => {
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+const PhraseBackup = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const [isDisable, setIsDisable] = useState<boolean>(true);
   const { getIsWallet, getWalletId } = useWalletPresistStore((state) => state);
+  const [isDisable, setIsDisable] = useState<boolean>(true);
+  const [isView, setIsView] = useState<boolean>(false);
 
-  const [phrase, setPhrase] = useState<string>('');
+  const [phrase, setPhrase] = useState<string[]>([]);
 
-  const onClickBackup = () => {
-    window.location.href = '/wallets/phrase/backup';
+  const onClickReConfirm = () => {
+    window.location.href = '/wallets/phrase/backup/confirm';
   };
 
-  const onClickBackupLater = () => {
-    window.location.href = '/dashboard';
-  };
+  const groupSize = 2;
+  const groupedArray = Array.from({ length: Math.ceil(phrase.length / groupSize) }, (_, index) =>
+    phrase.slice(index * groupSize, index * groupSize + groupSize),
+  );
 
   async function init() {
     try {
@@ -31,7 +32,7 @@ const PhraseBack = () => {
         });
 
         if (resp.result && resp.data.length === 1) {
-          setPhrase(resp.data[0].mnemonic);
+          setPhrase(resp.data[0].mnemonic.split(' '));
         } else {
           setSnackSeverity('error');
           setSnackMessage("Can't find the wallet, please try again later.");
@@ -58,17 +59,46 @@ const PhraseBack = () => {
           </Typography>
 
           <Box mt={5} width={500}>
+            {!isView && (
+              <div
+                style={{
+                  position: 'absolute',
+                  width: 500,
+                  height: 282,
+                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                  boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+                  textAlign: 'center',
+                  color: '#fff',
+                }}
+                onClick={() => {
+                  setIsView(true);
+                  setIsDisable(false);
+                }}
+              >
+                <Box mt={10}>
+                  <Icon component={VisibilityOffIcon} fontSize={'large'} />
+                  <Typography mt={4}>Click to view mnemonic phrase</Typography>
+                  <Typography mt={1}>Please make sure no one can view your screen</Typography>
+                </Box>
+              </div>
+            )}
             <Card variant="outlined">
               <CardContent>
-                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                  <Typography>{phrase}</Typography>
-                </Stack>
+                {groupedArray.map((group, groupIndex) => (
+                  <Box key={groupIndex} display="flex" mb={1}>
+                    {group.map((item, itemIndex) => (
+                      <Box key={itemIndex} mr={2}>
+                        <Chip label={`${groupIndex * groupSize + itemIndex + 1}. ${item}`} style={{ width: 220 }} />
+                      </Box>
+                    ))}
+                  </Box>
+                ))}
               </CardContent>
             </Card>
           </Box>
 
           <Box mt={16}>
-            <Button variant={'contained'} size={'large'} onClick={onClickBackupLater} disabled={isDisable}>
+            <Button variant={'contained'} size={'large'} onClick={onClickReConfirm} disabled={isDisable}>
               I have finished recording.
             </Button>
           </Box>
@@ -78,4 +108,4 @@ const PhraseBack = () => {
   );
 };
 
-export default PhraseBack;
+export default PhraseBackup;
