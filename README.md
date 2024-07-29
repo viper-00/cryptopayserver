@@ -1,82 +1,135 @@
 # CryptoPayServer
-Free services to help you buy and sell products and collect cryptocurrencies.
+
+Receive cryptocurrency payments with ease. Free, open-source, and self-hosted cryptocurrency payment processor.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Main Features](#main-features)
+- [Supported Chains](#supported-chains)
+- [Creating a Wallet](#creating-a-wallet)
+- [Creating a Store](#creating-a-store)
+- [Switching Stores](#switching-stores)
+- [System Notifications](#system-notifications)
+- [Dashboard](#dashboard)
+- [Store Settings](#store-settings)
+- [Wallet Management](#wallet-management)
+- [Plugin Settings](#plugin-settings)
+- [Account Settings](#account-settings)
+- [Product List](#product-list)
+- [Checkout Page](#checkout-page)
+- [Additional Features](#additional-features)
+- [License](#license)
+
+## Overview
+
+CryptoPayServer is a cryptocurrency payment processor designed to be free, open-source, and self-hosted. It allows merchants to receive cryptocurrency payments with support for multiple blockchains and cryptocurrencies.
 
 ## Main Features
-- Store Switch
-- Notifications
-- Dashboard
-- Settings
-- Wallets
-- Payments
-- Plugins
-- Account
-- Manage account/Account Settings
-- 。。。。。。
 
-## Store Switch
-1. 创建一个新的商店
-2. 查看当前商店
+- **Supported Chains**
+- **Create Wallet**
+- **Create Store**
+- **Switch Store**
+- **System Notifications**
+- **Dashboard**
+- **Store Settings**
+- **Wallet Management**
+- **Plugin Settings**
+- **Account Settings**
+- **Product List**
+- **Checkout Page**
+- **Additional Features**
 
-## Notifications
-1. 订单收款通知
-2. 到账通知
-3. 其他服务通知
-4. 等等
+## Supported Chains
+
+1. Bitcoin
+2. Bitcoin Lightning Network
+3. Litecoin
+4. Ethereum
+5. Solana
+6. Tron
+7. BSC
+
+## Creating a Wallet
+
+1. Create addresses for different chains using a mnemonic phrase, with support for import and export.
+2. Default support for major chains and popular cryptocurrencies.
+3. Customizable support for additional chains and currencies.
+
+## Creating a Store
+
+1. Each wallet has at least one mnemonic phrase.
+2. Enter basic store information, create a store, and start receiving payments from users.
+
+## Switching Stores
+
+1. Supports switching between multiple stores.
+2. Each store has its own unique theme.
+
+## System Notifications
+
+1. Provides and enables default notification types.
+2. Receive in-app system notifications, including version updates, transactions, order completions, etc.
 
 ## Dashboard
-1. 钱包余额
-2. 最新交易
-3. 最新订单
-4. 等等
 
-## Settings
-1. General：商店的基本信息、品牌设置、支付设置、归档和删除商店
-2. Rates：汇率服务、币对服务
-3. Checkout Appearance：invoice设置、Checkout页面设置、收据设置
-4. Access Tokens：生成API Key
-5. Users：设置商店管理员
-6. Roles：设置权限
-7. Webhooks：设置回调URL
-8. Payout Processors：设置自动提现
-9. Email：设置邮件服务基本信息、测试服务运行
-10. Forms：设置表单
+1. Track daily order counts, transaction volumes, sales figures, etc.
+2. View the current status of the store intuitively.
 
-## Wallets
-1. BTC
-2. 闪电网络
-3. LTC
-4. BCH
-5. ETH（支持代币）
-6. SOLANA（支持代币）
-7. OP（支持代币）
-8. ARB（支持代币）
-9. POLYGON（支持代币）
-10. TRON（支持代币）
-11. 等等
+## Store Settings
 
-## Payments
-1. Invoices：创建invoice、invoice列表
-2. Reporting：流水报告、导出数据
-3. Requests：持续付款，可向一个地址进行无数笔支付
-4. Pull payments：开发资金，让用户索取，当通过请求后，可以向收款地址发送资金
-5. Payouts：用来实现Pull payments、refunds、salary payouts和withdrawals等，可配置payout来源设置
+1. Set up basic store information.
+2. Add store SEO attributes.
+3. Enhance store security.
 
-## Plugins
-1. Shopify：配置Shopify插件，支持Shopify支付
-2. Point of sale：创建销售点，用来挂商品，出售买卖
-3. Pay button：配置支付按钮，支持小费和捐赠等服务
-4. Crowdfund：开放众筹服务，设置最大接收额度、日期等服务
+## Wallet Management
 
-## Account
-1. Theme：多种风格和模式
-2. Hide sensitive info：隐藏敏感信息
-3. Manage account：管理账户
-4. Logout：登出
+1. View current wallet balance and manage asset transfers.
+2. View balance information for addresses on different chains.
+3. View gas fees for sending transactions.
+4. View private keys and other sensitive information.
 
-## Manage account/Account Settings
-1. Account：更新邮箱、删除账户
-2. Password：修改密码
-3. Two-Factor Authentication：二步认证
-4. API Keys：API请求认证、可配置权限
-5. Notifications：通知管理、可根据类别开启和关闭
-6. Login Codes：登录代码
+## Plugin Settings
+
+1. Support for external e-commerce platform plugin settings.
+2. Connect to external service providers.
+3. Support for small apps.
+4. Plugin services supported: Shopify, Point of Sale, Pay Button, and Crowdfund.
+
+## Account Settings
+
+1. Manage personal account information.
+2. Modify personal settings.
+3. Manage security measures.
+4. Two-factor authentication.
+5. API request authentication.
+6. Notification management, with options to enable or disable by category.
+7. Login codes.
+
+## Product List
+
+1. List and delist products.
+2. Enter and modify basic product information.
+3. Share products.
+4. Purchase products.
+
+## Checkout Page
+
+1. Select payment currency.
+2. View payment QR code.
+3. Support Web3 payment processes.
+4. Support third-party payment wallets.
+5. Optimize payment process settings and feedback.
+
+## Additional Features
+
+1. Exchange rate services.
+2. Currency pair services.
+3. Email services.
+4. Automation services.
+5. Testnet and mainnet switching.
+
+## License
+
+CryptoPayServer's software, logo, and design are provided under the MIT License.
