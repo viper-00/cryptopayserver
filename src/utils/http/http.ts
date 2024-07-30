@@ -23,6 +23,7 @@ export class Http {
   static find_wallet_by_id = this.httpPath + '/find_wallet_by_id'
   static create_wallet = this.httpPath + '/create_wallet'
   static update_pwd_by_wallet_id = this.httpPath + '/update_pwd_by_wallet_id'
+  static update_backup_by_wallet_id = this.httpPath + '/update_backup_by_wallet_id'
 
   // notification
   static find_notification = this.httpPath + '/find_notification'

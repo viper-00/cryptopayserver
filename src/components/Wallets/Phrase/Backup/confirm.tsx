@@ -1,13 +1,12 @@
-import { Box, Button, Card, CardContent, Chip, Container, Icon, Skeleton, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Container, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSnackPresistStore } from 'lib/store/snack';
-import { useWalletPresistStore } from 'lib/store';
+import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { randomWords, addAndShuffleArray } from 'utils/strings';
+import { randomWords, addAndShuffleArray, getUniqueRandomIndices } from 'utils/strings';
 
 type SelectMems = {
-  id: number;
   index: number;
   selectArrays: string[];
   value: string;
@@ -16,12 +15,35 @@ type SelectMems = {
 const PhraseBackupConfirm = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { getIsWallet, getWalletId } = useWalletPresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
 
   const [selectMems, setSelectMems] = useState<SelectMems[]>([]);
-
   const [phrase, setPhrase] = useState<string[]>([]);
+  const [selectWord, setSelectWord] = useState<Record<number, string>>({});
 
-  async function init() {
+  async function updateWalletBackup() {
+    try {
+      const resp: any = await axios.put(Http.update_backup_by_wallet_id, {
+        user_id: getUserId(),
+        wallet_id: getWalletId(),
+        store_id: getStoreId(),
+      });
+      if (resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Mnemonic phrase confirm success');
+        setSnackOpen(true);
+
+        setTimeout(async () => {
+          window.location.href = '/dashboard';
+        }, 2000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function fetchWalletData() {
     try {
       if (getIsWallet()) {
         const resp: any = await axios.get(Http.find_wallet_by_id, {
@@ -34,28 +56,15 @@ const PhraseBackupConfirm = () => {
           const phraseArray = resp.data[0].mnemonic.split(' ');
           setPhrase(phraseArray);
 
-          // const randomNumberOne = getRandomNumber()
-          const memOne: SelectMems = {
-            id: 1,
-            index: 5,
-            selectArrays: addAndShuffleArray(randomWords(2), phraseArray[4]),
-            value: phraseArray[4],
-          };
-          const memTwo: SelectMems = {
-            id: 1,
-            index: 8,
-            selectArrays: addAndShuffleArray(randomWords(2), phraseArray[7]),
-            value: phraseArray[7],
-          };
-          const memThree: SelectMems = {
-            id: 1,
-            index: 9,
-            selectArrays: addAndShuffleArray(randomWords(2), phraseArray[8]),
-            value: phraseArray[8],
-          };
+          const randomIndices = getUniqueRandomIndices(phraseArray.length, 3).map((index) => index + 1);
 
-          let arrs: SelectMems[] = [memOne, memTwo, memThree];
-          setSelectMems(arrs);
+          const createMem = (index: number) => ({
+            index,
+            selectArrays: addAndShuffleArray(randomWords(2), phraseArray[index - 1]),
+            value: phraseArray[index - 1],
+          });
+
+          setSelectMems(randomIndices.map(createMem));
         } else {
           setSnackSeverity('error');
           setSnackMessage("Can't find the wallet, please try again later.");
@@ -68,8 +77,30 @@ const PhraseBackupConfirm = () => {
   }
 
   useEffect(() => {
-    init();
+    fetchWalletData();
   }, []);
+
+  const handleButtonClick = (index: number, selectItem: string) => {
+    setSelectWord((prevSelectWord) => ({
+      ...prevSelectWord,
+      [index]: selectItem,
+    }));
+  };
+
+  useEffect(() => {
+    if (Object.keys(selectWord).length === 3) {
+      let matchTime = 0;
+      Object.keys(selectWord).forEach((key) => {
+        if (phrase[parseInt(key) - 1] === selectWord[parseInt(key)]) {
+          matchTime += 1;
+        }
+      });
+
+      if (matchTime === 3) {
+        updateWalletBackup();
+      }
+    }
+  }, [selectWord]);
 
   return (
     <Box>
@@ -77,32 +108,35 @@ const PhraseBackupConfirm = () => {
         <Stack mt={20}>
           <Typography variant="h4">Confirm your mnemonic phrase again</Typography>
           <Typography mt={5}>Please select your mnemonic phrase in order</Typography>
-
-          <Typography>{phrase}</Typography>
-
+          <Typography>{phrase.join(' ')}</Typography>
           <Box mt={5} width={500}>
             <Card variant="outlined">
               <CardContent>
-                {selectMems &&
-                  selectMems.length > 0 &&
-                  selectMems.map((item: SelectMems, index: number) => (
-                    <Box key={index} pb={4}>
-                      <Stack direction={'row'} alignItems={'center'}>
-                        <Typography>Mnemonic phrase</Typography>
-                        <Typography># {item.index}</Typography>
-                      </Stack>
-
-                      <Stack direction={'row'} alignItems={'center'} mt={2}>
-                        {item.selectArrays &&
-                          item.selectArrays.length > 0 &&
-                          item.selectArrays.map((selectItem, selectIndex) => (
-                            <Box>
-                              <Button style={{ minWidth: 100 }}>{selectItem}</Button>
-                            </Box>
-                          ))}
-                      </Stack>
-                    </Box>
-                  ))}
+                {selectMems.map((item) => (
+                  <Box key={item.index} pb={4}>
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <Typography>Mnemonic phrase</Typography>
+                      <Typography># {item.index}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} mt={2}>
+                      {item.selectArrays.map((selectItem, selectIndex) => (
+                        <Box key={selectIndex}>
+                          <Button
+                            style={{
+                              minWidth: 100,
+                              textTransform: 'none',
+                              fontWeight: selectWord[item.index] === selectItem ? 'bold' : 'normal',
+                              backgroundColor: selectWord[item.index] === selectItem ? 'powderblue' : '',
+                            }}
+                            onClick={() => handleButtonClick(item.index, selectItem)}
+                          >
+                            {selectItem}
+                          </Button>
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                ))}
               </CardContent>
             </Card>
           </Box>

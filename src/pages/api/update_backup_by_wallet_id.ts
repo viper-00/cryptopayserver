@@ -14,11 +14,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse<R
         const userId = req.body.user_id;
         const walletId = req.body.wallet_id;
         const storeId = req.body.store_id;
-        const password = req.body.password;
-        const cryptoPassword = CryptoJS.SHA256(password).toString();
 
-        const query = 'UPDATE wallets set password = ? where id = ? and user_id = ? and store_id = ? and status = 1';
-        const values = [cryptoPassword, walletId, userId, storeId];
+        const query = 'UPDATE wallets set is_backup = ? where id = ? and user_id = ? and store_id = ? and status = 1';
+        const values = [1, walletId, userId, storeId];
         await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: null });
     }

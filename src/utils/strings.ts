@@ -9,9 +9,17 @@ export function addAndShuffleArray(arr: string[], str: string): string[] {
   return arr.sort(() => 0.5 - Math.random());
 }
 
-function getRandomNumber(min: number, max: number): number {
+export function getRandomNumber(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
 
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function getUniqueRandomIndices(max: number, count: number): number[] {
+  const indices = new Set<number>();
+  while (indices.size < count) {
+    indices.add(Math.floor(Math.random() * max));
+  }
+  return Array.from(indices);
 }
