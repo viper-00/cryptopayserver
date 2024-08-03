@@ -2,9 +2,10 @@ import { Box, Card, CardContent, Container, Icon, Stack, Typography } from '@mui
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useSnackPresistStore } from 'lib/store';
 
-const ImportWallet = () => {
-  const onClickConnectHardwareWallet = () => {};
+const WalletImport = () => {
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
   const onClickImportWalletFile = () => {};
 
@@ -13,6 +14,22 @@ const ImportWallet = () => {
   const onClickScanWalletQRCode = () => {};
 
   const onClickConnectEnterWalletSeed = () => {};
+
+  const onClickHardwareWallet = () => {
+    setSnackMessage('Not supported.');
+    setSnackSeverity('warning');
+    setSnackOpen(true);
+  };
+
+  const onClickMnemonicPhraseAndPrivateKey = () => {
+    window.location.href = '/wallets/import/mnemonicphrase';
+  };
+
+  const onClickNoPrivateKeyWallet = () => {
+    setSnackMessage('Not supported.');
+    setSnackSeverity('warning');
+    setSnackOpen(true);
+  };
 
   return (
     <Box>
@@ -23,15 +40,14 @@ const ImportWallet = () => {
             The following methods assume that you already have an existing wallet created and backed up.
           </Typography>
           <Box mt={8}>
-            <div onClick={onClickConnectHardwareWallet}>
+            <div onClick={onClickMnemonicPhraseAndPrivateKey}>
               <Card sx={{ width: 750, padding: 2 }}>
                 <CardContent>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Stack direction={'row'} alignItems={'center'}>
                       <Icon component={AccountBalanceWalletIcon} fontSize={'large'} />
                       <Box ml={5}>
-                        <Typography variant="h5">Connect hardware wallet</Typography>
-                        <Typography mt={1}>Import your public keys using our Vault application</Typography>
+                        <Typography variant="h5">Mnemonic phrase or private keys</Typography>
                       </Box>
                     </Stack>
                     <Icon component={ChevronRightIcon} fontSize={'large'} />
@@ -40,6 +56,41 @@ const ImportWallet = () => {
               </Card>
             </div>
           </Box>
+          <Box mt={4}>
+            <div onClick={onClickNoPrivateKeyWallet}>
+              <Card sx={{ width: 750, padding: 2 }}>
+                <CardContent>
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <Icon component={AccountBalanceWalletIcon} fontSize={'large'} />
+                      <Box ml={5}>
+                        <Typography variant="h5">No private key wallet</Typography>
+                      </Box>
+                    </Stack>
+                    <Icon component={ChevronRightIcon} fontSize={'large'} />
+                  </Stack>
+                </CardContent>
+              </Card>
+            </div>
+          </Box>
+          <Box mt={4}>
+            <div onClick={onClickHardwareWallet}>
+              <Card sx={{ width: 750, padding: 2 }}>
+                <CardContent>
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <Icon component={AccountBalanceWalletIcon} fontSize={'large'} />
+                      <Box ml={5}>
+                        <Typography variant="h5">Hardware wallet</Typography>
+                      </Box>
+                    </Stack>
+                    <Icon component={ChevronRightIcon} fontSize={'large'} />
+                  </Stack>
+                </CardContent>
+              </Card>
+            </div>
+          </Box>
+          {/* 
           <Box mt={4}>
             <div onClick={onClickImportWalletFile}>
               <Card sx={{ width: 750, padding: 2 }}>
@@ -111,11 +162,11 @@ const ImportWallet = () => {
                 </CardContent>
               </Card>
             </div>
-          </Box>
+          </Box> */}
         </Stack>
       </Container>
     </Box>
   );
 };
 
-export default ImportWallet;
+export default WalletImport;

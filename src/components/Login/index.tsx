@@ -62,7 +62,7 @@ const Login = () => {
               });
               if (wallet_resp.result) {
                 if (wallet_resp.data.length > 0) {
-                  setWalletId(wallet_resp[0].id);
+                  setWalletId(wallet_resp.data[0].id);
                   setIsWallet(true);
                   window.location.href = '/dashboard';
                 } else {

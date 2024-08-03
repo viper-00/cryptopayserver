@@ -23,13 +23,14 @@ import Login from 'components/Login';
 import Register from 'components/Register';
 import CreateStore from 'components/Stores/Create';
 import CreateWallet from 'components/Wallets/Create';
-import ImportWallet from 'components/Wallets/Import';
+import WalletImport from 'components/Wallets/Import';
 import GenerateWallet from 'components/Wallets/Generate';
 import SetPassword from 'components/Wallets/SetPassword';
 import PhraseIntro from 'components/Wallets/Phrase/Intro';
 import PhraseBackup from 'components/Wallets/Phrase/Backup';
 import PhraseBackupConfirm from 'components/Wallets/Phrase/Backup/Confirm';
 import { useWalletPresistStore, useSnackPresistStore, useUserPresistStore, useStorePresistStore } from 'lib/store';
+import ImportMnemonicPhraseOrPrivateKey from 'components/Wallets/Import/MnemonicPhraseOrPrivateKey';
 
 const Home = () => {
   const router = useRouter();
@@ -67,7 +68,8 @@ const Home = () => {
 
     '/stores/create': <CreateStore />,
     '/wallets/create': <CreateWallet />,
-    '/wallets/import': <ImportWallet />,
+    '/wallets/import': <WalletImport />,
+    '/wallets/import/mnemonicphrase': <ImportMnemonicPhraseOrPrivateKey />,
     '/wallets/generate': <GenerateWallet />,
     '/wallets/setPassword': <SetPassword />,
     '/wallets/phrase/intro': <PhraseIntro />,
@@ -77,7 +79,8 @@ const Home = () => {
 
   const createWalletWhiteList: any = {
     '/wallets/create': <CreateWallet />,
-    '/wallets/import': <ImportWallet />,
+    '/wallets/import': <WalletImport />,
+    '/wallets/import/mnemonicphrase': <ImportMnemonicPhraseOrPrivateKey />,
     '/wallets/generate': <GenerateWallet />,
     '/wallets/setPassword': <SetPassword />,
     '/wallets/phrase/intro': <PhraseIntro />,
@@ -89,6 +92,7 @@ const Home = () => {
     '/stores/create': true,
     '/wallets/create': true,
     '/wallets/import': true,
+    '/wallets/import/mnemonicphrase': true,
     '/wallets/generate': true,
     '/wallets/setPassword': true,
     '/wallets/phrase/intro': true,
