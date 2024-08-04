@@ -26,7 +26,7 @@ const CreateStore = () => {
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { getUserId } = useUserPresistStore((state) => state);
-  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
+  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource, setIsStore } = useStorePresistStore((state) => state);
 
   const onCreateStore = async () => {
     try {
@@ -47,6 +47,7 @@ const CreateStore = () => {
           setStoreName(create_store_resp.data[0].name);
           setStoreCurrency(create_store_resp.data[0].currency);
           setStorePriceSource(create_store_resp.data[0].price_source);
+          setIsStore(true)
 
           setTimeout(() => {
             window.location.href = '/dashboard';

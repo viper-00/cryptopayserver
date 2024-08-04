@@ -38,17 +38,34 @@ const Home = () => {
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
   const { getIsLogin, resetUser } = useUserPresistStore((state) => state);
   const { getIsWallet, resetWallet } = useWalletPresistStore((state) => state);
-  const { resetStore } = useStorePresistStore((state) => state);
+  const { resetStore, getIsStore } = useStorePresistStore((state) => state);
 
   const [isLogin, setLogin] = useState<boolean>(false);
-  // const [isWallet, setWallet] = useState<boolean>(false);
+  const [isStore, setStore] = useState<boolean>(false);
+  const [isWallet, setWallet] = useState<boolean>(false);
 
+  // White lists for various states
   const unLoginWhiteList: any = {
     '/login': <Login />,
     '/register': <Register />,
   };
 
-  const loginWhiteList: any = {
+  const storeCreationWhiteList: any = {
+    '/stores/create': <CreateStore />,
+  };
+
+  const walletCreationWhiteList: any = {
+    '/wallets/create': <CreateWallet />,
+    '/wallets/import': <WalletImport />,
+    '/wallets/import/mnemonicphrase': <ImportMnemonicPhraseOrPrivateKey />,
+    '/wallets/generate': <GenerateWallet />,
+    '/wallets/setPassword': <SetPassword />,
+    '/wallets/phrase/intro': <PhraseIntro />,
+    '/wallets/phrase/backup': <PhraseBackup />,
+    '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
+  };
+
+  const dashboardWhiteList: any = {
     '/': <Dashboard />,
     '/dashboard': <Dashboard />,
     '/settings': <Settings />,
@@ -67,6 +84,7 @@ const Home = () => {
     '/notifications': <Notifications />,
 
     '/stores/create': <CreateStore />,
+
     '/wallets/create': <CreateWallet />,
     '/wallets/import': <WalletImport />,
     '/wallets/import/mnemonicphrase': <ImportMnemonicPhraseOrPrivateKey />,
@@ -77,102 +95,70 @@ const Home = () => {
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 
-  const createWalletWhiteList: any = {
-    '/wallets/create': <CreateWallet />,
-    '/wallets/import': <WalletImport />,
-    '/wallets/import/mnemonicphrase': <ImportMnemonicPhraseOrPrivateKey />,
-    '/wallets/generate': <GenerateWallet />,
-    '/wallets/setPassword': <SetPassword />,
-    '/wallets/phrase/intro': <PhraseIntro />,
-    '/wallets/phrase/backup': <PhraseBackup />,
-    '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
-  };
-
-  const allPageWhiteList: any = {
-    '/stores/create': true,
-    '/wallets/create': true,
-    '/wallets/import': true,
-    '/wallets/import/mnemonicphrase': true,
-    '/wallets/generate': true,
-    '/wallets/setPassword': true,
-    '/wallets/phrase/intro': true,
-    '/wallets/phrase/backup': true,
-    '/wallets/phrase/backup/confirm': true,
-  };
-
+  // Handle page redirection based on user state
   useEffect(() => {
-    setLogin(getIsLogin());
-    // setWallet(getIsWallet());
+    const checkState = async () => {
+      const loginStatus = getIsLogin();
+      const storeStatus = getIsStore();
+      const walletStatus = getIsWallet();
 
-    if (getIsLogin()) {
-      // Is has wallet
-      if (!getIsWallet()) {
-        if (router.pathname !== '/wallets/create' && !createWalletWhiteList[router.pathname]) {
+      setLogin(loginStatus);
+      setStore(storeStatus);
+      setWallet(walletStatus);
+
+      if (!loginStatus) {
+        if (unLoginWhiteList[router.pathname]) {
+          return; // Stay on login or register pages if not logged in
+        } else {
+          window.location.href = '/login';
+        }
+      } else if (!storeStatus) {
+        if (storeCreationWhiteList[router.pathname]) {
+          return; // Stay on store creation page if store not created
+        } else {
+          window.location.href = '/stores/create';
+        }
+      } else if (!walletStatus) {
+        if (walletCreationWhiteList[router.pathname]) {
+          return; // Stay on wallet creation page if wallet not created
+        } else {
           window.location.href = '/wallets/create';
-          return;
+        }
+      } else {
+        if (router.pathname === '/') {
+          window.location.href = '/dashboard';
+        } else if (!dashboardWhiteList[router.pathname]) {
+          window.location.href = '/';
         }
       }
+    };
 
-      if (router.pathname === '/') {
-        window.location.href = '/dashboard';
-        return;
-      }
-
-      if (unLoginWhiteList[router.pathname]) {
-        window.location.href = '/';
-        return;
-      }
-    } else {
-      resetStore();
-      resetUser();
-      resetWallet();
-
-      if (loginWhiteList[router.pathname]) {
-        window.location.href = '/login';
-        return;
-      }
-      // if (unLoginWhiteList[router.pathname]) {
-      //   console.log('sdfsd1f', isLogin);
-
-      //   return;
-      // }
-
-      // console.log('sdfs2df', isLogin);
-
-      // if (router.pathname !== '/login') {
-      //   window.location.href = '/login';
-      //   return;
-      // }
-    }
-  }, [router.pathname]);
+    checkState();
+  }, [router.pathname, getIsLogin, getIsStore, getIsWallet]);
 
   return (
     <Box height={'100%'}>
       <MetaTags title="Home" />
 
-      {isLogin ? (
-        <>
-          <Stack direction={'row'} height={'100%'}>
-            {allPageWhiteList[router.pathname] ? null : <HomeSidebar />}
-
-            <Box width={'100%'}>
-              {loginWhiteList[router.pathname] || null}
-
-              <Box>
-                <Footer />
-              </Box>
-            </Box>
-          </Stack>
-        </>
-      ) : (
-        <>
+      {isLogin && (
+        <Stack direction={'row'} height={'100%'}>
+          {storeCreationWhiteList[router.pathname] || walletCreationWhiteList[router.pathname] ? null : <HomeSidebar />}
           <Box width={'100%'}>
-            {unLoginWhiteList[router.pathname] || null}
+            {dashboardWhiteList[router.pathname] || null}
             <Box>
               <Footer />
             </Box>
           </Box>
-        </>
+        </Stack>
+      )}
+
+      {!isLogin && (
+        <Box width={'100%'}>
+          {unLoginWhiteList[router.pathname] || null}
+          <Box>
+            <Footer />
+          </Box>
+        </Box>
       )}
 
       <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackOpen}>

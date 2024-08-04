@@ -6,6 +6,7 @@ type StorePerisistState = {
   storeName: string;
   storeCurrency: string;
   storePriceSource: string;
+  isStore: boolean;
 };
 
 type StorePerisistAction = {
@@ -17,6 +18,8 @@ type StorePerisistAction = {
   getStoreCurrency: () => string;
   setStorePriceSource: (storePriceSource: string) => void;
   getStorePriceSource: () => string;
+  setIsStore: (isStore: boolean) => void;
+  getIsStore: () => boolean;
 
   resetStore: () => void;
 };
@@ -26,6 +29,7 @@ const initialStoreState: StorePerisistState = {
   storeName: '',
   storeCurrency: '',
   storePriceSource: '',
+  isStore: false,
 };
 
 export const useStorePresistStore = create(
@@ -41,6 +45,8 @@ export const useStorePresistStore = create(
       getStoreCurrency: () => get().storeCurrency,
       setStorePriceSource: (value) => set(() => ({ storePriceSource: value })),
       getStorePriceSource: () => get().storePriceSource,
+      setIsStore: (value) => set(() => ({ isStore: value })),
+      getIsStore: () => get().isStore,
 
       resetStore: () => {
         set(initialStoreState);

@@ -17,8 +17,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse<R
         const cryptoPassword = CryptoJS.SHA256(password).toString();
 
         // user
-        const query = 'INSERT INTO users (email, username, password) VALUES (?, ?, ?)';
-        const values = [email, username, cryptoPassword];
+        const query = 'INSERT INTO users (email, username, password, status) VALUES (?, ?, ?, ?)';
+        const values = [email, username, cryptoPassword, 1];
         const [ResultSetHeader]: any = await connection.query(query, values);
         const userId = ResultSetHeader.insertId;
         if (userId === 0) {

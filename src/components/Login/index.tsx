@@ -25,7 +25,7 @@ const Login = () => {
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { setUserId, setUserEmail, setUsername, setIsLogin } = useUserPresistStore((state) => state);
-  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource } = useStorePresistStore((state) => state);
+  const { setStoreId, setStoreName, setStoreCurrency, setStorePriceSource, setIsStore } = useStorePresistStore((state) => state);
   const { setWalletId, setIsWallet } = useWalletPresistStore((state) => state);
 
   const onLogin = async () => {
@@ -53,6 +53,7 @@ const Login = () => {
               setStoreName(store_resp.data[0].name);
               setStoreCurrency(store_resp.data[0].currency);
               setStorePriceSource(store_resp.data[0].price_source);
+              setIsStore(true)
 
               // search wallet
               const wallet_resp: any = await axios.get(Http.find_wallet, {

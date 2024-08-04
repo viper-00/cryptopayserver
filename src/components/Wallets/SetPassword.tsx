@@ -1,11 +1,8 @@
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Container,
   FormControl,
-  Icon,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -56,8 +53,18 @@ const SetPassword = () => {
           setSnackSeverity('success');
           setSnackMessage('Successful update!');
           setSnackOpen(true);
+
           setTimeout(() => {
-            window.location.href = '/wallets/phrase/intro';
+            if (resp.data.is_backup === 1) {
+              window.location.href = '/dashboard';
+            } else if (resp.data.is_backup === 2) {
+              window.location.href = '/wallets/phrase/intro';
+            } else {
+              setSnackMessage('Input is wrong');
+              setSnackSeverity('error');
+              setSnackOpen(true);
+              return;
+            }
           }, 2000);
         }
       } else {

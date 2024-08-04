@@ -1,21 +1,15 @@
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  Container,
   FormControl,
-  Icon,
   InputAdornment,
   MenuItem,
   Select,
   Stack,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from '@mui/material';
-import { useSnackPresistStore, useStorePresistStore } from 'lib/store';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -26,19 +20,26 @@ const ImportMnemonicPhrase = () => {
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
+  const { setWalletId, setIsWallet } = useWalletPresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
 
   const handleBitChange = (e: any) => {
     setBit(e.target.value);
   };
 
   const handlePhraseChange = (e: any, index: number) => {
-    let p = phrase;
-    p[index - 1] = e.target.value;
-    setPhrase(p);
+    const newPhrase = [...phrase];
+    newPhrase[index - 1] = e.target.value;
+    setPhrase(newPhrase);
   };
 
   const handleButtonClick = async () => {
-    console.log('phrase', phrase);
+    if (!phrase || phrase.filter((element) => element !== undefined && element !== '').length !== bit) {
+      setSnackSeverity('error');
+      setSnackMessage('No suuport the wallet');
+      setSnackOpen(true);
+      return;
+    }
 
     try {
       const find_wallet_resp: any = await axios.get(Http.find_wallet, {
@@ -58,9 +59,31 @@ const ImportMnemonicPhrase = () => {
         return;
       }
 
-      
+      const import_wallet_resp: any = await axios.post(Http.save_wallet, {
+        import_wallet: phrase.join(' '),
+        store_id: getStoreId(),
+        user_id: getUserId(),
+      });
+
+      if (import_wallet_resp.result) {
+        setWalletId(import_wallet_resp.data.wallet_id);
+        setIsWallet(true);
+        setSnackSeverity('success');
+        setSnackMessage('Successful creation!');
+        setSnackOpen(true);
+        setTimeout(() => {
+          window.location.href = '/wallets/setPassword';
+        }, 2000);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('No suuport the wallet');
+        setSnackOpen(true);
+      }
     } catch (e) {
       console.error(e);
+      setSnackSeverity('error');
+      setSnackMessage('No suuport the wallet');
+      setSnackOpen(true);
     }
   };
 
@@ -72,7 +95,7 @@ const ImportMnemonicPhrase = () => {
           <FormControl hiddenLabel size="small">
             <Select value={bit} onChange={handleBitChange}>
               <MenuItem value={12}>12 bit</MenuItem>
-              <MenuItem value={24}>24 bit</MenuItem>
+              {/* <MenuItem value={24}>24 bit</MenuItem> */}
             </Select>
           </FormControl>
         </Box>
