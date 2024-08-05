@@ -19,8 +19,11 @@ import {
   Typography,
 } from '@mui/material';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import { useStorePresistStore } from 'lib/store';
 
 const General = () => {
+  const { getStoreId, getStoreName, getStoreCurrency } = useStorePresistStore((state) => state);
+
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
     clipPath: 'inset(50%)',
@@ -40,19 +43,19 @@ const General = () => {
         <Box mt={4}>
           <Typography>Store ID</Typography>
           <Box mt={1}>
-            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+            <TextField fullWidth hiddenLabel defaultValue={getStoreId()} size="small" disabled />
           </Box>
         </Box>
         <Box mt={2}>
           <Typography>Store Name</Typography>
           <Box mt={1}>
-            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+            <TextField fullWidth hiddenLabel defaultValue={getStoreName()} size="small" disabled />
           </Box>
         </Box>
         <Box mt={2}>
-          <Typography>Store Website </Typography>
+          <Typography>Store Website</Typography>
           <Box mt={1}>
-            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+            <TextField fullWidth hiddenLabel defaultValue={location.origin} size="small" disabled />
           </Box>
         </Box>
       </Box>

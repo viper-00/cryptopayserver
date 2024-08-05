@@ -16,16 +16,17 @@ import {
 import BalanceBars from './Balance';
 import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
 import TransactionDataGrid from './Transaction';
+import { useStorePresistStore } from 'lib/store';
 
 const Dashboard = () => {
   const onChangeToggle = () => {};
 
+  const { getStoreName } = useStorePresistStore((state) => state);
+
   return (
     <Box>
       <Container>
-        <Typography variant="h5" pt={5}>
-          Test
-        </Typography>
+        <Typography variant="h5" pt={5}>{getStoreName()}</Typography>
         <Grid container spacing={2} mt={2}>
           <Grid item xs={8}>
             <Card variant="outlined">

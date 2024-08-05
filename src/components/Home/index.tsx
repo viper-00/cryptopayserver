@@ -31,6 +31,12 @@ import PhraseBackup from 'components/Wallets/Phrase/Backup';
 import PhraseBackupConfirm from 'components/Wallets/Phrase/Backup/Confirm';
 import { useWalletPresistStore, useSnackPresistStore, useUserPresistStore, useStorePresistStore } from 'lib/store';
 import ImportMnemonicPhraseOrPrivateKey from 'components/Wallets/Import/MnemonicPhraseOrPrivateKey';
+import Ethereum from 'components/Wallet/Ethereum';
+import Litecoin from 'components/Wallet/Litecoin';
+import Solana from 'components/Wallet/Solana';
+import Ton from 'components/Wallet/Ton';
+import Tron from 'components/Wallet/Tron';
+import Bsc from 'components/Wallet/Bsc';
 
 const Home = () => {
   const router = useRouter();
@@ -44,7 +50,6 @@ const Home = () => {
   const [isStore, setStore] = useState<boolean>(false);
   const [isWallet, setWallet] = useState<boolean>(false);
 
-  // White lists for various states
   const unLoginWhiteList: any = {
     '/login': <Login />,
     '/register': <Register />,
@@ -71,6 +76,12 @@ const Home = () => {
     '/settings': <Settings />,
     '/wallet/bitcoin': <Bitcoin />,
     '/wallet/bitcoin/lightning': <Lightning />,
+    '/wallet/ethereum': <Ethereum />,
+    '/wallet/litecoin': <Litecoin />,
+    '/wallet/solana': <Solana />,
+    '/wallet/ton': <Ton />,
+    '/wallet/tron': <Tron />,
+    '/wallet/bsc': <Bsc />,
     '/payments/invoices': <Invoices />,
     '/payments/reporting': <Reporting />,
     '/payments/requests': <Requests />,
@@ -95,7 +106,6 @@ const Home = () => {
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 
-  // Handle page redirection based on user state
   useEffect(() => {
     const checkState = async () => {
       const loginStatus = getIsLogin();
@@ -108,19 +118,19 @@ const Home = () => {
 
       if (!loginStatus) {
         if (unLoginWhiteList[router.pathname]) {
-          return; // Stay on login or register pages if not logged in
+          return;
         } else {
           window.location.href = '/login';
         }
       } else if (!storeStatus) {
         if (storeCreationWhiteList[router.pathname]) {
-          return; // Stay on store creation page if store not created
+          return;
         } else {
           window.location.href = '/stores/create';
         }
       } else if (!walletStatus) {
         if (walletCreationWhiteList[router.pathname]) {
-          return; // Stay on wallet creation page if wallet not created
+          return;
         } else {
           window.location.href = '/wallets/create';
         }

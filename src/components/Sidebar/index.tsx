@@ -185,6 +185,48 @@ const HomeSidebar = () => {
             >
               Lightning
             </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/wallet/ethereum' ? true : false}
+              component={<Link href={'/wallet/ethereum'} />}
+            >
+              Ethereum
+            </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/wallet/bsc' ? true : false}
+              component={<Link href={'/wallet/bsc'} />}
+            >
+              Binance Smart Chain
+            </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/wallet/litecoin' ? true : false}
+              component={<Link href={'/wallet/litecoin'} />}
+            >
+              Litecoin
+            </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/wallet/solana' ? true : false}
+              component={<Link href={'/wallet/solana'} />}
+            >
+              Solana
+            </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/wallet/ton' ? true : false}
+              component={<Link href={'/wallet/ton'} />}
+            >
+              Ton
+            </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/wallet/tron' ? true : false}
+              component={<Link href={'/wallet/tron'} />}
+            >
+              Tron
+            </MenuItem>
           </Menu>
 
           <div style={{ padding: '0 24px', marginBottom: '8px', marginTop: '32px' }}>
