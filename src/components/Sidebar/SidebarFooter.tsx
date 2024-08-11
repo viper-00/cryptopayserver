@@ -74,13 +74,25 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
 
   const switchlabel = { inputProps: { 'aria-label': 'Switch demo' } };
 
-  const { getUsername, getUserTheme, getUserHideSensitiveInfo, setUserHideSensitiveInfo, setUserTheme, resetUser } =
-    useUserPresistStore((state) => state);
+  const {
+    getUsername,
+    getUserTheme,
+    getUserHideSensitiveInfo,
+    setUserHideSensitiveInfo,
+    setUserTheme,
+    getNetwork,
+    setNetwork,
+    resetUser,
+  } = useUserPresistStore((state) => state);
   const { resetStore } = useStorePresistStore((state) => state);
   const { resetWallet } = useWalletPresistStore((state) => state);
 
   const handleChangeUserHideSensitiveInfo = (e: any) => {
     setUserHideSensitiveInfo(e.target.checked);
+  };
+
+  const handleChangeNetwork = (e: any) => {
+    setNetwork(e.target.checked ? 'mainnet' : 'testnet');
   };
 
   const AccountDrawer = (
@@ -126,6 +138,17 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
               onChange={handleChangeUserHideSensitiveInfo}
             />
           </Box>
+        </Stack>
+        <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} mt={2}>
+          <Typography>Network</Typography>
+          <Stack direction={'row'} alignItems={'center'}>
+            <Typography>{getNetwork().toUpperCase()}</Typography>
+            <Switch
+              {...switchlabel}
+              checked={getNetwork() === 'mainnet' ? true : false}
+              onChange={handleChangeNetwork}
+            />
+          </Stack>
         </Stack>
       </Box>
       <Divider />

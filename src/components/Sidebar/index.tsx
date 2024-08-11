@@ -5,7 +5,7 @@ import { Menu, menuClasses, MenuItem, MenuItemStyles, Sidebar, SubMenu } from 'r
 import { SidebarFooter } from './SidebarFooter';
 import { SidebarHeader } from './SidebarHeader';
 import { Typography } from './Typography';
-import { Box, Stack } from '@mui/material';
+import { Box, Icon, Stack, SvgIcon } from '@mui/material';
 import {
   Assessment,
   CurrencyBitcoin,
@@ -21,6 +21,14 @@ import {
   Settings,
   ShoppingBag,
 } from '@mui/icons-material';
+import Image from 'next/image';
+import BitcoinSVG from 'assets/chain/bitcoin.svg';
+import EthereumSVG from 'assets/chain/ethereum.svg';
+import BscSVG from 'assets/chain/bsc.svg';
+import LitecoinSVG from 'assets/chain/litecoin.svg';
+import SolanaSVG from 'assets/chain/solana.svg';
+import TonSVG from 'assets/chain/ton.svg';
+import TronSVG from 'assets/chain/tron.svg';
 
 type Theme = 'light' | 'dark';
 
@@ -82,7 +90,6 @@ const HomeSidebar = () => {
   const menuItemStyles: MenuItemStyles = {
     root: {
       fontSize: '13px',
-      fontWeight: 400,
     },
     icon: {
       color: themes[theme].menu.icon,
@@ -105,11 +112,14 @@ const HomeSidebar = () => {
         color: themes[theme].menu.disabled.color,
       },
       '&:hover': {
-        backgroundColor: hexToRgba(themes[theme].menu.hover.backgroundColor, hasImage ? 0.8 : 1),
+        backgroundColor: 'none',
         color: themes[theme].menu.hover.color,
+        fontWeight: 'bold',
       },
       [`&.ps-active`]: {
         color: '#0098e5',
+        backgroundColor: 'rgba(197, 228, 255, 1)',
+        fontWeight: 'bold',
       },
     },
     label: ({ open }) => ({
@@ -172,56 +182,56 @@ const HomeSidebar = () => {
 
           <Menu menuItemStyles={menuItemStyles}>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={BitcoinSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/bitcoin' ? true : false}
               component={<Link href={'/wallet/bitcoin'} />}
             >
               Bitcoin
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={BitcoinSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/bitcoin/lightning' ? true : false}
               component={<Link href={'/wallet/bitcoin/lightning'} />}
             >
               Lightning
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={EthereumSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/ethereum' ? true : false}
               component={<Link href={'/wallet/ethereum'} />}
             >
               Ethereum
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={BscSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/bsc' ? true : false}
               component={<Link href={'/wallet/bsc'} />}
             >
               Binance Smart Chain
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={LitecoinSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/litecoin' ? true : false}
               component={<Link href={'/wallet/litecoin'} />}
             >
               Litecoin
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={SolanaSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/solana' ? true : false}
               component={<Link href={'/wallet/solana'} />}
             >
               Solana
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={TonSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/ton' ? true : false}
               component={<Link href={'/wallet/ton'} />}
             >
               Ton
             </MenuItem>
             <MenuItem
-              icon={<CurrencyBitcoin />}
+              icon={<Image src={TronSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallet/tron' ? true : false}
               component={<Link href={'/wallet/tron'} />}
             >

@@ -13,34 +13,43 @@ export class WEB3 {
     mnemonic = mnemonic === '' ? Bip39.generateMnemonic() : mnemonic;
 
     const seed = await Bip39.generateSeed(mnemonic);
-    const account = await this.createAccountBySeed(seed);
+
+    // mainnet
+    const mainnetAccount = await this.createAccountBySeed(true, seed);
+
+    //testnet
+    const testnetAccount = await this.createAccountBySeed(false, seed);
 
     return {
       isGenerate: isGenerate,
       mnemonic: mnemonic,
-      account: account,
+      account: [...mainnetAccount, ...testnetAccount],
     };
   }
 
-  static async createAccountBySeed(seed: Buffer): Promise<Array<ChainAccountType>> {
-    return await Promise.all([...BTC.createAccountBySeed(seed), ETH.createAccountBySeed(seed)]);
+  static async createAccountBySeed(isMainnet: boolean, seed: Buffer): Promise<Array<ChainAccountType>> {
+    return await Promise.all([...BTC.createAccountBySeed(isMainnet, seed), ETH.createAccountBySeed(isMainnet, seed)]);
   }
 
-  static async createAccountByPrivateKey(chain: CHAINS, privateKey: string): Promise<Array<ChainAccountType>> {
+  static async createAccountByPrivateKey(
+    isMainnet: boolean,
+    chain: CHAINS,
+    privateKey: string,
+  ): Promise<Array<ChainAccountType>> {
     switch (chain) {
       case CHAINS.BITCOIN:
-        return BTC.createAccountByPrivateKey(privateKey);
+        return BTC.createAccountByPrivateKey(isMainnet, privateKey);
       case CHAINS.ETHEREUM:
-        return Array<ChainAccountType>(ETH.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(ETH.createAccountByPrivateKey(isMainnet, privateKey));
       default:
         return [];
     }
   }
 
-  static async checkAddress(chain: CHAINS, address: string): Promise<boolean> {
+  static async checkAddress(isMainnet: boolean, chain: CHAINS, address: string): Promise<boolean> {
     switch (chain) {
       case CHAINS.BITCOIN:
-        return BTC.checkAddress(address);
+        return BTC.checkAddress(isMainnet, address);
       case CHAINS.ETHEREUM:
         return ETH.checkAddress(address);
       default:
@@ -48,34 +57,45 @@ export class WEB3 {
     }
   }
 
-  static async getAssetBalance(chain: CHAINS, address: string): Promise<AssetBalance> {
+  static async getAssetBalance(isMainnet: boolean, chain: CHAINS, address: string): Promise<AssetBalance> {
     switch (chain) {
       case CHAINS.BITCOIN:
-        return BTC.getAssetBalance(address);
+        return await BTC.getAssetBalance(isMainnet, address);
       case CHAINS.ETHEREUM:
-        return ETH.getAssetBalance(address);
+        return await ETH.getAssetBalance(isMainnet, address);
       default:
         return {} as AssetBalance;
     }
   }
 
-  static async getTransactionDetail(chain: CHAINS, hash: string): Promise<TransactionDetail> {
+  static async getTransactionDetail(isMainnet: boolean, chain: CHAINS, hash: string): Promise<TransactionDetail> {
     switch (chain) {
       case CHAINS.BITCOIN:
-        return await BTC.getTransactionDetail(hash);
+        return await BTC.getTransactionDetail(isMainnet, hash);
       case CHAINS.ETHEREUM:
-        return await ETH.getTransactionDetail(hash);
+        return await ETH.getTransactionDetail(isMainnet, hash);
       default:
         return {} as TransactionDetail;
     }
   }
 
-  static async sendTransaction(req: SendTransaction): Promise<string> {
+  static async getTransactions(isMainnet: boolean, chain: CHAINS, address: string): Promise<TransactionDetail[]> {
+    switch (chain) {
+      case CHAINS.BITCOIN:
+        return await BTC.getTransactions(isMainnet, address);
+      case CHAINS.ETHEREUM:
+        return [];
+      default:
+        return [];
+    }
+  }
+
+  static async sendTransaction(isMainnet: boolean, req: SendTransaction): Promise<string> {
     switch (req.coin.chainId) {
       case CHAINS.BITCOIN:
-        return await BTC.sendTransaction(req);
+        return await BTC.sendTransaction(isMainnet, req);
       case CHAINS.ETHEREUM:
-        return await ETH.sendTransaction(req);
+        return await ETH.sendTransaction(isMainnet, req);
       default:
         return '';
     }

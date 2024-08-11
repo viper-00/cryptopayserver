@@ -11,7 +11,6 @@ import {
   TRANSACTIONTYPE,
   UnspentTransactionOutput,
 } from '../types';
-import { IS_MAINNET } from 'packages/constants';
 import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import { ECPairFactory } from 'ecpair';
@@ -19,72 +18,85 @@ import axios from 'axios';
 import { BigAdd, BigSub, BigDiv, BigMul } from 'utils/number';
 import { ethers } from 'ethers';
 import Big from 'big.js';
+import { GetBlockchainTxUrl, GetNodeApi } from 'utils/chain/btc';
 
 export class BTC {
   static chain = CHAINS.BITCOIN;
-  static chainIds = IS_MAINNET ? CHAINIDS.BITCOIN : CHAINIDS.BITCOIN_TESTNET;
-  static BTC_NETWORK = IS_MAINNET ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
-  static NODE_API = IS_MAINNET ? 'https://mempool.space/api' : 'https://mempool.space/testnet/api';
-  static BLOCKCHAIN_URL = IS_MAINNET ? 'https://mempool.space/zh/tx' : 'https://mempool.space/zh/testnet/tx';
+
+  static axiosInstance = axios.create({
+    timeout: 10000,
+  });
+
+  static getNetwork(isMainnet: boolean): bitcoin.Network {
+    return isMainnet ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
+  }
+
+  static getChainIds(isMainnet: boolean): CHAINIDS {
+    return isMainnet ? CHAINIDS.BITCOIN : CHAINIDS.BITCOIN_TESTNET;
+  }
 
   // For the wallet
   // Four type support: Native Segwit, Nested Segwit, Taproot, Legacy
-  static createAccountBySeed(seed: Buffer): ChainAccountType[] {
+  static createAccountBySeed(isMainnet: boolean, seed: Buffer): ChainAccountType[] {
     bitcoin.initEccLib(ecc);
 
     let accounts: Array<ChainAccountType> = [];
 
-    const nativeSegwitPath = IS_MAINNET ? `m/84'/0'/0'/0/0` : `m/84'/1'/0'/0/0`;
-    const nestedSegwitPath = IS_MAINNET ? `m/49'/0'/0'/0/0` : `m/49'/1'/0'/0/0`;
-    const taprootPath = IS_MAINNET ? `m/86'/0'/0'/0/0` : `m/86'/1'/0'/0/0`;
-    const legacyPath = IS_MAINNET ? `m/44'/0'/0'/0/0` : `m/44'/1'/0'/0/0`;
+    const nativeSegwitPath = isMainnet ? `m/84'/0'/0'/0/0` : `m/84'/1'/0'/0/0`;
+    const nestedSegwitPath = isMainnet ? `m/49'/0'/0'/0/0` : `m/49'/1'/0'/0/0`;
+    const taprootPath = isMainnet ? `m/86'/0'/0'/0/0` : `m/86'/1'/0'/0/0`;
+    const legacyPath = isMainnet ? `m/44'/0'/0'/0/0` : `m/44'/1'/0'/0/0`;
 
     try {
       // nativeSegwit
       const bip32 = BIP32Factory(ecc);
-      const node = bip32.fromSeed(seed, this.BTC_NETWORK);
+      const node = bip32.fromSeed(seed, this.getNetwork(isMainnet));
 
       const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
-      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
+      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(isMainnet, nativeSegwitPrivateKey as string);
 
       accounts.push({
         chain: this.chain,
         address: nativeSegwitAddress as string,
         privateKey: nativeSegwitPrivateKey,
         note: BTCTYPE.NATIVESEGWIT,
+        isMainnet: isMainnet,
       });
 
       // nestedSegwit
       const nestedSegwitPrivateKey = node.derivePath(nestedSegwitPath).privateKey?.toString('hex');
-      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(nestedSegwitPrivateKey as string);
+      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(isMainnet, nestedSegwitPrivateKey as string);
 
       accounts.push({
         chain: this.chain,
         address: nestedSegwitAddress as string,
         privateKey: nestedSegwitPrivateKey,
         note: BTCTYPE.NESTEDSEGWIT,
+        isMainnet: isMainnet,
       });
 
       // taproot
       const taprootPrivateKey = node.derivePath(taprootPath).privateKey?.toString('hex');
-      const taprootAddress = this.getAddressP2trFromPrivateKey(taprootPrivateKey as string);
+      const taprootAddress = this.getAddressP2trFromPrivateKey(isMainnet, taprootPrivateKey as string);
 
       accounts.push({
         chain: this.chain,
         address: taprootAddress as string,
         privateKey: taprootPrivateKey,
         note: BTCTYPE.TAPROOT,
+        isMainnet: isMainnet,
       });
 
       // legacy
       const legacyPrivateKey = node.derivePath(legacyPath).privateKey?.toString('hex');
-      const legacyAddress = this.getAddressP2pkhFromPrivateKey(legacyPrivateKey as string);
+      const legacyAddress = this.getAddressP2pkhFromPrivateKey(isMainnet, legacyPrivateKey as string);
 
       accounts.push({
         chain: this.chain,
         address: legacyAddress as string,
         privateKey: legacyPrivateKey,
         note: BTCTYPE.LEGACY,
+        isMainnet: isMainnet,
       });
 
       return accounts;
@@ -94,48 +106,52 @@ export class BTC {
     }
   }
 
-  static createAccountByPrivateKey(privateKey: string): Array<ChainAccountType> {
+  static createAccountByPrivateKey(isMainnet: boolean, privateKey: string): Array<ChainAccountType> {
     try {
       let accounts: Array<ChainAccountType> = [];
 
       // nativeSegwit
-      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(privateKey);
+      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(isMainnet, privateKey);
 
       accounts.push({
         chain: this.chain,
         address: nativeSegwitAddress as string,
         privateKey: privateKey,
         note: 'Native Segwit',
+        isMainnet: isMainnet,
       });
 
       // nestedSegwit
-      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(privateKey);
+      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(isMainnet, privateKey);
 
       accounts.push({
         chain: this.chain,
         address: nestedSegwitAddress as string,
         privateKey: privateKey,
         note: 'Nested Segwit',
+        isMainnet: isMainnet,
       });
 
       // taproot
-      const taprootAddress = this.getAddressP2trFromPrivateKey(privateKey);
+      const taprootAddress = this.getAddressP2trFromPrivateKey(isMainnet, privateKey);
 
       accounts.push({
         chain: this.chain,
         address: taprootAddress as string,
         privateKey: privateKey,
         note: 'Taproot',
+        isMainnet: isMainnet,
       });
 
       // legacy
-      const legacyAddress = this.getAddressP2pkhFromPrivateKey(privateKey);
+      const legacyAddress = this.getAddressP2pkhFromPrivateKey(isMainnet, privateKey);
 
       accounts.push({
         chain: this.chain,
         address: legacyAddress as string,
         privateKey: privateKey,
         note: 'Legacy',
+        isMainnet: isMainnet,
       });
 
       return accounts;
@@ -145,57 +161,57 @@ export class BTC {
     }
   }
 
-  static toWifStaring(privateKey: string): string {
+  static toWifStaring(isMainnet: boolean, privateKey: string): string {
     const ECPair = ECPairFactory(ecc);
     const privateKeyBytes = Buffer.from(privateKey, 'hex');
-    const keyPair = ECPair.fromPrivateKey(privateKeyBytes, { network: this.BTC_NETWORK });
+    const keyPair = ECPair.fromPrivateKey(privateKeyBytes, { network: this.getNetwork(isMainnet) });
     return keyPair.toWIF();
   }
 
   // p2wpkh
-  static getAddressP2wpkhFromPrivateKey(privateKey: string): string {
+  static getAddressP2wpkhFromPrivateKey(isMainnet: boolean, privateKey: string): string {
     const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+    const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, privateKey), this.getNetwork(isMainnet));
+    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
     return p2wpkh.address as string;
   }
 
   // p2sh-p2wpkh
-  static getAddressP2shP2wpkhFromPrivateKey(privateKey: string): string {
+  static getAddressP2shP2wpkhFromPrivateKey(isMainnet: boolean, privateKey: string): string {
     const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
+    const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, privateKey), this.getNetwork(isMainnet));
     const p2 = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK }),
-      network: this.BTC_NETWORK,
+      redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) }),
+      network: this.getNetwork(isMainnet),
     });
     return p2.address as string;
   }
 
   // p2tr
-  static getAddressP2trFromPrivateKey(privateKey: string): string {
+  static getAddressP2trFromPrivateKey(isMainnet: boolean, privateKey: string): string {
     const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
+    const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, privateKey), this.getNetwork(isMainnet));
     const p2tr = bitcoin.payments.p2tr({
       internalPubkey: keyPair.publicKey.subarray(1, 33),
-      network: this.BTC_NETWORK,
+      network: this.getNetwork(isMainnet),
     });
 
     return p2tr.address as string;
   }
 
   // p2pkh
-  static getAddressP2pkhFromPrivateKey(privateKey: string): string {
+  static getAddressP2pkhFromPrivateKey(isMainnet: boolean, privateKey: string): string {
     const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.BTC_NETWORK);
-    const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+    const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, privateKey), this.getNetwork(isMainnet));
+    const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
     p2pkh.output;
     return p2pkh.address as string;
   }
 
   // For the transaction
-  static checkAddress(address: string): boolean {
+  static checkAddress(isMainnet: boolean, address: string): boolean {
     try {
-      bitcoin.address.toOutputScript(address, this.BTC_NETWORK);
+      bitcoin.address.toOutputScript(address, this.getNetwork(isMainnet));
       return true;
     } catch (e) {
       return false;
@@ -237,18 +253,18 @@ export class BTC {
     }
   }
 
-  static async getAssetBalance(address: string, toBTC: boolean = true): Promise<AssetBalance> {
+  static async getAssetBalance(isMainnet: boolean, address: string, toBTC: boolean = true): Promise<AssetBalance> {
     let items = {} as AssetBalance;
-    items.BTC = await this.getBalance(address, toBTC);
+    items.BTC = await this.getBalance(isMainnet, address, toBTC);
     return items;
   }
 
-  static async getBalance(address: string, toBTC: boolean = true): Promise<string> {
+  static async getBalance(isMainnet: boolean, address: string, toBTC: boolean = true): Promise<string> {
     try {
-      const url = `${this.NODE_API}/address/${address}/utxo`;
-      const response = await axios.get(url);
+      const url = `${GetNodeApi(isMainnet)}/address/${address}/utxo`;
+      const response = await this.axiosInstance.get(url);
 
-      if (response.data.length > 0) {
+      if (response && response.data && response.data.length > 0) {
         let balance = '0';
         response.data.map((utxo: any) => {
           if (utxo.status.confirmed) {
@@ -266,10 +282,10 @@ export class BTC {
     }
   }
 
-  static async getAddressUtxo(address: string): Promise<UnspentTransactionOutput[]> {
+  static async getAddressUtxo(isMainnet: boolean, address: string): Promise<UnspentTransactionOutput[]> {
     try {
-      const url = `${this.NODE_API}/address/${address}/utxo`;
-      const response = await axios.get(url);
+      const url = `${GetNodeApi(isMainnet)}/address/${address}/utxo`;
+      const response = await this.axiosInstance.get(url);
 
       if (response.data.length > 0) {
         return response.data.map((utxo: any) => {
@@ -290,10 +306,10 @@ export class BTC {
     }
   }
 
-  static async getCurrentFeeRate(): Promise<BTCFeeRate> {
+  static async getCurrentFeeRate(isMainnet: boolean): Promise<BTCFeeRate> {
     try {
-      const url = `${this.NODE_API}/fees/recommended`;
-      const response = await axios.get(url);
+      const url = `${GetNodeApi(isMainnet)}/fees/recommended`;
+      const response = await this.axiosInstance.get(url);
       if (response.data) {
         return {
           fast: parseInt(response.data.fastestFee),
@@ -308,10 +324,10 @@ export class BTC {
     }
   }
 
-  static async broadcastTransaction(data: string): Promise<string> {
+  static async broadcastTransaction(isMainnet: boolean, data: string): Promise<string> {
     try {
-      const url = `${this.NODE_API}/tx`;
-      const response = await axios.post(url, data);
+      const url = `${GetNodeApi(isMainnet)}/tx`;
+      const response = await this.axiosInstance.post(url, data);
       if (response.data.txId) {
         return response.data.txId;
       }
@@ -323,10 +339,10 @@ export class BTC {
     }
   }
 
-  static async getTransactions(address: string): Promise<TransactionDetail[]> {
+  static async getTransactions(isMainnet: boolean, address: string): Promise<TransactionDetail[]> {
     try {
-      const url = `${this.NODE_API}/address/${address}/txs`;
-      const response = await axios.get(url);
+      const url = `${GetNodeApi(isMainnet)}/address/${address}/txs`;
+      const response = await this.axiosInstance.get(url);
       if (response.data.length > 0) {
         let txs: TransactionDetail[] = [];
         response.data.map((item: any) => {
@@ -335,7 +351,7 @@ export class BTC {
             status = TRANSACTIONSTATUS.SUCCESS;
           }
 
-          let txType;
+          let txType = TRANSACTIONTYPE.SEND;
           let value = 0;
           item.vin.map((vinItem: any) => {
             if (
@@ -344,19 +360,26 @@ export class BTC {
             ) {
               txType = TRANSACTIONTYPE.SEND;
               value += parseInt(vinItem.prevout.value);
+            } else {
+              txType = TRANSACTIONTYPE.RECEIVED;
             }
           });
 
-          if (txType !== TRANSACTIONTYPE.SEND) {
-            txType = TRANSACTIONTYPE.RECEIVED;
-          }
-
           item.vout.map((voutItem: any) => {
-            if (
-              voutItem.scriptpubkey_address &&
-              address.toLowerCase() === voutItem.scriptpubkey_address.toLowerCase()
-            ) {
-              value -= parseInt(voutItem.value);
+            if (txType === TRANSACTIONTYPE.SEND) {
+              if (
+                voutItem.scriptpubkey_address &&
+                address.toLowerCase() !== voutItem.scriptpubkey_address.toLowerCase()
+              ) {
+                value -= parseInt(voutItem.value);
+              }
+            } else if (txType === TRANSACTIONTYPE.RECEIVED) {
+              if (
+                voutItem.scriptpubkey_address &&
+                address.toLowerCase() === voutItem.scriptpubkey_address.toLowerCase()
+              ) {
+                value += parseInt(voutItem.value);
+              }
             }
           });
 
@@ -367,7 +390,7 @@ export class BTC {
             blockNumber = item.status.block_height;
           }
 
-          const url = `${this.BLOCKCHAIN_URL}/${item.txid}`;
+          const url = `${GetBlockchainTxUrl(isMainnet)}/${item.txid}`;
 
           txs.push({
             hash: item.txid,
@@ -392,10 +415,10 @@ export class BTC {
     }
   }
 
-  static async getTransactionDetail(hash: string, address?: string): Promise<TransactionDetail> {
+  static async getTransactionDetail(isMainnet: boolean, hash: string, address?: string): Promise<TransactionDetail> {
     try {
-      const url = `${this.NODE_API}/tx/${hash}`;
-      const response = await axios.get(url);
+      const url = `${GetNodeApi(isMainnet)}/tx/${hash}`;
+      const response = await this.axiosInstance.get(url);
       if (response.data) {
         let status = TRANSACTIONSTATUS.PENDING;
         if (response.data.status.confirmed) {
@@ -437,7 +460,7 @@ export class BTC {
           blockNumber = response.data.status.block_height;
         }
 
-        const explorerUrl = `${this.BLOCKCHAIN_URL}/${response.data.txid}`;
+        const explorerUrl = `${GetBlockchainTxUrl(isMainnet)}/${response.data.txid}`;
 
         if (address) {
           return {
@@ -471,44 +494,44 @@ export class BTC {
     }
   }
 
-  static async sendTransaction(req: SendTransaction): Promise<string> {
+  static async sendTransaction(isMainnet: boolean, req: SendTransaction): Promise<string> {
     try {
       const ECPair = ECPairFactory(ecc);
-      const keyPair = ECPair.fromWIF(this.toWifStaring(req.privateKey), this.BTC_NETWORK);
+      const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, req.privateKey), this.getNetwork(isMainnet));
 
       let script: Buffer;
       switch (req.btcType) {
         case BTCTYPE.NATIVESEGWIT:
-          const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+          const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
           script = p2wpkh.output as Buffer;
         case BTCTYPE.NESTEDSEGWIT:
           const p2 = bitcoin.payments.p2sh({
-            redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK }),
-            network: this.BTC_NETWORK,
+            redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) }),
+            network: this.getNetwork(isMainnet),
           });
           script = p2.output as Buffer;
           break;
         case BTCTYPE.TAPROOT:
           const p2tr = bitcoin.payments.p2tr({
             internalPubkey: keyPair.publicKey.subarray(1, 33),
-            network: this.BTC_NETWORK,
+            network: this.getNetwork(isMainnet),
           });
           script = p2tr.output as Buffer;
           break;
         case BTCTYPE.LEGACY:
-          const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.BTC_NETWORK });
+          const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
           script = p2pkh.output as Buffer;
           break;
         default:
           throw new Error('can not create the transactions of btc');
       }
 
-      const txb = new bitcoin.Psbt({ network: this.BTC_NETWORK });
+      const txb = new bitcoin.Psbt({ network: this.getNetwork(isMainnet) });
       txb.setVersion(2);
       txb.setLocktime(0);
 
       let totalBalance = '0';
-      const utxos = await this.getAddressUtxo(req.from);
+      const utxos = await this.getAddressUtxo(isMainnet, req.from);
       utxos &&
         utxos.length > 0 &&
         utxos.forEach((item) => {
@@ -530,7 +553,7 @@ export class BTC {
       });
 
       // feeRate * vSize
-      const feeRate = req.feeRate ? req.feeRate : (await this.getCurrentFeeRate()).normal;
+      const feeRate = req.feeRate ? req.feeRate : (await this.getCurrentFeeRate(isMainnet)).normal;
       const size = txb.extractTransaction().virtualSize() + 90;
       const feeBalance = BigMul(size.toString(), feeRate.toString());
 
@@ -548,7 +571,7 @@ export class BTC {
       txb.finalizeAllInputs();
 
       const tx = txb.extractTransaction();
-      const txid = await this.broadcastTransaction(tx.toHex());
+      const txid = await this.broadcastTransaction(isMainnet, tx.toHex());
       return txid;
     } catch (e) {
       console.error(e);

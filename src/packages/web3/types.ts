@@ -11,6 +11,7 @@ export type ChainAccountType = {
   address: string;
   privateKey?: string;
   note?: string;
+  isMainnet: boolean;
 };
 
 export enum BTCTYPE {

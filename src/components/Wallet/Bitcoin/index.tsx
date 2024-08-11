@@ -4,7 +4,6 @@ import {
   Button,
   Container,
   FormControl,
-  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -12,20 +11,75 @@ import {
   Select,
   Stack,
   Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  Paper,
+  TableRow,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { CHAINS } from 'packages/constants/blockchain';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { GetBlockchainAddressUrl } from 'utils/chain/btc';
+import { TransactionDetail } from 'packages/web3/types';
+import Link from 'next/link';
+
+type walletType = {
+  address: string;
+  type: string;
+  balance: string;
+  transactions: TransactionDetail[];
+};
 
 const Bitcoin = () => {
   const [isSettings, setIsSettings] = useState<boolean>(false);
+  const { getWalletId } = useWalletPresistStore((state) => state);
+  const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+  const [wallet, setWallet] = useState<walletType[]>([]);
+
+  async function getBitcoinWalletAddress() {
+    try {
+      const find_address_resp: any = await axios.get(Http.find_wallet_address_by_chain_and_network, {
+        params: {
+          user_id: getUserId(),
+          wallet_id: getWalletId(),
+          chain_id: CHAINS.BITCOIN,
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
+
+      if (find_address_resp.result && find_address_resp.data.length > 0) {
+        let ws: walletType[] = [];
+        find_address_resp.data.forEach(async (item: any) => {
+          ws.push({
+            address: item.address,
+            type: item.note,
+            balance: item.balance.BTC,
+            transactions: item.transactions,
+          });
+        });
+        setWallet(ws);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    getBitcoinWalletAddress();
+  }, []);
 
   return (
     <Box>
       <Container>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
           <Box>
-            <Typography variant="h6">test BTC Wallet</Typography>
-            <Typography>0.00000000 BTC (0.00 USD)</Typography>
+            <Typography variant="h6">Bitcoin Wallet</Typography>
           </Box>
           <Stack direction={'row'} alignItems={'center'} gap={2}>
             <Box>
@@ -267,15 +321,37 @@ const Bitcoin = () => {
             </Box>
           ) : (
             <Box>
-              <Typography>There are no transactions yet.</Typography>
-
-              <Box mt={8}>
-                <Typography>If CryptoPay Server shows you an invalid balance, rescan your wallet.</Typography>
-                <Typography mt={1}>
-                  If some transactions appear in CryptoPay Server, but are missing in another wallet, follow these
-                  instructions.
-                </Typography>
-              </Box>
+              {wallet &&
+                wallet.length > 0 &&
+                wallet.map((item, index) => (
+                  <Box key={index} mb={10}>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Box>
+                        <Typography fontWeight={'bold'} fontSize={14}>
+                          {item.type}
+                        </Typography>
+                        <Typography mt={1}>{item.address}</Typography>
+                        <Typography mt={1}>{item.balance} BTC</Typography>
+                      </Box>
+                      <Box>
+                        <Button
+                          href={GetBlockchainAddressUrl(getNetwork() === 'mainnet' ? true : false) + '/' + item.address}
+                          target={'_blank'}
+                        >
+                          Check onChain
+                        </Button>
+                        <Button>Rescan address</Button>
+                      </Box>
+                    </Stack>
+                    <Box mt={5}>
+                      {item.transactions && item.transactions.length > 0 ? (
+                        <TransactionsTab rows={item.transactions} />
+                      ) : (
+                        <Typography>There are no transactions yet.</Typography>
+                      )}
+                    </Box>
+                  </Box>
+                ))}
             </Box>
           )}
         </Box>
@@ -285,3 +361,47 @@ const Bitcoin = () => {
 };
 
 export default Bitcoin;
+
+// function createData() {
+//   return { date, message };
+// }
+// const rows = [createData(1, '6/21/24, 11:30 PM', '	A new payout is awaiting for approval')];
+
+function TransactionsTab({ rows }: { rows: TransactionDetail[] }) {
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Hash</TableCell>
+            <TableCell>Value</TableCell>
+            <TableCell>Asset</TableCell>
+            <TableCell>Fee</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Block Number</TableCell>
+            <TableCell>Block Timestamp</TableCell>
+            <TableCell>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell component="th" scope="row">
+                <Link href={row.url} target={'_blank'}>
+                  {row.hash}
+                </Link>
+              </TableCell>
+              <TableCell>{row.value} sat</TableCell>
+              <TableCell>{row.asset}</TableCell>
+              <TableCell>{row.fee} sat</TableCell>
+              <TableCell>{row.type}</TableCell>
+              <TableCell>{row.blockNumber}</TableCell>
+              <TableCell>{new Date(row.blockTimestamp as number * 1000).toLocaleString()}</TableCell>
+              <TableCell>{row.status}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}

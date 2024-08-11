@@ -1,22 +1,22 @@
 import { generate } from 'random-words';
 
-export function randomWords(length: number = 0): string[] {
+export function RandomWords(length: number = 0): string[] {
   return length === 0 ? [generate() as string] : (generate(length) as string[]);
 }
 
-export function addAndShuffleArray(arr: string[], str: string): string[] {
+export function AddAndShuffleArray(arr: string[], str: string): string[] {
   arr.push(str);
   return arr.sort(() => 0.5 - Math.random());
 }
 
-export function getRandomNumber(min: number, max: number): number {
+export function GetRandomNumber(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
 
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function getUniqueRandomIndices(max: number, count: number): number[] {
+export function GetUniqueRandomIndices(max: number, count: number): number[] {
   const indices = new Set<number>();
   while (indices.size < count) {
     indices.add(Math.floor(Math.random() * max));

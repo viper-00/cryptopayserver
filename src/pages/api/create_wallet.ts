@@ -27,8 +27,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           wallet.account.length > 0 &&
           wallet.account.map(async (item) => {
             const createWalletQuery =
-              'INSERT INTO addresses (user_id, wallet_id, address, chain_id, private_key, note, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            const createWalletValues = [userId, walletId, item.address, item.chain, item.privateKey, item.note, 1];
+              'INSERT INTO addresses (user_id, wallet_id, address, chain_id, private_key, note, network, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+            const createWalletValues = [
+              userId,
+              walletId,
+              item.address,
+              item.chain,
+              item.privateKey,
+              item.note,
+              item.isMainnet ? 1 : 2,
+              1,
+            ];
             await connection.query(createWalletQuery, createWalletValues);
           });
 

@@ -8,6 +8,7 @@ type UserPerisistState = {
   isLogin: boolean;
   userTheme: 'auto' | 'light' | 'dark';
   userHideSensitiveInfo: boolean;
+  network: 'mainnet' | 'testnet';
 };
 
 type UserPerisistAction = {
@@ -23,6 +24,8 @@ type UserPerisistAction = {
   getUserTheme: () => string;
   setUserHideSensitiveInfo: (userHideSensitiveInfo: boolean) => void;
   getUserHideSensitiveInfo: () => boolean;
+  setNetwork: (network: 'mainnet' | 'testnet') => void;
+  getNetwork: () => string;
 
   resetUser: () => void;
 };
@@ -34,6 +37,7 @@ const initialUserState: UserPerisistState = {
   isLogin: false,
   userTheme: 'auto',
   userHideSensitiveInfo: false,
+  network: 'mainnet',
 };
 
 export const useUserPresistStore = create(
@@ -53,6 +57,8 @@ export const useUserPresistStore = create(
       getUserTheme: () => get().userTheme,
       setUserHideSensitiveInfo: (value) => set(() => ({ userHideSensitiveInfo: value })),
       getUserHideSensitiveInfo: () => get().userHideSensitiveInfo,
+      setNetwork: (value) => set(() => ({ network: value })),
+      getNetwork: () => get().network,
 
       resetUser: () => {
         set(initialUserState);

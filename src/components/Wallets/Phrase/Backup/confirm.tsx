@@ -4,7 +4,7 @@ import { useSnackPresistStore } from 'lib/store/snack';
 import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { randomWords, addAndShuffleArray, getUniqueRandomIndices } from 'utils/strings';
+import { RandomWords, AddAndShuffleArray, GetUniqueRandomIndices } from 'utils/strings';
 
 type SelectMems = {
   index: number;
@@ -56,11 +56,11 @@ const PhraseBackupConfirm = () => {
           const phraseArray = resp.data[0].mnemonic.split(' ');
           setPhrase(phraseArray);
 
-          const randomIndices = getUniqueRandomIndices(phraseArray.length, 3).map((index) => index + 1);
+          const randomIndices = GetUniqueRandomIndices(phraseArray.length, 3).map((index) => index + 1);
 
           const createMem = (index: number) => ({
             index,
-            selectArrays: addAndShuffleArray(randomWords(2), phraseArray[index - 1]),
+            selectArrays: AddAndShuffleArray(RandomWords(2), phraseArray[index - 1]),
             value: phraseArray[index - 1],
           });
 

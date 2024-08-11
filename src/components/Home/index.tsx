@@ -42,7 +42,7 @@ const Home = () => {
   const router = useRouter();
 
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getIsLogin, resetUser } = useUserPresistStore((state) => state);
+  const { getIsLogin, resetUser, getNetwork } = useUserPresistStore((state) => state);
   const { getIsWallet, resetWallet } = useWalletPresistStore((state) => state);
   const { resetStore, getIsStore } = useStorePresistStore((state) => state);
 
@@ -154,6 +154,12 @@ const Home = () => {
         <Stack direction={'row'} height={'100%'}>
           {storeCreationWhiteList[router.pathname] || walletCreationWhiteList[router.pathname] ? null : <HomeSidebar />}
           <Box width={'100%'}>
+            {getNetwork() === 'testnet' && (
+              <Box p={2}>
+                <Alert severity="warning">This is a test network. The currency has no value.</Alert>
+              </Box>
+            )}
+
             {dashboardWhiteList[router.pathname] || null}
             <Box>
               <Footer />

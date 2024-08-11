@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { Typography } from './Typography';
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -42,7 +43,6 @@ interface StoreProps {
 }
 
 export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest }) => {
-
   const { getStoreId } = useStorePresistStore((state) => state);
   const { getUserId } = useUserPresistStore((state) => state);
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
@@ -98,8 +98,8 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
       setStorePriceSource(store_result.data[0].price_source);
 
       setTimeout(() => {
-        window.location.reload()
-      }, 2000)
+        window.location.reload();
+      }, 2000);
     } else {
       setSnackSeverity('error');
       setSnackMessage("Can't find the store, please try again later.");
@@ -107,12 +107,8 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
     }
   }
 
-  async function init() {
-    await getStore();
-  }
-
   useEffect(() => {
-    init();
+    getStore();
   }, []);
 
   return (
