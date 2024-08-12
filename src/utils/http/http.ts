@@ -32,4 +32,7 @@ export class Http {
   // notification
   static find_notification = this.httpPath + '/find_notification';
   static update_notification = this.httpPath + '/update_notification';
+
+  // payment setting
+  static find_payment_setting_by_chain_id = this.httpPath + "/find_payment_setting_by_chain_id" 
 }

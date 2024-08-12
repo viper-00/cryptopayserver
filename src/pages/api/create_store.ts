@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { CHAINS } from 'packages/constants/blockchain';
 import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 
@@ -21,6 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (storeId === 0) {
           return res.status(200).json({ message: 'Something wrong', result: false, data: null });
         }
+
+        // create payment setting for btc chain
+        const createPaymentSettingQuery = 'INSERT INTO payment_settings (user_id, chain_id, store_id, payment_expire, confirm_block, show_recommended_fee) VALUES (?, ?, ?, ?, ?, ?)';
+        const createPaymentSettingValues = [userId, CHAINS.BITCOIN, storeId, 30, 1, 1];
+        await connection.query(createPaymentSettingQuery, createPaymentSettingValues);
 
         const findQuery = 'SELECT * FROM stores where id = ? and status = ?';
         const findValues = [storeId, 1];

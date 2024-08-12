@@ -20,7 +20,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -40,7 +40,12 @@ const Bitcoin = () => {
   const [isSettings, setIsSettings] = useState<boolean>(false);
   const { getWalletId } = useWalletPresistStore((state) => state);
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
   const [wallet, setWallet] = useState<walletType[]>([]);
+
+  const [paymentExpire, setPaymentExpire] = useState<number>(0);
+  const [confirmBlock, setConfirmBlock] = useState<number>(0);
+  const [showRecommendedFee, setShowRecommendedFee] = useState<boolean>(false);
 
   async function getBitcoinWalletAddress() {
     try {
@@ -70,8 +75,29 @@ const Bitcoin = () => {
     }
   }
 
+  async function getBitcoinPaymentSetting() {
+    try {
+      const find_setting_resp: any = await axios.get(Http.find_payment_setting_by_chain_id, {
+        params: {
+          user_id: getUserId(),
+          chain_id: CHAINS.BITCOIN,
+          store_id: getStoreId(),
+        },
+      });
+
+      if (find_setting_resp.result && find_setting_resp.data.length === 1) {
+        setPaymentExpire(find_setting_resp.data[0].payment_expire);
+        setConfirmBlock(find_setting_resp.data[0].confirm_block);
+        setShowRecommendedFee(find_setting_resp.data[0].show_recommended_fee === 1 ? true : false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   useEffect(() => {
     getBitcoinWalletAddress();
+    getBitcoinPaymentSetting();
   }, []);
 
   return (
@@ -101,7 +127,7 @@ const Bitcoin = () => {
         <Box mt={5}>
           {isSettings ? (
             <Box>
-              <Typography variant="h6">BTC Wallet Settings</Typography>
+              {/* <Typography variant="h6">BTC Wallet Settings</Typography>
               <Stack alignItems={'center'} direction={'row'} mt={2}>
                 <Typography>Hot wallet</Typography>
                 <Box ml={2}>
@@ -241,14 +267,14 @@ const Bitcoin = () => {
                 <Box mt={5}>
                   <Button variant={'contained'}>Save Wallet Settings</Button>
                 </Box>
-              </Box>
+              </Box> */}
 
               <Box mt={5}>
                 <Typography variant="h6">Payment</Typography>
 
-                <Box mt={2}>
+                <Box mt={3}>
                   <Typography>Payment invalid if transactions fails to confirm … after invoice expiration</Typography>
-                  <Box mt={2}>
+                  <Box mt={1}>
                     <FormControl variant="outlined">
                       <OutlinedInput
                         size={'small'}
@@ -258,34 +284,42 @@ const Bitcoin = () => {
                         inputProps={{
                           'aria-label': 'weight',
                         }}
+                        value={paymentExpire}
+                        onChange={(e: any) => {
+                          setPaymentExpire(e.target.value);
+                        }}
                       />
                     </FormControl>
                   </Box>
                 </Box>
-                <Box mt={2}>
+                <Box mt={3}>
                   <Typography>Consider the invoice settled when the payment transaction …</Typography>
-                  <Box mt={2}>
+                  <Box mt={1}>
                     <FormControl sx={{ minWidth: 300 }}>
                       <Select
                         size={'small'}
                         inputProps={{ 'aria-label': 'Without label' }}
-                        id="demo-simple-select-helper"
-                        defaultValue={2}
-                        //   value={age}
-
-                        //   onChange={handleChange}
+                        value={confirmBlock}
+                        onChange={(e: any) => {
+                          setConfirmBlock(e.target.value);
+                        }}
                       >
-                        <MenuItem value={1}>Is unconfirmed</MenuItem>
-                        <MenuItem value={2}>Has at least 1 confirmation</MenuItem>
-                        <MenuItem value={3}>Has at least 2 confirmation</MenuItem>
-                        <MenuItem value={4}>Has at least 6 confirmation</MenuItem>
+                        <MenuItem value={0}>Is unconfirmed</MenuItem>
+                        <MenuItem value={1}>Has at least 1 confirmation</MenuItem>
+                        <MenuItem value={2}>Has at least 2 confirmation</MenuItem>
+                        <MenuItem value={3}>Has at least 6 confirmation</MenuItem>
                       </Select>
                     </FormControl>
                   </Box>
                 </Box>
-                <Box mt={2}>
+                <Box mt={3}>
                   <Stack direction={'row'} alignItems={'center'}>
-                    <Switch />
+                    <Switch
+                      checked={showRecommendedFee}
+                      onChange={(e: any) => {
+                        setShowRecommendedFee(e.target.checked);
+                      }}
+                    />
                     <Box ml={2}>
                       <Typography>Show recommended fee</Typography>
                       <Typography>Fee will be shown for BTC and LTC onchain payments only.</Typography>
@@ -293,8 +327,8 @@ const Bitcoin = () => {
                   </Stack>
                 </Box>
 
-                <Typography mt={2}>Recommended fee confirmation target blocks</Typography>
-                <Box mt={2}>
+                {/* <Typography mt={3}>Recommended fee confirmation target blocks</Typography>
+                <Box mt={1}>
                   <FormControl variant="outlined">
                     <OutlinedInput
                       size={'small'}
@@ -305,19 +339,19 @@ const Bitcoin = () => {
                       }}
                     />
                   </FormControl>
-                </Box>
+                </Box> */}
 
-                <Box mt={4}>
+                <Box mt={6}>
                   <Button variant={'contained'}>Save Payment Settings</Button>
                 </Box>
               </Box>
 
-              <Box mt={5}>
+              {/* <Box mt={5}>
                 <Typography variant="h6">Labels</Typography>
                 <Box mt={2}>
                   <Button>Manage labels</Button>
                 </Box>
-              </Box>
+              </Box> */}
             </Box>
           ) : (
             <Box>
@@ -362,11 +396,6 @@ const Bitcoin = () => {
 
 export default Bitcoin;
 
-// function createData() {
-//   return { date, message };
-// }
-// const rows = [createData(1, '6/21/24, 11:30 PM', '	A new payout is awaiting for approval')];
-
 function TransactionsTab({ rows }: { rows: TransactionDetail[] }) {
   return (
     <TableContainer component={Paper}>
@@ -396,7 +425,7 @@ function TransactionsTab({ rows }: { rows: TransactionDetail[] }) {
               <TableCell>{row.fee} sat</TableCell>
               <TableCell>{row.type}</TableCell>
               <TableCell>{row.blockNumber}</TableCell>
-              <TableCell>{new Date(row.blockTimestamp as number * 1000).toLocaleString()}</TableCell>
+              <TableCell>{new Date((row.blockTimestamp as number) * 1000).toLocaleString()}</TableCell>
               <TableCell>{row.status}</TableCell>
             </TableRow>
           ))}
