@@ -37,6 +37,8 @@ import Solana from 'components/Wallet/Solana';
 import Ton from 'components/Wallet/Ton';
 import Tron from 'components/Wallet/Tron';
 import Bsc from 'components/Wallet/Bsc';
+import BitcoinSend from 'components/Wallet/Bitcoin/Send';
+import BitcoinReceive from 'components/Wallet/Bitcoin/Receive';
 
 const Home = () => {
   const router = useRouter();
@@ -70,11 +72,18 @@ const Home = () => {
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
   };
 
+  const otherWhiteList: any = {
+    '/wallet/bitcoin/send': <BitcoinSend />,
+    '/wallet/bitcoin/receive': <BitcoinReceive />,
+  };
+
   const dashboardWhiteList: any = {
     '/': <Dashboard />,
     '/dashboard': <Dashboard />,
     '/settings': <Settings />,
     '/wallet/bitcoin': <Bitcoin />,
+    '/wallet/bitcoin/send': <BitcoinSend />,
+    '/wallet/bitcoin/receive': <BitcoinReceive />,
     '/wallet/bitcoin/lightning': <Lightning />,
     '/wallet/ethereum': <Ethereum />,
     '/wallet/litecoin': <Litecoin />,
@@ -152,7 +161,7 @@ const Home = () => {
 
       {isLogin && (
         <Stack direction={'row'} height={'100%'}>
-          {storeCreationWhiteList[router.pathname] || walletCreationWhiteList[router.pathname] ? null : <HomeSidebar />}
+          {storeCreationWhiteList[router.pathname] || walletCreationWhiteList[router.pathname] || otherWhiteList[router.pathname] ? null : <HomeSidebar />}
           <Box width={'100%'}>
             {getNetwork() === 'testnet' && (
               <Box p={2}>
