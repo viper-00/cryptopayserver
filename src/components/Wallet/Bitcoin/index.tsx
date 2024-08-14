@@ -30,6 +30,7 @@ import { TransactionDetail } from 'packages/web3/types';
 import Link from 'next/link';
 
 type walletType = {
+  id: number;
   address: string;
   type: string;
   balance: string;
@@ -46,6 +47,7 @@ const Bitcoin = () => {
   const [paymentExpire, setPaymentExpire] = useState<number>(0);
   const [confirmBlock, setConfirmBlock] = useState<number>(0);
   const [showRecommendedFee, setShowRecommendedFee] = useState<boolean>(false);
+  const [currentUsedAddressId, setCurrentUsedAddressId] = useState<number>(0);
 
   async function getBitcoinWalletAddress() {
     try {
@@ -62,6 +64,7 @@ const Bitcoin = () => {
         let ws: walletType[] = [];
         find_address_resp.data.forEach(async (item: any) => {
           ws.push({
+            id: item.id,
             address: item.address,
             type: item.note,
             balance: item.balance.BTC,
@@ -89,6 +92,9 @@ const Bitcoin = () => {
         setPaymentExpire(find_setting_resp.data[0].payment_expire);
         setConfirmBlock(find_setting_resp.data[0].confirm_block);
         setShowRecommendedFee(find_setting_resp.data[0].show_recommended_fee === 1 ? true : false);
+        setCurrentUsedAddressId(
+          find_setting_resp.data[0].current_used_address_id ? find_setting_resp.data[0].current_used_address_id : 0,
+        );
       }
     } catch (e) {
       console.error(e);
@@ -271,7 +277,28 @@ const Bitcoin = () => {
 
               <Box mt={5}>
                 <Typography variant="h6">Payment</Typography>
-
+                <Box mt={3}>
+                  <Typography>The transaction address currently used</Typography>
+                  <Box mt={1}>
+                    <FormControl sx={{ minWidth: 300 }}>
+                      <Select
+                        size={'small'}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        value={currentUsedAddressId}
+                        onChange={(e: any) => {
+                          setCurrentUsedAddressId(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={0}>None</MenuItem>
+                        {wallet.map((item, index) => (
+                          <MenuItem value={item.id} key={index}>
+                            {item.address}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Box>
                 <Box mt={3}>
                   <Typography>Payment invalid if transactions fails to confirm … after invoice expiration</Typography>
                   <Box mt={1}>

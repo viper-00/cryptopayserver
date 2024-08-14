@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const chainId = req.query.chain_id;
 
         const query =
-          'SELECT payment_expire, confirm_block, show_recommended_fee FROM payment_settings where user_id = ? and store_id = ? and chain_id = ?';
+          'SELECT payment_expire, confirm_block, show_recommended_fee, current_used_address_id FROM payment_settings where user_id = ? and store_id = ? and chain_id = ?';
         const values = [userId, storeId, chainId];
         const [rows] = await connection.query(query, values);
         

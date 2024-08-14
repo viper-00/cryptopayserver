@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const network = req.query.network;
 
         const query =
-          'SELECT address, note FROM addresses where user_id = ? and wallet_id = ? and chain_id = ? and network = ? and status = 1';
+          'SELECT id, address, note FROM addresses where user_id = ? and wallet_id = ? and chain_id = ? and network = ? and status = 1';
         const values = [userId, walletId, chainId, network];
         const [rows] = await connection.query(query, values);
 
@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (Array.isArray(rows) && rows.length > 0) {
           const promises = rows.map(async (item: any) => {
             return {
+              id: item.id,
               address: item.address,
               note: item.note,
               balance: await WEB3.getAssetBalance(
