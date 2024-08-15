@@ -14,7 +14,7 @@ import Shopify from 'components/Plugins/Shopify';
 import Pointofsale from 'components/Plugins/Pointofsale';
 import Paybutton from 'components/Plugins/Paybutton';
 import Crowdfund from 'components/Plugins/Crowdfund';
-import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import { Alert, Box, IconButton, Snackbar, Stack } from '@mui/material';
 import Footer from './Footer';
 import Account from 'components/Account';
 import Notifications from 'components/Notifications';
@@ -39,12 +39,13 @@ import Tron from 'components/Wallet/Tron';
 import Bsc from 'components/Wallet/Bsc';
 import BitcoinSend from 'components/Wallet/Bitcoin/Send';
 import BitcoinReceive from 'components/Wallet/Bitcoin/Receive';
+import ControlCameraIcon from '@mui/icons-material/ControlCamera';
 
 const Home = () => {
   const router = useRouter();
 
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getIsLogin, resetUser, getNetwork } = useUserPresistStore((state) => state);
+  const { getIsLogin, resetUser, getNetwork, setShowSidebar, getShowSidebar } = useUserPresistStore((state) => state);
   const { getIsWallet, resetWallet } = useWalletPresistStore((state) => state);
   const { resetStore, getIsStore } = useStorePresistStore((state) => state);
 
@@ -161,8 +162,23 @@ const Home = () => {
 
       {isLogin && (
         <Stack direction={'row'} height={'100%'}>
-          {storeCreationWhiteList[router.pathname] || walletCreationWhiteList[router.pathname] || otherWhiteList[router.pathname] ? null : <HomeSidebar />}
-          <Box width={'100%'}>
+          {storeCreationWhiteList[router.pathname] ||
+          walletCreationWhiteList[router.pathname] ||
+          otherWhiteList[router.pathname] ? null : getShowSidebar() ? (
+            <HomeSidebar />
+          ) : null}
+
+          <Box m={2}>
+            <IconButton
+              onClick={() => {
+                setShowSidebar(!getShowSidebar());
+              }}
+            >
+              <ControlCameraIcon />
+            </IconButton>
+          </Box>
+
+          <Box>
             {getNetwork() === 'testnet' && (
               <Box p={2}>
                 <Alert severity="warning">This is a test network. The currency has no value.</Alert>

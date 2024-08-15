@@ -29,6 +29,7 @@ import LitecoinSVG from 'assets/chain/litecoin.svg';
 import SolanaSVG from 'assets/chain/solana.svg';
 import TonSVG from 'assets/chain/ton.svg';
 import TronSVG from 'assets/chain/tron.svg';
+import { useUserPresistStore } from 'lib/store';
 
 type Theme = 'light' | 'dark';
 
@@ -87,6 +88,8 @@ const HomeSidebar = () => {
 
   const router = useRouter();
 
+  const {getShowSidebar} = useUserPresistStore(state => state)
+
   const menuItemStyles: MenuItemStyles = {
     root: {
       fontSize: '13px',
@@ -129,7 +132,7 @@ const HomeSidebar = () => {
 
   return (
     <Sidebar
-      collapsed={collapsed}
+      collapsed={!getShowSidebar()}
       toggled={toggled}
       onBackdropClick={() => setToggled(false)}
       onBreakPoint={setBroken}

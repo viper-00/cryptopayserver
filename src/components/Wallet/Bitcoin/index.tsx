@@ -20,7 +20,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -44,10 +44,37 @@ const Bitcoin = () => {
   const { getStoreId } = useStorePresistStore((state) => state);
   const [wallet, setWallet] = useState<walletType[]>([]);
 
+  const [settingId, setSettingId] = useState<number>(0);
   const [paymentExpire, setPaymentExpire] = useState<number>(0);
   const [confirmBlock, setConfirmBlock] = useState<number>(0);
   const [showRecommendedFee, setShowRecommendedFee] = useState<boolean>(false);
   const [currentUsedAddressId, setCurrentUsedAddressId] = useState<number>(0);
+
+  const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  async function updateBitcoinPaymentSetting() {
+    try {
+      const resp: any = await axios.put(Http.update_payment_setting_by_id, {
+        id: settingId,
+        user_id: getUserId(),
+        chain_id: CHAINS.BITCOIN,
+        store_id: getStoreId(),
+        payment_expire: paymentExpire,
+        confirm_block: confirmBlock,
+        show_recommended_fee: showRecommendedFee ? 1 : 2,
+        current_used_address_id: currentUsedAddressId,
+      });
+      if (resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful update!');
+        setSnackOpen(true);
+
+        await init();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   async function getBitcoinWalletAddress() {
     try {
@@ -89,6 +116,7 @@ const Bitcoin = () => {
       });
 
       if (find_setting_resp.result && find_setting_resp.data.length === 1) {
+        setSettingId(find_setting_resp.data[0].id);
         setPaymentExpire(find_setting_resp.data[0].payment_expire);
         setConfirmBlock(find_setting_resp.data[0].confirm_block);
         setShowRecommendedFee(find_setting_resp.data[0].show_recommended_fee === 1 ? true : false);
@@ -101,9 +129,13 @@ const Bitcoin = () => {
     }
   }
 
+  async function init() {
+    await getBitcoinWalletAddress();
+    await getBitcoinPaymentSetting();
+  }
+
   useEffect(() => {
-    getBitcoinWalletAddress();
-    getBitcoinPaymentSetting();
+    init();
   }, []);
 
   return (
@@ -369,7 +401,9 @@ const Bitcoin = () => {
                 </Box> */}
 
                 <Box mt={6}>
-                  <Button variant={'contained'}>Save Payment Settings</Button>
+                  <Button variant={'contained'} onClick={updateBitcoinPaymentSetting}>
+                    Save Payment Settings
+                  </Button>
                 </Box>
               </Box>
 

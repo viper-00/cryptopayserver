@@ -27,12 +27,13 @@ export class Http {
   static save_wallet = this.httpPath + '/save_wallet';
 
   // address of wallet
-  static find_wallet_address_by_chain_and_network = this.httpPath + "/find_wallet_address_by_chain_and_network"
+  static find_wallet_address_by_chain_and_network = this.httpPath + '/find_wallet_address_by_chain_and_network';
 
   // notification
   static find_notification = this.httpPath + '/find_notification';
   static update_notification = this.httpPath + '/update_notification';
 
   // payment setting
-  static find_payment_setting_by_chain_id = this.httpPath + "/find_payment_setting_by_chain_id" 
+  static find_payment_setting_by_chain_id = this.httpPath + '/find_payment_setting_by_chain_id';
+  static update_payment_setting_by_id = this.httpPath + '/update_payment_setting_by_id';
 }
