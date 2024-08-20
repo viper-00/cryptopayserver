@@ -168,26 +168,30 @@ const Home = () => {
             <HomeSidebar />
           ) : null}
 
-          <Box m={2}>
-            <IconButton
-              onClick={() => {
-                setShowSidebar(!getShowSidebar());
-              }}
-            >
-              <ControlCameraIcon />
-            </IconButton>
-          </Box>
-
-          <Box>
-            {getNetwork() === 'testnet' && (
-              <Box p={2}>
-                <Alert severity="warning">This is a test network. The currency has no value.</Alert>
+          <Box width={'100%'}>
+            {dashboardWhiteList[router.pathname] ? (
+              <Box m={2}>
+                <IconButton
+                  onClick={() => {
+                    setShowSidebar(!getShowSidebar());
+                  }}
+                >
+                  <ControlCameraIcon />
+                </IconButton>
               </Box>
-            )}
+            ) : null}
 
-            {dashboardWhiteList[router.pathname] || null}
             <Box>
-              <Footer />
+              {getNetwork() === 'testnet' && (
+                <Box p={2}>
+                  <Alert severity="warning">This is a test network. The currency has no value.</Alert>
+                </Box>
+              )}
+
+              {dashboardWhiteList[router.pathname] || null}
+              <Box>
+                <Footer />
+              </Box>
             </Box>
           </Box>
         </Stack>

@@ -147,10 +147,24 @@ const Bitcoin = () => {
           </Box>
           <Stack direction={'row'} alignItems={'center'} gap={2}>
             <Box>
-              <Button variant={'contained'}>Send</Button>
+              <Button
+                variant={'contained'}
+                onClick={() => {
+                  window.location.href = '/wallet/bitcoin/send';
+                }}
+              >
+                Send
+              </Button>
             </Box>
             <Box>
-              <Button variant={'contained'}>Receive</Button>
+              <Button
+                variant={'contained'}
+                onClick={() => {
+                  window.location.href = '/wallet/bitcoin/receive';
+                }}
+              >
+                Receive
+              </Button>
             </Box>
             <IconButton
               onClick={() => {
