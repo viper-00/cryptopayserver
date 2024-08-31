@@ -36,4 +36,5 @@ export class Http {
   // payment setting
   static find_payment_setting_by_chain_id = this.httpPath + '/find_payment_setting_by_chain_id';
   static update_payment_setting_by_id = this.httpPath + '/update_payment_setting_by_id';
+  static find_payment_by_chain_id = this.httpPath + '/find_payment_by_chain_id';
 }

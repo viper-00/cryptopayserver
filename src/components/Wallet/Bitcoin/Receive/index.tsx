@@ -1,8 +1,5 @@
 import {
   Box,
-  Button,
-  Card,
-  CardContent,
   IconButton,
   Paper,
   Stack,
@@ -10,18 +7,56 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ContentCopy } from '@mui/icons-material';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { CHAINS } from 'packages/constants/blockchain';
 
 const BitcoinReceive = () => {
+  const { getWalletId } = useWalletPresistStore((state) => state);
+  const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+
+  const [address, setAddress] = useState<string>('');
+  const [link, setLink] = useState<string>("")
   const [alignment, setAlignment] = useState<'address' | 'link'>('address');
 
   const handleChange = (e: any) => {
     setAlignment(e.target.value);
   };
+
+  async function getBitcoin() {
+    try {
+      const find_payment_resp: any = await axios.get(Http.find_payment_by_chain_id, {
+        params: {
+          user_id: getUserId(),
+          chain_id: CHAINS.BITCOIN,
+          store_id: getStoreId(),
+        },
+      });
+
+      if (find_payment_resp.result && find_payment_resp.data.length === 1) {
+        setAddress("bitcoin:"+find_payment_resp.data[0].address);
+        setLink("bitcoin:"+find_payment_resp.data[0].address+"?pj="+location.href)
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function init() {
+    await getBitcoin();
+  }
+
+  useEffect(() => {
+    init();
+  }, []);
+
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
       <Typography variant="h4" mt={4}>
         Receive BTC
       </Typography>
@@ -44,7 +79,7 @@ const BitcoinReceive = () => {
               }}
             >
               <QRCodeSVG
-                value={'sdfsdfs'}
+                value={address}
                 width={250}
                 height={350}
                 imageSettings={{
@@ -62,13 +97,13 @@ const BitcoinReceive = () => {
               {'Address'.toUpperCase()}
             </Typography>
             <Stack direction="row" alignItems="center" justifyContent="center">
-              <Typography mr={1}>bc1qmxdysupv8------r0zn7dru8vxvl</Typography>
+              <Typography mr={1}>{address}</Typography>
               <IconButton>
                 <ContentCopy />
               </IconButton>
             </Stack>
 
-            <Box mt={2} display="flex" flexDirection="column">
+            {/* <Box mt={2} display="flex" flexDirection="column">
               <Button fullWidth variant="contained">
                 A
               </Button>
@@ -77,7 +112,7 @@ const BitcoinReceive = () => {
                   B
                 </Button>
               </Box>
-            </Box>
+            </Box> */}
           </Box>
         </>
       ) : (
@@ -92,7 +127,7 @@ const BitcoinReceive = () => {
               }}
             >
               <QRCodeSVG
-                value={'sdfsdfs'}
+                value={link}
                 width={250}
                 height={350}
                 imageSettings={{
@@ -110,13 +145,13 @@ const BitcoinReceive = () => {
               {'payment link'.toUpperCase()}
             </Typography>
             <Stack direction="row" alignItems="center" justifyContent="center">
-              <Typography mr={1}>bitcoin:XXXXXXX?pj=http://localhost:8888/wallet/bitcoin/receive</Typography>
+              <Typography mr={1}>{link}</Typography>
               <IconButton>
                 <ContentCopy />
               </IconButton>
             </Stack>
 
-            <Box mt={2} display="flex" flexDirection="column">
+            {/* <Box mt={2} display="flex" flexDirection="column">
               <Button fullWidth variant="contained">
                 A
               </Button>
@@ -125,7 +160,7 @@ const BitcoinReceive = () => {
                   B
                 </Button>
               </Box>
-            </Box>
+            </Box> */}
           </Box>
         </>
       )}
