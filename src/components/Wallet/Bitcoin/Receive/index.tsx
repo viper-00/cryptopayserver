@@ -1,15 +1,7 @@
-import {
-  Box,
-  IconButton,
-  Paper,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from '@mui/material';
+import { Box, IconButton, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { ContentCopy } from '@mui/icons-material';
+import { ContentCopy, QrCode } from '@mui/icons-material';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
@@ -20,9 +12,9 @@ const BitcoinReceive = () => {
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
 
-  const [address, setAddress] = useState<string>('');
-  const [link, setLink] = useState<string>("")
-  const [alignment, setAlignment] = useState<'address' | 'link'>('address');
+  const [lightning, setLightning] = useState<string>('');
+  const [bitcoin, setBitcoin] = useState<string>('');
+  const [alignment, setAlignment] = useState<'lightning' | 'bitcoin'>('bitcoin');
 
   const handleChange = (e: any) => {
     setAlignment(e.target.value);
@@ -39,8 +31,7 @@ const BitcoinReceive = () => {
       });
 
       if (find_payment_resp.result && find_payment_resp.data.length === 1) {
-        setAddress("bitcoin:"+find_payment_resp.data[0].address);
-        setLink("bitcoin:"+find_payment_resp.data[0].address+"?pj="+location.href)
+        setBitcoin(find_payment_resp.data[0].address);
       }
     } catch (e) {
       console.error(e);
@@ -62,57 +53,15 @@ const BitcoinReceive = () => {
       </Typography>
       <Box mt={2}>
         <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleChange} aria-label="type">
-          <ToggleButton value="address">Address</ToggleButton>
-          <ToggleButton value="link">Link</ToggleButton>
+          <ToggleButton value="lightning">Lightning</ToggleButton>
+          <ToggleButton value="bitcoin">Bitcoin</ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
-      {alignment === 'address' ? (
+      {alignment === 'lightning' ? (
         <>
           <Box mt={4} display="flex" justifyContent="center" width="100%" maxWidth={350}>
-            <Paper
-              style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <QRCodeSVG
-                value={address}
-                width={250}
-                height={350}
-                imageSettings={{
-                  src: 'http://127.0.0.1:8888/btc.svg',
-                  width: 35,
-                  height: 35,
-                  excavate: false,
-                }}
-              />
-            </Paper>
-          </Box>
-
-          <Box mt={2}>
-            <Typography mt={1} fontWeight={'bold'}>
-              {'Address'.toUpperCase()}
-            </Typography>
-            <Stack direction="row" alignItems="center" justifyContent="center">
-              <Typography mr={1}>{address}</Typography>
-              <IconButton>
-                <ContentCopy />
-              </IconButton>
-            </Stack>
-
-            {/* <Box mt={2} display="flex" flexDirection="column">
-              <Button fullWidth variant="contained">
-                A
-              </Button>
-              <Box mt={1}>
-                <Button fullWidth variant="contained">
-                  B
-                </Button>
-              </Box>
-            </Box> */}
+            <Typography>No support right now!</Typography>
           </Box>
         </>
       ) : (
@@ -127,7 +76,7 @@ const BitcoinReceive = () => {
               }}
             >
               <QRCodeSVG
-                value={link}
+                value={bitcoin}
                 width={250}
                 height={350}
                 imageSettings={{
@@ -141,26 +90,33 @@ const BitcoinReceive = () => {
           </Box>
 
           <Box mt={2}>
-            <Typography mt={1} fontWeight={'bold'}>
-              {'payment link'.toUpperCase()}
-            </Typography>
             <Stack direction="row" alignItems="center" justifyContent="center">
-              <Typography mr={1}>{link}</Typography>
+              <Typography mr={1}>{bitcoin}</Typography>
               <IconButton>
-                <ContentCopy />
+                <ContentCopy fontSize={'small'} />
               </IconButton>
             </Stack>
 
-            {/* <Box mt={2} display="flex" flexDirection="column">
-              <Button fullWidth variant="contained">
-                A
-              </Button>
-              <Box mt={1}>
-                <Button fullWidth variant="contained">
-                  B
-                </Button>
+            <Stack mt={5} direction="row" alignItems="center" justifyContent={'space-between'}>
+              <Box textAlign={'center'}>
+                <IconButton>
+                  <QrCode fontSize={'small'} />
+                </IconButton>
+                <Typography mt={1}>Copy QR Code</Typography>
               </Box>
-            </Box> */}
+              <Box textAlign={'center'}>
+                <IconButton>
+                  <QrCode fontSize={'small'} />
+                </IconButton>
+                <Typography mt={1}>Copy QR Code</Typography>
+              </Box>
+              <Box textAlign={'center'}>
+                <IconButton>
+                  <QrCode fontSize={'small'} />
+                </IconButton>
+                <Typography mt={1}>Copy QR Code</Typography>
+              </Box>
+            </Stack>
           </Box>
         </>
       )}
