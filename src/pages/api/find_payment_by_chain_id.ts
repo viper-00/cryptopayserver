@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import mysql from 'mysql2/promise';
+import { WEB3 } from 'packages/web3';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -21,15 +22,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (Array.isArray(rows) && rows.length === 1) {
           const row = rows[0] as mysql.RowDataPacket;
 
-          const addressQuery = 'SELECT address FROM addresses where id = ? and status = 1';
+          const addressQuery = 'SELECT address, network FROM addresses where id = ? and status = 1';
           const addressValues = [row.current_used_address_id];
           const [addressRows] = await connection.query(addressQuery, addressValues);
 
-          return res.status(200).json({
-            message: '',
-            result: true,
-            data: addressRows,
-          });
+          if (Array.isArray(addressRows) && addressRows.length === 1) {
+            const addressRow = addressRows[0] as mysql.RowDataPacket;
+            const balance = await WEB3.getAssetBalance(
+              addressRow.network === 1 ? true : false,
+              parseInt(chainId as string),
+              addressRow.address,
+            );
+
+            return res.status(200).json({
+              message: '',
+              result: true,
+              data: {
+                address: addressRow.address,
+                balance: balance,
+              },
+            });
+          }
         }
         return res.status(200).json({ message: '', result: true, data: rows });
 

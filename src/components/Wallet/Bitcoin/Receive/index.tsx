@@ -30,8 +30,8 @@ const BitcoinReceive = () => {
         },
       });
 
-      if (find_payment_resp.result && find_payment_resp.data.length === 1) {
-        setBitcoin(find_payment_resp.data[0].address);
+      if (find_payment_resp.result) {
+        setBitcoin(find_payment_resp.data.address);
       }
     } catch (e) {
       console.error(e);
@@ -102,19 +102,19 @@ const BitcoinReceive = () => {
                 <IconButton>
                   <QrCode fontSize={'small'} />
                 </IconButton>
-                <Typography mt={1}>Copy QR Code</Typography>
+                <Typography mt={1} fontSize={'small'}>Copy QR Code</Typography>
               </Box>
               <Box textAlign={'center'}>
                 <IconButton>
                   <QrCode fontSize={'small'} />
                 </IconButton>
-                <Typography mt={1}>Copy QR Code</Typography>
+                <Typography mt={1} fontSize={'small'}>Copy Address</Typography>
               </Box>
               <Box textAlign={'center'}>
                 <IconButton>
                   <QrCode fontSize={'small'} />
                 </IconButton>
-                <Typography mt={1}>Copy QR Code</Typography>
+                <Typography mt={1} fontSize={'small'}>Download QR</Typography>
               </Box>
             </Stack>
           </Box>
