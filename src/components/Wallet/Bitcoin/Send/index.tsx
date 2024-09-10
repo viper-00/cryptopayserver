@@ -17,11 +17,21 @@ import BitcoinSVG from 'assets/chain/bitcoin.svg';
 import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
+import { OmitMiddleString } from 'utils/strings';
+
+type feeType = {
+  fastest: number;
+  halfHour: number;
+  hour: number;
+  economy: number;
+  minimum: number;
+};
 
 const BitcoinSend = () => {
   const [alignment, setAlignment] = useState<'fastest' | 'halfHour' | 'hour' | 'economy' | 'minimum'>('fastest');
+  const [feeObj, setFeeObj] = useState<feeType>();
   const [addressAlert, setAddressAlert] = useState<boolean>(false);
   const [amountAlert, setAmountAlert] = useState<boolean>(false);
   const [amountRed, setAmountRed] = useState<boolean>(false);
@@ -35,8 +45,26 @@ const BitcoinSend = () => {
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
   const handleChangeFees = (e: any) => {
+    switch (e.target.value) {
+      case 'fastest':
+        setFeeRate(feeObj?.fastest);
+        break;
+      case 'halfHour':
+        setFeeRate(feeObj?.halfHour);
+        break;
+      case 'hour':
+        setFeeRate(feeObj?.hour);
+        break;
+      case 'economy':
+        setFeeRate(feeObj?.economy);
+        break;
+      case 'minimum':
+        setFeeRate(feeObj?.minimum);
+        break;
+    }
     setAlignment(e.target.value);
   };
 
@@ -59,12 +87,98 @@ const BitcoinSend = () => {
   }
 
   async function getBitcoinFeeRate() {
-    
+    try {
+      const find_fee_resp: any = await axios.get(Http.find_fee_rate, {
+        params: {
+          chain_id: CHAINS.BITCOIN,
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
+      if (find_fee_resp.result) {
+        setFeeObj({
+          fastest: find_fee_resp.data.fastest,
+          halfHour: find_fee_resp.data.halfHour,
+          hour: find_fee_resp.data.hour,
+          economy: find_fee_resp.data.economy,
+          minimum: find_fee_resp.data.minimum,
+        });
+        setFeeRate(find_fee_resp.data.fastest);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function checkAddress(): Promise<boolean> {
+    if (destinationAddress === fromAddress) {
+      return false;
+    }
+
+    if (!destinationAddress || destinationAddress === '') {
+      return false;
+    }
+
+    try {
+      const checkout_resp: any = await axios.get(Http.checkout_chain_address, {
+        params: {
+          chain_id: CHAINS.BITCOIN,
+          address: destinationAddress,
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
+      return checkout_resp.result;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
+
+  function checkAmount(): boolean {
+    if (amount && amount != 0 && parseFloat(balance) >= amount) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function checkFeeRate(): boolean {
+    if (feeRate && feeRate > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  async function onClickSignTransaction() {
+    if (!(await checkAddress())) {
+      setSnackSeverity('error');
+      setSnackMessage('The destination address cannot be empty or input errors');
+      setSnackOpen(true);
+      return;
+    }
+    if (!checkAmount()) {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect amount input');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (!checkFeeRate()) {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect fee rate');
+      setSnackOpen(true);
+      return;
+    }
+
+    setPage(2);
+  }
+
+  async function init() {
+    await getBitcoin();
+    await getBitcoinFeeRate();
   }
 
   useEffect(() => {
-    getBitcoin();
-    getBitcoinFeeRate()
+    init();
   }, []);
 
   return (
@@ -196,12 +310,7 @@ const BitcoinSend = () => {
             </Stack>
 
             <Box mt={8}>
-              <Button
-                variant={'contained'}
-                onClick={() => {
-                  setPage(2);
-                }}
-              >
+              <Button variant={'contained'} onClick={onClickSignTransaction}>
                 Sign transaction
               </Button>
             </Box>
@@ -218,14 +327,14 @@ const BitcoinSend = () => {
 
               <Box mt={4}>
                 <Typography>Send to</Typography>
-                <Typography mt={1}>tbsfsd...12312</Typography>
+                <Typography mt={1}>{OmitMiddleString(destinationAddress)}</Typography>
               </Box>
 
               <Box mt={4}>
                 <Typography>Spend Amount</Typography>
                 <Stack direction={'row'} alignItems={'baseline'} justifyContent={'center'}>
                   <Typography mt={1} variant={'h4'}>
-                    0.00000123
+                    {amount}
                   </Typography>
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
@@ -265,7 +374,7 @@ const BitcoinSend = () => {
                       inputProps={{
                         'aria-label': 'weight',
                       }}
-                      value={'29.0'}
+                      value={feeRate}
                       disabled
                     />
                   </FormControl>

@@ -28,9 +28,11 @@ export type UnspentTransactionOutput = {
 };
 
 export type BTCFeeRate = {
-  fast: number;
-  normal: number;
-  slow: number;
+  fastest: number;
+  halfHour: number;
+  hour: number;
+  economy: number;
+  minimum: number;
 };
 
 export type ETHGasPrice = {

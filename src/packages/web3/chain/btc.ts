@@ -308,13 +308,15 @@ export class BTC {
 
   static async getCurrentFeeRate(isMainnet: boolean): Promise<BTCFeeRate> {
     try {
-      const url = `${GetNodeApi(isMainnet)}/fees/recommended`;
+      const url = `${GetNodeApi(isMainnet)}/v1/fees/recommended`;
       const response = await this.axiosInstance.get(url);
       if (response.data) {
         return {
-          fast: parseInt(response.data.fastestFee),
-          normal: parseInt(response.data.halfHourFee),
-          slow: parseInt(response.data.hourFee),
+          fastest: parseInt(response.data.fastestFee),
+          halfHour: parseInt(response.data.halfHourFee),
+          hour: parseInt(response.data.hourFee),
+          economy: parseInt(response.data.economyFee),
+          minimum: parseInt(response.data.minimumFee),
         };
       }
       throw new Error('can not get the fee rate of btc');
@@ -553,7 +555,7 @@ export class BTC {
       });
 
       // feeRate * vSize
-      const feeRate = req.feeRate ? req.feeRate : (await this.getCurrentFeeRate(isMainnet)).normal;
+      const feeRate = req.feeRate ? req.feeRate : (await this.getCurrentFeeRate(isMainnet)).fastest;
       const size = txb.extractTransaction().virtualSize() + 90;
       const feeBalance = BigMul(size.toString(), feeRate.toString());
 

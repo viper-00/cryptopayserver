@@ -57,6 +57,17 @@ export class WEB3 {
     }
   }
 
+  static async getFeeRate(isMainnet: boolean, chain: CHAINS): Promise<any> {
+    switch(chain) {
+      case CHAINS.BITCOIN:
+        return BTC.getCurrentFeeRate(isMainnet)
+      case CHAINS.ETHEREUM:
+        return ETH.getGasPrice(isMainnet)
+      default:
+        return null
+    }
+  }
+
   static async getAssetBalance(isMainnet: boolean, chain: CHAINS, address: string): Promise<AssetBalance> {
     switch (chain) {
       case CHAINS.BITCOIN:
