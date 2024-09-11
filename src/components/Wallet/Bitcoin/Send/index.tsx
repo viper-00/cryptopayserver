@@ -21,6 +21,12 @@ import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 
 import { CHAINS } from 'packages/constants/blockchain';
 import { OmitMiddleString } from 'utils/strings';
 
+// const input_byte_length = 180;
+// const output_byte_length = 34;
+// const other_byte_length = 8;
+
+const fee_byte_length = 140;
+
 type feeType = {
   fastest: number;
   halfHour: number;
@@ -40,12 +46,19 @@ const BitcoinSend = () => {
   const [fromAddress, setFromAddress] = useState<string>('');
   const [balance, setBalance] = useState<string>('');
   const [destinationAddress, setDestinationAddress] = useState<string>('');
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<string>();
   const [feeRate, setFeeRate] = useState<number>();
+  const [networkFee, setNetworkFee] = useState<number>();
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+
+  useEffect(() => {
+    if (feeRate) {
+      setNetworkFee((fee_byte_length * feeRate) / 100000000);
+    }
+  }, [feeRate]);
 
   const handleChangeFees = (e: any) => {
     switch (e.target.value) {
@@ -134,7 +147,7 @@ const BitcoinSend = () => {
   }
 
   function checkAmount(): boolean {
-    if (amount && amount != 0 && parseFloat(balance) >= amount) {
+    if (amount && networkFee && parseFloat(amount) != 0 && parseFloat(balance) >= parseFloat(amount) + networkFee) {
       return true;
     }
 
@@ -157,7 +170,7 @@ const BitcoinSend = () => {
     }
     if (!checkAmount()) {
       setSnackSeverity('error');
-      setSnackMessage('Incorrect amount input');
+      setSnackMessage('Insufficient balance or input error');
       setSnackOpen(true);
       return;
     }
@@ -180,6 +193,10 @@ const BitcoinSend = () => {
   useEffect(() => {
     init();
   }, []);
+
+  const onClickSignAndPay = async () => {
+    
+  }
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
@@ -288,6 +305,7 @@ const BitcoinSend = () => {
                   />
                 </FormControl>
               </Box>
+              <Typography mt={1}>Network Fee: {networkFee}</Typography>
             </Box>
 
             <Stack mt={4} direction={'row'} alignItems={'center'}>
@@ -339,7 +357,7 @@ const BitcoinSend = () => {
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'baseline'} justifyContent={'center'}>
-                  <Typography mt={1}>0.0000000111</Typography>
+                  <Typography mt={1}>{networkFee}</Typography>
                   <Typography ml={1}>tBTC</Typography>
                   <Typography ml={1}>(network fee)</Typography>
                 </Stack>
@@ -356,7 +374,7 @@ const BitcoinSend = () => {
                       inputProps={{
                         'aria-label': 'weight',
                       }}
-                      value={'0.000123123'}
+                      value={networkFee}
                       disabled
                     />
                   </FormControl>
@@ -382,15 +400,10 @@ const BitcoinSend = () => {
               </Box>
 
               <Box mt={4}>
-                <Typography>Input:(2)</Typography>
+                <Typography>Input:(1)</Typography>
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
-                  <Typography>tbsdfsdf...sdfsd</Typography>
-                  <Typography ml={10}>0.000012312</Typography>
-                  <Typography ml={1}>tBTC</Typography>
-                </Stack>
-                <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
-                  <Typography>tbsdfsdf...sdfsd</Typography>
-                  <Typography ml={10}>0.000012312</Typography>
+                  <Typography>{OmitMiddleString(fromAddress)}</Typography>
+                  <Typography ml={10}>{balance}</Typography>
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
               </Box>
@@ -398,13 +411,15 @@ const BitcoinSend = () => {
               <Box mt={4}>
                 <Typography>Output:(2)</Typography>
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
-                  <Typography>tbsdfsdf...sdfsd</Typography>
-                  <Typography ml={10}>0.000012312</Typography>
+                  <Typography>{OmitMiddleString(destinationAddress)}</Typography>
+                  <Typography ml={10}>{amount}</Typography>
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
-                  <Typography>tbsdfsdf...sdfsd</Typography>
-                  <Typography ml={10}>0.000012312</Typography>
+                  <Typography>{OmitMiddleString(fromAddress)}</Typography>
+                  <Typography ml={10}>
+                    {parseFloat(balance) - parseFloat(amount as string) - (networkFee as number)}
+                  </Typography>
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
               </Box>
@@ -419,7 +434,7 @@ const BitcoinSend = () => {
                   Reject
                 </Button>
                 <Box ml={2}>
-                  <Button variant={'contained'} onClick={() => {}}>
+                  <Button variant={'contained'} onClick={onClickSignAndPay}>
                     Sign & Pay
                   </Button>
                 </Box>
