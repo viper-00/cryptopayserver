@@ -24,20 +24,11 @@ export function GetUniqueRandomIndices(max: number, count: number): number[] {
   return Array.from(indices);
 }
 
-export function OmitMiddleString(str: string, maxLength: number = 20): string {
-  if (str.length <= maxLength) {
-    return str;
-  }
+export function OmitMiddleString(str: string, hideLength: number = 5): string {
+  if (str.length <= hideLength * 2) return "..."
 
-  if (maxLength <= 3) {
-    return '...';
-  }
-
-  const partLength = Math.floor((maxLength - 3) / 2);
-  const startPart = str.substring(0, partLength);
-  const endPart = str.substring(str.length - partLength);
-
-  console.log("${startPart}...${endPart}", `${startPart}...${endPart}`)
+  const startPart = str.substring(0, hideLength);
+  const endPart = str.substring(str.length - hideLength);
 
   return `${startPart}...${endPart}`;
 }

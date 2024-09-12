@@ -20,10 +20,9 @@ import { Http } from 'utils/http/http';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
 import { OmitMiddleString } from 'utils/strings';
-
-// const input_byte_length = 180;
-// const output_byte_length = 34;
-// const other_byte_length = 8;
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import Link from 'next/link';
 
 const fee_byte_length = 140;
 
@@ -195,8 +194,8 @@ const BitcoinSend = () => {
   }, []);
 
   const onClickSignAndPay = async () => {
-    
-  }
+    setPage(3);
+  };
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
@@ -412,13 +411,13 @@ const BitcoinSend = () => {
                 <Typography>Output:(2)</Typography>
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                   <Typography>{OmitMiddleString(destinationAddress)}</Typography>
-                  <Typography ml={10}>{amount}</Typography>
+                  <Typography ml={10}>{parseFloat(amount as string).toFixed(8)}</Typography>
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                   <Typography>{OmitMiddleString(fromAddress)}</Typography>
                   <Typography ml={10}>
-                    {parseFloat(balance) - parseFloat(amount as string) - (networkFee as number)}
+                    {(parseFloat(balance) - parseFloat(amount as string) - (networkFee as number)).toFixed(8)}
                   </Typography>
                   <Typography ml={1}>tBTC</Typography>
                 </Stack>
@@ -439,6 +438,36 @@ const BitcoinSend = () => {
                   </Button>
                 </Box>
               </Stack>
+            </Box>
+          </>
+        )}
+
+        {page === 3 && (
+          <>
+            <Box textAlign={'center'} mt={10}>
+              <Icon component={CheckCircleIcon} color={'success'} style={{ fontSize: 80 }} />
+              <Typography mt={2} fontWeight={'bold'} fontSize={20}>
+                Payment Sent
+              </Typography>
+              <Typography mt={2}>Your transaction has been successfully sent</Typography>
+              <Link href={''} target="_blank">
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} mt={2}>
+                  <Icon component={RemoveRedEyeIcon} />
+                  <Typography ml={1}>View on Block Explorer</Typography>
+                </Stack>
+              </Link>
+              <Box mt={10}>
+                <Button
+                  size={'large'}
+                  variant={'contained'}
+                  style={{ width: 500 }}
+                  onClick={() => {
+                    window.location.href = '/';
+                  }}
+                >
+                  Done
+                </Button>
+              </Box>
             </Box>
           </>
         )}
