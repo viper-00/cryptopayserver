@@ -17,12 +17,13 @@ import BitcoinSVG from 'assets/chain/bitcoin.svg';
 import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
 import { OmitMiddleString } from 'utils/strings';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
+import { GetBlockchainAddressUrl, GetBlockchainTxUrl } from 'utils/chain/btc';
 
 const fee_byte_length = 140;
 
@@ -48,8 +49,10 @@ const BitcoinSend = () => {
   const [amount, setAmount] = useState<string>();
   const [feeRate, setFeeRate] = useState<number>();
   const [networkFee, setNetworkFee] = useState<number>();
+  const [blockExplorerLink, setBlockExplorerLink] = useState<string>("");
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+  const { getWalletId } = useWalletPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
@@ -194,7 +197,30 @@ const BitcoinSend = () => {
   }, []);
 
   const onClickSignAndPay = async () => {
-    setPage(3);
+    try {
+      const send_transaction_resp: any = await axios.post(Http.send_transaction, {
+        chain_id: CHAINS.BITCOIN,
+        from_address: fromAddress,
+        to_address: destinationAddress,
+        network: getNetwork() === 'mainnet' ? 1 : 2,
+        wallet_id: getWalletId(),
+        user_id: getUserId(),
+        value: amount,
+        fee_rate: feeRate,
+      });
+
+      if (send_transaction_resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful creation!');
+        setSnackOpen(true);
+
+        setBlockExplorerLink(GetBlockchainTxUrl(getNetwork() === 'mainnet') + '/' + send_transaction_resp.data.hash);
+
+        setPage(3);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -450,7 +476,7 @@ const BitcoinSend = () => {
                 Payment Sent
               </Typography>
               <Typography mt={2}>Your transaction has been successfully sent</Typography>
-              <Link href={''} target="_blank">
+              <Link href={blockExplorerLink} target="_blank">
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} mt={2}>
                   <Icon component={RemoveRedEyeIcon} />
                   <Typography ml={1}>View on Block Explorer</Typography>
@@ -462,7 +488,7 @@ const BitcoinSend = () => {
                   variant={'contained'}
                   style={{ width: 500 }}
                   onClick={() => {
-                    window.location.href = '/';
+                    window.location.href = '/wallet/bitcoin';
                   }}
                 >
                   Done

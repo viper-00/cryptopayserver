@@ -2,7 +2,7 @@ import { WalletAccountType, ChainAccountType, AssetBalance, TransactionDetail, S
 import { Bip39 } from './bip39';
 import { BTC } from './chain/btc';
 import { ETH } from './chain/eth';
-import { CHAINS } from 'packages/constants/blockchain';
+import { CHAINIDS, CHAINS } from 'packages/constants/blockchain';
 
 export class WEB3 {
   // support: Import and generate wallet
@@ -58,13 +58,24 @@ export class WEB3 {
   }
 
   static async getFeeRate(isMainnet: boolean, chain: CHAINS): Promise<any> {
-    switch(chain) {
+    switch (chain) {
       case CHAINS.BITCOIN:
-        return BTC.getCurrentFeeRate(isMainnet)
+        return BTC.getCurrentFeeRate(isMainnet);
       case CHAINS.ETHEREUM:
-        return ETH.getGasPrice(isMainnet)
+        return ETH.getGasPrice(isMainnet);
       default:
-        return null
+        return null;
+    }
+  }
+
+  static getChainIds(isMainnet: boolean, chain: CHAINS): CHAINIDS {
+    switch (chain) {
+      case CHAINS.BITCOIN:
+        return BTC.getChainIds(isMainnet);
+      case CHAINS.ETHEREUM:
+        return ETH.getChainIds(isMainnet);
+      default:
+        return CHAINIDS.NONE;
     }
   }
 

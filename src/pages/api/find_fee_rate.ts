@@ -8,9 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     switch (req.method) {
       case 'GET':
-        const address = req.query.address;
         const chainId = req.query.chain_id;
         const network = req.query.network;
+
+        console.log("sdfsdf", chainId, network)
 
         const fee = await WEB3.getFeeRate(
           parseInt(network as string) === 1 ? true : false,

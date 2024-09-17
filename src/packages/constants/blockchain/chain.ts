@@ -1,4 +1,6 @@
 export enum CHAINIDS {
+  NONE = 0,
+  
   BITCOIN = 2,
   BITCOIN_TESTNET = 3,
 

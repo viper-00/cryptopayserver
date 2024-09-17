@@ -35,6 +35,21 @@ export class BTC {
     return isMainnet ? CHAINIDS.BITCOIN : CHAINIDS.BITCOIN_TESTNET;
   }
 
+  static getType(note: string): BTCTYPE {
+    switch (note) {
+      case 'NATIVESEGWIT':
+        return BTCTYPE.NATIVESEGWIT;
+      case 'NESTEDSEGWIT':
+        return BTCTYPE.NESTEDSEGWIT;
+      case 'TAPROOT':
+        return BTCTYPE.TAPROOT;
+      case 'LEGACY':
+        return BTCTYPE.LEGACY;
+      default:
+        throw new Error('Not suuport the BTCTYPE');
+    }
+  }
+
   // For the wallet
   // Four type support: Native Segwit, Nested Segwit, Taproot, Legacy
   static createAccountBySeed(isMainnet: boolean, seed: Buffer): ChainAccountType[] {
@@ -330,8 +345,9 @@ export class BTC {
     try {
       const url = `${GetNodeApi(isMainnet)}/tx`;
       const response = await this.axiosInstance.post(url, data);
-      if (response.data.txId) {
-        return response.data.txId;
+
+      if (response.data) {
+        return response.data;
       }
 
       throw new Error('can not broadcast tx of btc');
@@ -498,20 +514,24 @@ export class BTC {
 
   static async sendTransaction(isMainnet: boolean, req: SendTransaction): Promise<string> {
     try {
+      // bitcoin.initEccLib(ecc);
+
       const ECPair = ECPairFactory(ecc);
       const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, req.privateKey), this.getNetwork(isMainnet));
 
-      let script: Buffer;
+      let script, redeemScript: Buffer;
       switch (req.btcType) {
         case BTCTYPE.NATIVESEGWIT:
           const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
           script = p2wpkh.output as Buffer;
+          redeemScript = p2wpkh.redeem?.output as Buffer
         case BTCTYPE.NESTEDSEGWIT:
           const p2 = bitcoin.payments.p2sh({
-            redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) }),
+            redeem: bitcoin.payments.p2wpkh({ m: 2, pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) }),
             network: this.getNetwork(isMainnet),
           });
           script = p2.output as Buffer;
+          redeemScript = p2.redeem?.output as Buffer;
           break;
         case BTCTYPE.TAPROOT:
           const p2tr = bitcoin.payments.p2tr({
@@ -519,10 +539,12 @@ export class BTC {
             network: this.getNetwork(isMainnet),
           });
           script = p2tr.output as Buffer;
+          redeemScript = p2tr.redeem?.output as Buffer
           break;
         case BTCTYPE.LEGACY:
           const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
           script = p2pkh.output as Buffer;
+          redeemScript = p2pkh.redeem?.output as Buffer
           break;
         default:
           throw new Error('can not create the transactions of btc');
@@ -536,7 +558,7 @@ export class BTC {
       const utxos = await this.getAddressUtxo(isMainnet, req.from);
       utxos &&
         utxos.length > 0 &&
-        utxos.forEach((item) => {
+        utxos.forEach((item, index) => {
           totalBalance = BigAdd(totalBalance, item.value.toString());
           txb.addInput({
             hash: item.txid,
@@ -545,7 +567,11 @@ export class BTC {
               script: script,
               value: item.value,
             },
-          });
+            redeemScript: redeemScript,
+            // tapScriptSig: undefined,
+            // finalScriptSig: undefined
+            // witnessScript: undefined,
+          })
         });
 
       const sendBalance = new Big(ethers.parseUnits(req.value, 8).toString()).toNumber();
@@ -556,7 +582,9 @@ export class BTC {
 
       // feeRate * vSize
       const feeRate = req.feeRate ? req.feeRate : (await this.getCurrentFeeRate(isMainnet)).fastest;
-      const size = txb.extractTransaction().virtualSize() + 90;
+      // const size = txb.extractTransaction().virtualSize() + 90;
+      // const size = 200 + 90;
+      const size = 1000;
       const feeBalance = BigMul(size.toString(), feeRate.toString());
 
       const remainValue = parseFloat(BigSub(BigSub(totalBalance, sendBalance.toString()), feeBalance));

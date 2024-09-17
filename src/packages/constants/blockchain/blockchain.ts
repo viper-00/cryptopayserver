@@ -21,6 +21,7 @@ export const BITCOIN_COINS: COIN[] = [
     decimals: 8,
     displayDecimals: 8,
     icon: '',
+    contractAddress: "",
   },
 ];
 
