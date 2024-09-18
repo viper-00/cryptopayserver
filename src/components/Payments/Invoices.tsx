@@ -20,10 +20,23 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import InvoiceDataGrid from './Invoice/InvoiceDataGrid';
+import { CURRENCY } from 'packages/constants';
 
 const Invoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
   const [openCreateInvoice, setOpenCreateInvoice] = useState<boolean>(false);
+
+  const [number, setNumber] = useState<number>();
+  const [currency, setCurrency] = useState<string>(CURRENCY[0]);
+  const [orderId, setOrderId] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [buyerEmail, setBuyerEmail] = useState<string>('');
+  const [notificationUrl, setNotificationUrl] = useState<string>('');
+  const [notificationEmail, setNotificationEmail] = useState<string>('');
+
+  async function onClickCreateInvoice() {
+    
+  }
 
   return (
     <Box>
@@ -33,14 +46,26 @@ const Invoices = () => {
             <Box>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
                 <Typography variant="h6">Create Invoice</Typography>
-                <Button variant={'contained'}>Create</Button>
+                <Button variant={'contained'} onClick={onClickCreateInvoice}>
+                  Create
+                </Button>
               </Stack>
 
               <Stack direction={'row'} alignItems={'baseline'}>
                 <Box mt={5}>
                   <Typography>Amount</Typography>
                   <Box mt={1}>
-                    <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+                    <TextField
+                      fullWidth
+                      hiddenLabel
+                      defaultValue=""
+                      size="small"
+                      type="number"
+                      onChange={(e: any) => {
+                        setNumber(e.target.value);
+                      }}
+                      value={number}
+                    />
                   </Box>
                 </Box>
                 <Box ml={5}>
@@ -50,17 +75,27 @@ const Invoices = () => {
                       <Select
                         size={'small'}
                         inputProps={{ 'aria-label': 'Without label' }}
-                        id="demo-simple-select-helper"
-                        defaultValue={1}
-                        //   value={age}
-
-                        //   onChange={handleChange}
+                        defaultValue={CURRENCY[0]}
+                        onChange={(e) => {
+                          setCurrency(e.target.value);
+                        }}
+                        value={currency}
                       >
-                        <MenuItem value={1}>USD</MenuItem>
-                        <MenuItem value={2}>AAA</MenuItem>
-                        <MenuItem value={3}>BBB</MenuItem>
+                        {CURRENCY &&
+                          CURRENCY.length > 0 &&
+                          CURRENCY.map((item, index) => (
+                            <MenuItem value={item} key={index}>
+                              {item}
+                            </MenuItem>
+                          ))}
                       </Select>
                     </FormControl>
+                  </Box>
+                </Box>
+                <Box ml={5}>
+                  <Typography>Crypto</Typography>
+                  <Box mt={1}>
+                    <TextField fullWidth hiddenLabel size="small" value={'BTC'} disabled />
                   </Box>
                 </Box>
               </Stack>
@@ -68,27 +103,45 @@ const Invoices = () => {
               <Box mt={4}>
                 <Typography>Order Id</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+                  <TextField
+                    fullWidth
+                    hiddenLabel
+                    defaultValue=""
+                    size="small"
+                    value={orderId}
+                    onChange={(e: any) => {
+                      setOrderId(e.target.value);
+                    }}
+                  />
                 </Box>
               </Box>
 
               <Box mt={4}>
                 <Typography>Item Description</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+                  <TextField
+                    fullWidth
+                    hiddenLabel
+                    defaultValue=""
+                    size="small"
+                    value={description}
+                    onChange={(e: any) => {
+                      setDescription(e.target.value);
+                    }}
+                  />
                 </Box>
               </Box>
 
-              <Box mt={4}>
+              {/* <Box mt={4}>
                 <Typography>Supported Transaction Currencies</Typography>
                 <Box mt={1}>
                   <Box mt={1}>
                     <FormControlLabel control={<Checkbox defaultChecked />} label="BTC (On-Chain)" />
                   </Box>
                 </Box>
-              </Box>
+              </Box> */}
 
-              <Box mt={4}>
+              {/* <Box mt={4}>
                 <Typography>Default payment method on checkout</Typography>
                 <Box mt={1}>
                   <FormControl sx={{ minWidth: 300 }}>
@@ -107,7 +160,7 @@ const Invoices = () => {
                     </Select>
                   </FormControl>
                 </Box>
-              </Box>
+              </Box> */}
             </Box>
 
             <Box mt={5}>
@@ -115,9 +168,17 @@ const Invoices = () => {
               <Box mt={4}>
                 <Typography>Buyer Email</Typography>
                 <Box mt={1}>
-                  <TextField fullWidth hiddenLabel defaultValue="" size="small" />
+                  <TextField
+                    fullWidth
+                    hiddenLabel
+                    value={buyerEmail}
+                    onChange={(e: any) => {
+                      setBuyerEmail(e.target.value);
+                    }}
+                    size="small"
+                  />
                 </Box>
-                <Box mt={4}>
+                {/* <Box mt={4}>
                   <Typography>Require Refund Email</Typography>
                   <Box mt={1}>
                     <FormControl sx={{ minWidth: 300 }}>
@@ -136,7 +197,7 @@ const Invoices = () => {
                       </Select>
                     </FormControl>
                   </Box>
-                </Box>
+                </Box> */}
               </Box>
             </Box>
 
@@ -147,14 +208,54 @@ const Invoices = () => {
                   <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
                     Metadata
                   </AccordionSummary>
-                  <AccordionDetails>EXAMPLE</AccordionDetails>
+                  <AccordionDetails>
+                    <Typography>Custom data to expand the invoice. This data is a JSON object.</Typography>
+
+                    <Box mt={4}>
+                      <Typography>Metadata</Typography>
+                      <TextField hiddenLabel multiline rows={6} style={{ width: 600, marginTop: 10 }} />
+                    </Box>
+                  </AccordionDetails>
                 </Accordion>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel2-content" id="panel2-header">
-                    Invoice Notifications
-                  </AccordionSummary>
-                  <AccordionDetails>EXAMPLE</AccordionDetails>
-                </Accordion>
+
+                <Box mt={4}>
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel2-content" id="panel2-header">
+                      Invoice Notifications
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box>
+                        <Typography>Notification URL</Typography>
+                        <Box mt={1}>
+                          <TextField
+                            fullWidth
+                            hiddenLabel
+                            size="small"
+                            value={notificationUrl}
+                            onChange={(e: any) => {
+                              setNotificationUrl(e.target.value);
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                      <Box mt={4}>
+                        <Typography>Notification Email</Typography>
+                        <Box mt={1}>
+                          <TextField
+                            fullWidth
+                            hiddenLabel
+                            size="small"
+                            value={notificationEmail}
+                            onChange={(e: any) => {
+                              setNotificationEmail(e.target.value);
+                            }}
+                          />
+                        </Box>
+                        <Typography mt={1}>Receive updates for this invoice.</Typography>
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
+                </Box>
               </Box>
             </Box>
           </Box>

@@ -97,7 +97,6 @@ const CreateStore = () => {
                   <Select
                     size={'small'}
                     inputProps={{ 'aria-label': 'Without label' }}
-                    id="demo-simple-select-helper"
                     defaultValue={CURRENCY[0]}
                     onChange={(e) => {
                       setCurrency(e.target.value);
