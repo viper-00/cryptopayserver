@@ -26,6 +26,7 @@ const CustomIconButton = (props: Props) => {
     }
     setIsLoading(false);
   };
+  
   return (
     <IconButton
       // aria-label={'icon button'}

@@ -49,7 +49,7 @@ const BitcoinSend = () => {
   const [amount, setAmount] = useState<string>();
   const [feeRate, setFeeRate] = useState<number>();
   const [networkFee, setNetworkFee] = useState<number>();
-  const [blockExplorerLink, setBlockExplorerLink] = useState<string>("");
+  const [blockExplorerLink, setBlockExplorerLink] = useState<string>('');
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getWalletId } = useWalletPresistStore((state) => state);
@@ -83,7 +83,7 @@ const BitcoinSend = () => {
     setAlignment(e.target.value);
   };
 
-  async function getBitcoin() {
+  const getBitcoin = async () => {
     try {
       const find_payment_resp: any = await axios.get(Http.find_payment_by_chain_id, {
         params: {
@@ -99,9 +99,9 @@ const BitcoinSend = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function getBitcoinFeeRate() {
+  const getBitcoinFeeRate = async () => {
     try {
       const find_fee_resp: any = await axios.get(Http.find_fee_rate, {
         params: {
@@ -122,9 +122,9 @@ const BitcoinSend = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function checkAddress(): Promise<boolean> {
+  const checkAddress = async (): Promise<boolean> => {
     if (destinationAddress === fromAddress) {
       return false;
     }
@@ -146,24 +146,24 @@ const BitcoinSend = () => {
       console.error(e);
       return false;
     }
-  }
+  };
 
-  function checkAmount(): boolean {
+  const checkAmount = (): boolean => {
     if (amount && networkFee && parseFloat(amount) != 0 && parseFloat(balance) >= parseFloat(amount) + networkFee) {
       return true;
     }
 
     return false;
-  }
+  };
 
-  function checkFeeRate(): boolean {
+  const checkFeeRate = (): boolean => {
     if (feeRate && feeRate > 0) {
       return true;
     }
     return false;
-  }
+  };
 
-  async function onClickSignTransaction() {
+  const onClickSignTransaction = async () => {
     if (!(await checkAddress())) {
       setSnackSeverity('error');
       setSnackMessage('The destination address cannot be empty or input errors');
@@ -185,12 +185,12 @@ const BitcoinSend = () => {
     }
 
     setPage(2);
-  }
+  };
 
-  async function init() {
+  const init = async () => {
     await getBitcoin();
     await getBitcoinFeeRate();
-  }
+  };
 
   useEffect(() => {
     init();

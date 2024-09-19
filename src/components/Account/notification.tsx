@@ -17,7 +17,7 @@ const Notification = () => {
 
   const [notification, setNotification] = useState<Notification[]>([]);
 
-  async function getNotifications() {
+  const getNotifications = async () => {
     const resposne: any = await axios.get(Http.find_notification, {
       params: {
         user_id: getUserId(),
@@ -39,11 +39,11 @@ const Notification = () => {
       setSnackMessage('Something wrong, please try it again');
       setSnackOpen(true);
     }
-  }
+  };
 
-  async function init() {
+  const init = async () => {
     await getNotifications();
-  }
+  };
 
   useEffect(() => {
     init();

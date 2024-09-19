@@ -40,6 +40,7 @@ const CustomButton = (props: Props) => {
     }
     setIsLoading(false);
   };
+  
   return (
     <Button
       // color={color || "info"}

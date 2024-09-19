@@ -22,7 +22,7 @@ const PhraseBackupConfirm = () => {
   const [phrase, setPhrase] = useState<string[]>([]);
   const [selectWord, setSelectWord] = useState<Record<number, string>>({});
 
-  async function updateWalletBackup() {
+  const updateWalletBackup = async () => {
     try {
       const resp: any = await axios.put(Http.update_backup_by_wallet_id, {
         user_id: getUserId(),
@@ -41,9 +41,9 @@ const PhraseBackupConfirm = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function fetchWalletData() {
+  const fetchWalletData = async () => {
     try {
       if (getIsWallet()) {
         const resp: any = await axios.get(Http.find_wallet_by_id, {
@@ -74,7 +74,7 @@ const PhraseBackupConfirm = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   useEffect(() => {
     fetchWalletData();

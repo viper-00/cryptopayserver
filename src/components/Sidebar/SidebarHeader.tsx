@@ -50,7 +50,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
 
   const [stores, setStores] = useState<StoreProps[]>([]);
 
-  async function getStore() {
+  const getStore = async () => {
     if (getUserId() === 0) {
       return;
     }
@@ -82,9 +82,9 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
         window.location.href = '/stores/create';
       }, 2000);
     }
-  }
+  };
 
-  async function onClickStore(id: number) {
+  const onClickStore = async (id: number) => {
     const store_result: any = await axios.get(Http.find_store_by_id, {
       params: {
         id: id,
@@ -105,7 +105,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
       setSnackMessage("Can't find the store, please try again later.");
       setSnackOpen(true);
     }
-  }
+  };
 
   useEffect(() => {
     getStore();

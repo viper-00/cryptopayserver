@@ -22,7 +22,7 @@ const PhraseBackup = () => {
     phrase.slice(index * groupSize, index * groupSize + groupSize),
   );
 
-  async function init() {
+  const init = async () => {
     try {
       if (getIsWallet()) {
         const resp: any = await axios.get(Http.find_wallet_by_id, {
@@ -42,7 +42,7 @@ const PhraseBackup = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   useEffect(() => {
     init();

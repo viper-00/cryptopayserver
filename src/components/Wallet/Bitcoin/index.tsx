@@ -52,7 +52,7 @@ const Bitcoin = () => {
 
   const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
 
-  async function updateBitcoinPaymentSetting() {
+  const updateBitcoinPaymentSetting = async () => {
     try {
       const resp: any = await axios.put(Http.update_payment_setting_by_id, {
         id: settingId,
@@ -74,9 +74,9 @@ const Bitcoin = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function getBitcoinWalletAddress() {
+  const getBitcoinWalletAddress = async () => {
     try {
       const find_address_resp: any = await axios.get(Http.find_wallet_address_by_chain_and_network, {
         params: {
@@ -103,9 +103,9 @@ const Bitcoin = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function getBitcoinPaymentSetting() {
+  const getBitcoinPaymentSetting = async () => {
     try {
       const find_setting_resp: any = await axios.get(Http.find_payment_setting_by_chain_id, {
         params: {
@@ -127,12 +127,12 @@ const Bitcoin = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function init() {
+  const init = async () => {
     await getBitcoinWalletAddress();
     await getBitcoinPaymentSetting();
-  }
+  };
 
   useEffect(() => {
     init();

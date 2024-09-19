@@ -41,4 +41,7 @@ export class Http {
   static checkout_chain_address = this.httpPath + '/checkout_chain_address';
   static find_fee_rate = this.httpPath + '/find_fee_rate';
   static send_transaction = this.httpPath + '/send_transaction';
+
+  // invoice
+  static create_invoice = this.httpPath + '/create_invoice'
 }

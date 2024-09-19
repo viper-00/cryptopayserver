@@ -20,7 +20,7 @@ const BitcoinReceive = () => {
     setAlignment(e.target.value);
   };
 
-  async function getBitcoin() {
+  const getBitcoin = async () => {
     try {
       const find_payment_resp: any = await axios.get(Http.find_payment_by_chain_id, {
         params: {
@@ -36,11 +36,11 @@ const BitcoinReceive = () => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
-  async function init() {
+  const init = async () => {
     await getBitcoin();
-  }
+  };
 
   useEffect(() => {
     init();
@@ -102,19 +102,25 @@ const BitcoinReceive = () => {
                 <IconButton>
                   <QrCode fontSize={'small'} />
                 </IconButton>
-                <Typography mt={1} fontSize={'small'}>Copy QR Code</Typography>
+                <Typography mt={1} fontSize={'small'}>
+                  Copy QR Code
+                </Typography>
               </Box>
               <Box textAlign={'center'}>
                 <IconButton>
                   <QrCode fontSize={'small'} />
                 </IconButton>
-                <Typography mt={1} fontSize={'small'}>Copy Address</Typography>
+                <Typography mt={1} fontSize={'small'}>
+                  Copy Address
+                </Typography>
               </Box>
               <Box textAlign={'center'}>
                 <IconButton>
                   <QrCode fontSize={'small'} />
                 </IconButton>
-                <Typography mt={1} fontSize={'small'}>Download QR</Typography>
+                <Typography mt={1} fontSize={'small'}>
+                  Download QR
+                </Typography>
               </Box>
             </Stack>
           </Box>

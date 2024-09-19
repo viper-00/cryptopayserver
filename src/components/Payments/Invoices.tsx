@@ -21,22 +21,115 @@ import {
 import { useState } from 'react';
 import InvoiceDataGrid from './Invoice/InvoiceDataGrid';
 import { CURRENCY } from 'packages/constants';
+import { isValidEmail, isValidHTTPUrl, isValidJSON } from 'utils/verify';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { CHAINS } from 'packages/constants/blockchain';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 
 const Invoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
   const [openCreateInvoice, setOpenCreateInvoice] = useState<boolean>(false);
 
-  const [number, setNumber] = useState<number>();
+  const [amount, setAmount] = useState<number>();
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
+  const [crypto, setCrypto] = useState<string>('BTC');
   const [orderId, setOrderId] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [buyerEmail, setBuyerEmail] = useState<string>('');
+  const [metadata, setMetadata] = useState<string>('');
   const [notificationUrl, setNotificationUrl] = useState<string>('');
   const [notificationEmail, setNotificationEmail] = useState<string>('');
 
-  async function onClickCreateInvoice() {
-    
-  }
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  const checkAmount = (amount: number): boolean => {
+    if (amount > 0) {
+      return true;
+    }
+    return false;
+  };
+
+  const onClickCreateInvoice = async () => {
+    if (!checkAmount(amount as number)) {
+      console.log('Error: amount');
+      return;
+    }
+
+    if (!CURRENCY.includes(currency)) {
+      console.log('Error: currency');
+      return;
+    }
+
+    if (!isValidEmail(buyerEmail) || !isValidEmail(notificationEmail)) {
+      console.log('Error: email');
+      return;
+    }
+
+    if (!isValidJSON(metadata)) {
+      console.log('Error: metadata');
+      return;
+    }
+
+    if (!isValidHTTPUrl(notificationUrl)) {
+      console.log('Error: notificationUrl');
+      return;
+    }
+
+    const ln_amount = amount;
+    const ln_currency = currency;
+    const ln_crypto = crypto;
+    const ln_order_id = orderId;
+    const ln_desc = description;
+    const ln_buyer_email = buyerEmail;
+    const ln_metadata = metadata;
+    const ln_notification_url = notificationUrl;
+    const ln_notification_email = notificationEmail;
+
+    console.log(
+      'test',
+      ln_amount,
+      ln_currency,
+      ln_crypto,
+      ln_order_id,
+      ln_desc,
+      ln_buyer_email,
+      ln_metadata,
+      ln_notification_url,
+      ln_notification_email,
+    );
+
+    try {
+      const create_invoice_resp: any = await axios.post(Http.create_invoice, {
+        user_id: getUserId(),
+        store_id: getStoreId(),
+        chain_id: CHAINS.BITCOIN,
+        network: getNetwork() === 'mainnet' ? 1 : 2,
+        amount: ln_amount,
+        currency: ln_currency,
+        crypto: ln_crypto,
+        order_id: ln_order_id,
+        description: ln_desc,
+        buyer_email: ln_buyer_email,
+        metadata: ln_metadata,
+        notification_url: ln_notification_url,
+        notification_email: ln_notification_email,
+      });
+
+      if (create_invoice_resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful creation!');
+        setSnackOpen(true);
+        // setTimeout(() => {
+        //   window.location.href = '/';
+        // }, 2000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Box>
@@ -62,9 +155,9 @@ const Invoices = () => {
                       size="small"
                       type="number"
                       onChange={(e: any) => {
-                        setNumber(e.target.value);
+                        setAmount(e.target.value);
                       }}
-                      value={number}
+                      value={amount}
                     />
                   </Box>
                 </Box>
@@ -95,7 +188,7 @@ const Invoices = () => {
                 <Box ml={5}>
                   <Typography>Crypto</Typography>
                   <Box mt={1}>
-                    <TextField fullWidth hiddenLabel size="small" value={'BTC'} disabled />
+                    <TextField fullWidth hiddenLabel size="small" value={crypto} disabled />
                   </Box>
                 </Box>
               </Stack>
@@ -213,7 +306,16 @@ const Invoices = () => {
 
                     <Box mt={4}>
                       <Typography>Metadata</Typography>
-                      <TextField hiddenLabel multiline rows={6} style={{ width: 600, marginTop: 10 }} />
+                      <TextField
+                        hiddenLabel
+                        multiline
+                        rows={6}
+                        style={{ width: 600, marginTop: 10 }}
+                        value={metadata}
+                        onChange={(e: any) => {
+                          setMetadata(e.target.value);
+                        }}
+                      />
                     </Box>
                   </AccordionDetails>
                 </Accordion>
@@ -235,6 +337,7 @@ const Invoices = () => {
                             onChange={(e: any) => {
                               setNotificationUrl(e.target.value);
                             }}
+                            placeholder="https://example.com"
                           />
                         </Box>
                       </Box>
@@ -251,7 +354,9 @@ const Invoices = () => {
                             }}
                           />
                         </Box>
-                        <Typography mt={1}>Receive updates for this invoice.</Typography>
+                        <Typography mt={1} fontSize={14} color={'gray'}>
+                          Receive updates for this invoice.
+                        </Typography>
                       </Box>
                     </AccordionDetails>
                   </Accordion>
