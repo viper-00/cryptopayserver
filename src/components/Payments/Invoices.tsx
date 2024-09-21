@@ -34,7 +34,6 @@ const Invoices = () => {
   const [amount, setAmount] = useState<number>();
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
   const [crypto, setCrypto] = useState<string>('BTC');
-  const [orderId, setOrderId] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [buyerEmail, setBuyerEmail] = useState<string>('');
   const [metadata, setMetadata] = useState<string>('');
@@ -81,7 +80,6 @@ const Invoices = () => {
     const ln_amount = amount;
     const ln_currency = currency;
     const ln_crypto = crypto;
-    const ln_order_id = orderId;
     const ln_desc = description;
     const ln_buyer_email = buyerEmail;
     const ln_metadata = metadata;
@@ -93,7 +91,6 @@ const Invoices = () => {
       ln_amount,
       ln_currency,
       ln_crypto,
-      ln_order_id,
       ln_desc,
       ln_buyer_email,
       ln_metadata,
@@ -110,7 +107,6 @@ const Invoices = () => {
         amount: ln_amount,
         currency: ln_currency,
         crypto: ln_crypto,
-        order_id: ln_order_id,
         description: ln_desc,
         buyer_email: ln_buyer_email,
         metadata: ln_metadata,
@@ -193,7 +189,7 @@ const Invoices = () => {
                 </Box>
               </Stack>
 
-              <Box mt={4}>
+              {/* <Box mt={4}>
                 <Typography>Order Id</Typography>
                 <Box mt={1}>
                   <TextField
@@ -207,7 +203,7 @@ const Invoices = () => {
                     }}
                   />
                 </Box>
-              </Box>
+              </Box> */}
 
               <Box mt={4}>
                 <Typography>Item Description</Typography>
