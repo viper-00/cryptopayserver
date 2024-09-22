@@ -43,5 +43,7 @@ export class Http {
   static send_transaction = this.httpPath + '/send_transaction';
 
   // invoice
-  static create_invoice = this.httpPath + '/create_invoice'
+  static create_invoice = this.httpPath + '/create_invoice';
+  static find_invoice = this.httpPath + '/find_invoice';
+  static find_invoice_by_id = this.httpPath + '/find_invoice_by_id';
 }

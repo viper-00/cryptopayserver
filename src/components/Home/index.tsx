@@ -5,7 +5,8 @@ import Dashboard from 'components/Dashboard';
 import Settings from 'components/Settings';
 import Bitcoin from 'components/Wallet/Bitcoin';
 import Lightning from 'components/Wallet/Bitcoin/Lightning';
-import Invoices from 'components/Payments/Invoices';
+import Invoices from 'components/Payments/invoices/index';
+import InvoiceDetails from 'components/Payments/invoices/id';
 import Reporting from 'components/Payments/Reporting';
 import Requests from 'components/Payments/Requests';
 import Pullpayments from 'components/Payments/Pullpayments';
@@ -93,6 +94,7 @@ const Home = () => {
     '/wallet/tron': <Tron />,
     '/wallet/bsc': <Bsc />,
     '/payments/invoices': <Invoices />,
+    '/payments/invoices/[id]': <InvoiceDetails />,
     '/payments/reporting': <Reporting />,
     '/payments/requests': <Requests />,
     '/payments/pullpayments': <Pullpayments />,

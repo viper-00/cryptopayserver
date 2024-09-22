@@ -4,6 +4,7 @@ import { WEB3 } from 'packages/web3';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import { GenerateOrderIDByTime } from 'utils/number';
 import mysql from 'mysql2/promise';
+import { ORDER_STATUS } from 'packages/constants';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -43,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             const destinationAddress = addressRow.address;
             const paid = 2; // unpaid
-            const orderStatus = 'processing'; // invalid, settled, expired, processing
+            const orderStatus = ORDER_STATUS.Processing; // settled, invalid, expired, processing
 
             const now = new Date();
             const createDate = now.getTime();

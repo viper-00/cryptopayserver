@@ -19,13 +19,14 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import InvoiceDataGrid from './Invoice/InvoiceDataGrid';
-import { CURRENCY } from 'packages/constants';
+import InvoiceDataGrid from '../Invoice/InvoiceDataGrid';
+import { CURRENCY, ORDER_TIME } from 'packages/constants';
 import { isValidEmail, isValidHTTPUrl, isValidJSON } from 'utils/verify';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { CHAINS } from 'packages/constants/blockchain';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { ORDER_STATUS } from 'packages/constants';
 
 const Invoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
@@ -39,6 +40,10 @@ const Invoices = () => {
   const [metadata, setMetadata] = useState<string>('');
   const [notificationUrl, setNotificationUrl] = useState<string>('');
   const [notificationEmail, setNotificationEmail] = useState<string>('');
+
+  const [search, setSearch] = useState<string>('');
+  const [orderStatus, setOrderStatus] = useState<string>(ORDER_STATUS.AllStatus);
+  const [orderTime, setOrderTime] = useState<string>(ORDER_TIME.AllTime);
 
   const { getUserId, getNetwork } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
@@ -135,9 +140,20 @@ const Invoices = () => {
             <Box>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
                 <Typography variant="h6">Create Invoice</Typography>
-                <Button variant={'contained'} onClick={onClickCreateInvoice}>
-                  Create
-                </Button>
+                <Box>
+                  <Button
+                    variant={'contained'}
+                    onClick={() => {
+                      setOpenCreateInvoice(false);
+                    }}
+                    style={{ marginRight: 20}}
+                  >
+                    Back
+                  </Button>
+                  <Button variant={'contained'} onClick={onClickCreateInvoice}>
+                    Create
+                  </Button>
+                </Box>
               </Stack>
 
               <Stack direction={'row'} alignItems={'baseline'}>
@@ -237,7 +253,6 @@ const Invoices = () => {
                     <Select
                       size={'small'}
                       inputProps={{ 'aria-label': 'Without label' }}
-                      id="demo-simple-select-helper"
                       defaultValue={1}
                       //   value={age}
 
@@ -274,7 +289,6 @@ const Invoices = () => {
                       <Select
                         size={'small'}
                         inputProps={{ 'aria-label': 'Without label' }}
-                        id="demo-simple-select-helper"
                         defaultValue={1}
                         //   value={age}
 
@@ -294,7 +308,7 @@ const Invoices = () => {
               <Typography variant="h6">Additional Options</Typography>
               <Box mt={4}>
                 <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
+                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content">
                     Metadata
                   </AccordionSummary>
                   <AccordionDetails>
@@ -318,7 +332,7 @@ const Invoices = () => {
 
                 <Box mt={4}>
                   <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel2-content" id="panel2-header">
+                    <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel2-content">
                       Invoice Notifications
                     </AccordionSummary>
                     <AccordionDetails>
@@ -391,37 +405,43 @@ const Invoices = () => {
                   inputProps={{
                     'aria-label': 'weight',
                   }}
+                  placeholder="Search..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
                 />
               </FormControl>
               <FormControl sx={{ minWidth: 120 }}>
                 <Select
                   size={'small'}
                   inputProps={{ 'aria-label': 'Without label' }}
-                  id="demo-simple-select-helper"
-                  defaultValue={0}
-                  //   value={age}
-                  //   onChange={handleChange}
+                  value={orderStatus}
+                  onChange={(e) => {
+                    console.log('ddd', e.target.value);
+                    setOrderStatus(e.target.value);
+                  }}
                 >
-                  <MenuItem value={0}>All Status</MenuItem>
-                  <Divider />
+                  {ORDER_STATUS &&
+                    Object.entries(ORDER_STATUS).map((item, index) => (
+                      <MenuItem value={item[1]} key={index}>
+                        {item[1]}
+                      </MenuItem>
+                      // {index === 0 && <Divider />}
+                    ))}
+
+                  {/* index === 0 && <Divider />
+
                   <MenuItem value={1}>Settled</MenuItem>
                   <MenuItem value={2}>Processing</MenuItem>
                   <MenuItem value={3}>Expired</MenuItem>
-                  <MenuItem value={4}>Invalid</MenuItem>
-                  <Divider />
-                  <MenuItem value={5}>Settled Late</MenuItem>
-                  <MenuItem value={6}>Settled Partial</MenuItem>
-                  <MenuItem value={7}>Settled Over</MenuItem>
-                  <MenuItem value={8}>Unusual</MenuItem>
-                  <Divider />
-                  <MenuItem value={9}>Include archived</MenuItem>
+                  <MenuItem value={4}>Invalid</MenuItem> */}
                 </Select>
               </FormControl>
-              <FormControl sx={{ minWidth: 120 }}>
+              {/* <FormControl sx={{ minWidth: 120 }}>
                 <Select
                   size={'small'}
                   inputProps={{ 'aria-label': 'Without label' }}
-                  id="demo-simple-select-helper"
                   defaultValue={0}
                   //   value={age}
                   //   onChange={handleChange}
@@ -430,22 +450,23 @@ const Invoices = () => {
                   <Divider />
                   <MenuItem value={1}>test</MenuItem>
                 </Select>
-              </FormControl>
+              </FormControl> */}
               <FormControl sx={{ minWidth: 120 }}>
                 <Select
                   size={'small'}
                   inputProps={{ 'aria-label': 'Without label' }}
-                  id="demo-simple-select-helper"
-                  defaultValue={0}
-                  //   value={age}
-                  //   onChange={handleChange}
+                  value={orderTime}
+                  defaultValue={orderTime}
+                  onChange={(e) => {
+                    setOrderTime(e.target.value);
+                  }}
                 >
-                  <MenuItem value={0}>All Time</MenuItem>
-                  <Divider />
-                  <MenuItem value={1}>Last 24 hours</MenuItem>
-                  <MenuItem value={2}>Last 3 days</MenuItem>
-                  <MenuItem value={3}>Last 7 days</MenuItem>
-                  <MenuItem value={4}>Custom Range</MenuItem>
+                  {ORDER_TIME &&
+                    Object.entries(ORDER_TIME).map((item, index) => (
+                      <MenuItem value={item[1]} key={index}>
+                        {item[1]}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
             </Stack>
