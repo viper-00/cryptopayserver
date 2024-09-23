@@ -13,7 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const storeId = req.query.store_id;
         const network = req.query.network;
 
-        const query = 'SELECT * FROM invoices where id = ? and store_id = ? and network = ? and status = ?';
+        console.log("idd", id, storeId, network)
+        const query = 'SELECT * FROM invoices where order_id = ? and store_id = ? and network = ? and status = ?';
         const values = [id, storeId, network, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });
