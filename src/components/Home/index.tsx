@@ -5,8 +5,8 @@ import Dashboard from 'components/Dashboard';
 import Settings from 'components/Settings';
 import Bitcoin from 'components/Wallet/Bitcoin';
 import Lightning from 'components/Wallet/Bitcoin/Lightning';
-import Invoices from 'components/Payments/invoices/index';
-import InvoiceDetails from 'components/Payments/invoices/id';
+import PaymentInvoices from 'components/Payments/invoices/index';
+import PaymentInvoiceDetails from 'components/Payments/invoices/id';
 import Reporting from 'components/Payments/Reporting';
 import Requests from 'components/Payments/Requests';
 import Pullpayments from 'components/Payments/Pullpayments';
@@ -41,6 +41,8 @@ import Bsc from 'components/Wallet/Bsc';
 import BitcoinSend from 'components/Wallet/Bitcoin/Send';
 import BitcoinReceive from 'components/Wallet/Bitcoin/Receive';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
+// import Invoices from 'components/Invoices/index';
+import InvoicesDetails from 'components/Invoices/id';
 
 const Home = () => {
   const router = useRouter();
@@ -77,6 +79,7 @@ const Home = () => {
   const otherWhiteList: any = {
     '/wallet/bitcoin/send': <BitcoinSend />,
     '/wallet/bitcoin/receive': <BitcoinReceive />,
+    '/invoices/[id]': <InvoicesDetails />,
   };
 
   const dashboardWhiteList: any = {
@@ -93,8 +96,8 @@ const Home = () => {
     '/wallet/ton': <Ton />,
     '/wallet/tron': <Tron />,
     '/wallet/bsc': <Bsc />,
-    '/payments/invoices': <Invoices />,
-    '/payments/invoices/[id]': <InvoiceDetails />,
+    '/payments/invoices': <PaymentInvoices />,
+    '/payments/invoices/[id]': <PaymentInvoiceDetails />,
     '/payments/reporting': <Reporting />,
     '/payments/requests': <Requests />,
     '/payments/pullpayments': <Pullpayments />,
@@ -116,6 +119,8 @@ const Home = () => {
     '/wallets/phrase/intro': <PhraseIntro />,
     '/wallets/phrase/backup': <PhraseBackup />,
     '/wallets/phrase/backup/confirm': <PhraseBackupConfirm />,
+
+    '/invoices/[id]': <InvoicesDetails />,
   };
 
   useEffect(() => {

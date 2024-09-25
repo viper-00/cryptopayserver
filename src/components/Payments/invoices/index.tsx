@@ -28,7 +28,7 @@ import { CHAINS } from 'packages/constants/blockchain';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { ORDER_STATUS } from 'packages/constants';
 
-const Invoices = () => {
+const PaymentInvoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
   const [openCreateInvoice, setOpenCreateInvoice] = useState<boolean>(false);
 
@@ -146,7 +146,7 @@ const Invoices = () => {
                     onClick={() => {
                       setOpenCreateInvoice(false);
                     }}
-                    style={{ marginRight: 20}}
+                    style={{ marginRight: 20 }}
                   >
                     Back
                   </Button>
@@ -481,4 +481,4 @@ const Invoices = () => {
   );
 };
 
-export default Invoices;
+export default PaymentInvoices;

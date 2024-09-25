@@ -40,7 +40,7 @@ type OrderType = {
   expirationDate: number;
 };
 
-const InvoiceDetails = () => {
+const PaymentInvoiceDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
@@ -71,8 +71,6 @@ const InvoiceDetails = () => {
       const invoice_resp: any = await axios.get(Http.find_invoice_by_id, {
         params: {
           id: id,
-          store_id: getStoreId(),
-          network: getNetwork() === 'mainnet' ? 1 : 2,
         },
       });
 
@@ -121,9 +119,12 @@ const InvoiceDetails = () => {
         </Stack>
 
         <Stack direction={'row'} alignItems={'center'} mt={4}>
-          <Button variant={'outlined'} onClick={() => {
-            window.location.href = "/invoices/" + order.orderId
-          }}>
+          <Button
+            variant={'outlined'}
+            onClick={() => {
+              window.location.href = '/invoices/' + order.orderId;
+            }}
+          >
             Checkout
           </Button>
           <Button variant={'outlined'} onClick={() => {}} style={{ marginLeft: 20 }}>
@@ -333,7 +334,7 @@ const InvoiceDetails = () => {
   );
 };
 
-export default InvoiceDetails;
+export default PaymentInvoiceDetails;
 
 function createData(date: string, message: string) {
   return { date, message };
