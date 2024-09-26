@@ -29,6 +29,8 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { QRCodeSVG } from 'qrcode.react';
 import { OmitMiddleString } from 'utils/strings';
+import { COINGECKO_IDS } from 'packages/constants';
+import { BigDiv } from 'utils/number';
 
 type OrderType = {
   orderId: number;
@@ -46,6 +48,10 @@ type OrderType = {
   paymentMethod: string;
   createdDate: number;
   expirationDate: number;
+  rate: number;
+  totalPrice: string;
+  amountDue: string;
+  networkFee: number;
 };
 
 const InvoiceDetails = () => {
@@ -74,6 +80,10 @@ const InvoiceDetails = () => {
     paymentMethod: '',
     createdDate: 0,
     expirationDate: 0,
+    rate: 0,
+    totalPrice: '0',
+    amountDue: '0',
+    networkFee: 0,
   });
 
   const init = async (id: any) => {
@@ -85,26 +95,42 @@ const InvoiceDetails = () => {
       });
 
       if (invoice_resp.result && invoice_resp.data.length === 1) {
-        setOrder({
-          orderId: invoice_resp.data[0].order_id,
-          amount: invoice_resp.data[0].amount,
-          buyerEmail: invoice_resp.data[0].buyer_email,
-          crypto: invoice_resp.data[0].crypto,
-          currency: invoice_resp.data[0].currency,
-          description: invoice_resp.data[0].description,
-          destinationAddress: invoice_resp.data[0].destination_address,
-          metadata: invoice_resp.data[0].metadata,
-          notificationEmail: invoice_resp.data[0].notification_email,
-          notificationUrl: invoice_resp.data[0].notification_url,
-          orderStatus: invoice_resp.data[0].order_status,
-          paid: invoice_resp.data[0].paid,
-          paymentMethod: invoice_resp.data[0].payment_method,
-          createdDate: invoice_resp.data[0].created_date,
-          expirationDate: invoice_resp.data[0].expiration_date,
+        const ids = COINGECKO_IDS[invoice_resp.data[0].crypto];
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids,
+            currency: invoice_resp.data[0].currency,
+          },
         });
 
+        const rate = rate_response.data[ids][(invoice_resp.data[0].currency as string).toLowerCase()];
+        const totalPrice = parseFloat(BigDiv(invoice_resp.data[0].amount, rate)).toFixed(8);
+        if (rate_response.result) {
+          setOrder({
+            orderId: invoice_resp.data[0].order_id,
+            amount: invoice_resp.data[0].amount,
+            buyerEmail: invoice_resp.data[0].buyer_email,
+            crypto: invoice_resp.data[0].crypto,
+            currency: invoice_resp.data[0].currency,
+            description: invoice_resp.data[0].description,
+            destinationAddress: invoice_resp.data[0].destination_address,
+            metadata: invoice_resp.data[0].metadata,
+            notificationEmail: invoice_resp.data[0].notification_email,
+            notificationUrl: invoice_resp.data[0].notification_url,
+            orderStatus: invoice_resp.data[0].order_status,
+            paid: invoice_resp.data[0].paid,
+            paymentMethod: invoice_resp.data[0].payment_method,
+            createdDate: invoice_resp.data[0].created_date,
+            expirationDate: invoice_resp.data[0].expiration_date,
+            rate: rate,
+            totalPrice: totalPrice,
+            amountDue: totalPrice,
+            networkFee: 0,
+          });
+        }
+
         const qrVal =
-          'bitcoin:' + invoice_resp.data[0].destination_address + '?amount=' + '0.0012312' + 'pj=' + location.href;
+          'bitcoin:' + invoice_resp.data[0].destination_address + '?amount=' + totalPrice + '&pj=' + location.href;
         setQrCodeVal(qrVal);
       } else {
         setSnackSeverity('error');
@@ -126,10 +152,10 @@ const InvoiceDetails = () => {
         <Typography textAlign={'center'}>{order.description}</Typography>
         <Stack direction={'row'} alignItems={'center'} mt={2} justifyContent={'center'}>
           <Typography fontSize={24} fontWeight={'bold'}>
-            0.0012312311
+            {order.totalPrice}
           </Typography>
           <Typography ml={1} fontSize={24} fontWeight={'bold'}>
-            BTC
+            {order.crypto}
           </Typography>
         </Stack>
 
@@ -150,7 +176,9 @@ const InvoiceDetails = () => {
             <AccordionDetails>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
                 <Typography>Total Price</Typography>
-                <Typography fontWeight={'bold'}>0.00123123 BTC</Typography>
+                <Typography fontWeight={'bold'}>
+                  {order.totalPrice} {order.crypto}
+                </Typography>
               </Stack>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
                 <Typography>Total Fiat</Typography>
@@ -160,15 +188,19 @@ const InvoiceDetails = () => {
               </Stack>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
                 <Typography>Exchange Rate</Typography>
-                <Typography fontWeight={'bold'}>1 BTC = $60000,00</Typography>
+                <Typography fontWeight={'bold'}>
+                  1 {order.crypto} = {order.rate} {order.currency}
+                </Typography>
               </Stack>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
                 <Typography>Amount Due</Typography>
-                <Typography fontWeight={'bold'}>0.00123123 BTC</Typography>
+                <Typography fontWeight={'bold'}>
+                  {order.amountDue} {order.crypto}
+                </Typography>
               </Stack>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <Typography>Recommended Fee</Typography>
-                <Typography fontWeight={'bold'}>3.123 sat/byte</Typography>
+                <Typography fontWeight={'bold'}>{order.networkFee} sat/byte</Typography>
               </Stack>
             </AccordionDetails>
           </Accordion>

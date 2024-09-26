@@ -46,4 +46,7 @@ export class Http {
   static create_invoice = this.httpPath + '/create_invoice';
   static find_invoice = this.httpPath + '/find_invoice';
   static find_invoice_by_id = this.httpPath + '/find_invoice_by_id';
+
+  // tool
+  static find_crypto_price = this.httpPath + '/find_crypto_price';
 }
