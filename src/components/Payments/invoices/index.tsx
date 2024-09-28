@@ -21,7 +21,7 @@ import {
 import { useState } from 'react';
 import InvoiceDataGrid from '../Invoice/InvoiceDataGrid';
 import { CURRENCY, ORDER_TIME } from 'packages/constants';
-import { isValidEmail, isValidHTTPUrl, isValidJSON } from 'utils/verify';
+import { IsValidEmail, IsValidHTTPUrl, IsValidJSON } from 'utils/verify';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { CHAINS } from 'packages/constants/blockchain';
@@ -67,17 +67,17 @@ const PaymentInvoices = () => {
       return;
     }
 
-    if (!isValidEmail(buyerEmail) || !isValidEmail(notificationEmail)) {
+    if (!IsValidEmail(buyerEmail) || !IsValidEmail(notificationEmail)) {
       console.log('Error: email');
       return;
     }
 
-    if (!isValidJSON(metadata)) {
+    if (!IsValidJSON(metadata)) {
       console.log('Error: metadata');
       return;
     }
 
-    if (!isValidHTTPUrl(notificationUrl)) {
+    if (!IsValidHTTPUrl(notificationUrl)) {
       console.log('Error: notificationUrl');
       return;
     }
@@ -418,7 +418,6 @@ const PaymentInvoices = () => {
                   inputProps={{ 'aria-label': 'Without label' }}
                   value={orderStatus}
                   onChange={(e) => {
-                    console.log('ddd', e.target.value);
                     setOrderStatus(e.target.value);
                   }}
                 >

@@ -100,7 +100,6 @@ export default function InvoiceDataGrid() {
           });
           setRows(rt);
         }
-        console.log('invoice', invoice_resp.data);
       } else {
         setSnackSeverity('error');
         setSnackMessage('Can not find the invoice on site!');

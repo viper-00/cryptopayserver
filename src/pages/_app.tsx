@@ -11,12 +11,11 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-  
   async function test_db_conn() {
     try {
       const response: any = await axios.get(Http.test_db_conn);
       if (response.result) {
-        console.log("Test DB connection successfully")
+        console.log('Test DB connection successfully');
       }
     } catch (e) {
       console.error(e);

@@ -29,8 +29,9 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { QRCodeSVG } from 'qrcode.react';
 import { OmitMiddleString } from 'utils/strings';
-import { COINGECKO_IDS } from 'packages/constants';
+import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
 import { BigDiv } from 'utils/number';
+import { GetImgSrcByCrypto } from 'utils/qrcode';
 
 type OrderType = {
   orderId: number;
@@ -51,18 +52,18 @@ type OrderType = {
   rate: number;
   totalPrice: string;
   amountDue: string;
-  networkFee: number;
 };
 
 const InvoiceDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { getNetwork } = useUserPresistStore((state) => state);
-  const { getStoreId, getStoreName } = useStorePresistStore((state) => state);
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const [qrCodeVal, setQrCodeVal] = useState<string>('');
+  const [countdownVal, setCountdownVal] = useState<string>('0');
+
+  const [payStatus, setPayStatus] = useState<number>(1);
 
   const [order, setOrder] = useState<OrderType>({
     orderId: 0,
@@ -83,7 +84,6 @@ const InvoiceDetails = () => {
     rate: 0,
     totalPrice: '0',
     amountDue: '0',
-    networkFee: 0,
   });
 
   const init = async (id: any) => {
@@ -105,6 +105,7 @@ const InvoiceDetails = () => {
 
         const rate = rate_response.data[ids][(invoice_resp.data[0].currency as string).toLowerCase()];
         const totalPrice = parseFloat(BigDiv(invoice_resp.data[0].amount, rate)).toFixed(8);
+
         if (rate_response.result) {
           setOrder({
             orderId: invoice_resp.data[0].order_id,
@@ -125,7 +126,6 @@ const InvoiceDetails = () => {
             rate: rate,
             totalPrice: totalPrice,
             amountDue: totalPrice,
-            networkFee: 0,
           });
         }
 
@@ -144,7 +144,40 @@ const InvoiceDetails = () => {
 
   useEffect(() => {
     id && init(id);
+
+    const activeInit = setInterval(() => {
+      id && init(id);
+    }, 10 * 1000);
+
+    return () => clearInterval(activeInit);
   }, [id]);
+
+  const countDownTime = () => {
+    if (!order.expirationDate || order.expirationDate <= 0) {
+      return;
+    }
+
+    const currentTime = Date.now();
+    const remainingTime = order.expirationDate - currentTime;
+
+    if (remainingTime <= 0) {
+      return;
+    }
+
+    const seconds = Math.floor((remainingTime / 1000) % 60);
+    const minutes = Math.floor((remainingTime / 1000 / 60) % 60);
+    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    setCountdownVal(formattedTime);
+  };
+
+  useEffect(() => {
+    const activeCountDownTime = setInterval(() => {
+      countDownTime();
+    }, 1000);
+
+    return () => clearInterval(activeCountDownTime);
+  }, [order.expirationDate]);
 
   return (
     <Box mt={4}>
@@ -160,12 +193,30 @@ const InvoiceDetails = () => {
         </Stack>
 
         <Box mt={2}>
-          <Alert variant="filled" severity="info">
-            <Stack direction={'row'} alignItems={'center'}>
-              <Typography>This invoice will expire in</Typography>
-              <Typography ml={1}>00:28</Typography>
-            </Stack>
-          </Alert>
+          {order.orderStatus === ORDER_STATUS.Processing && (
+            <Alert variant="filled" severity="info">
+              <Stack direction={'row'} alignItems={'center'}>
+                <Typography>This invoice will expire in</Typography>
+                <Typography ml={1}>{countdownVal}</Typography>
+              </Stack>
+            </Alert>
+          )}
+
+          {order.orderStatus === ORDER_STATUS.Settled && (
+            <Alert variant="filled" severity="success">
+              <Stack direction={'row'} alignItems={'center'}>
+                <Typography>The order has been paid successfully</Typography>
+              </Stack>
+            </Alert>
+          )}
+
+          {order.orderStatus === ORDER_STATUS.Expired && (
+            <Alert variant="filled" severity="warning">
+              <Stack direction={'row'} alignItems={'center'}>
+                <Typography>The order has expired, please do not continue to pay</Typography>
+              </Stack>
+            </Alert>
+          )}
         </Box>
 
         <Box mt={2}>
@@ -198,29 +249,27 @@ const InvoiceDetails = () => {
                   {order.amountDue} {order.crypto}
                 </Typography>
               </Stack>
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                <Typography>Recommended Fee</Typography>
-                <Typography fontWeight={'bold'}>{order.networkFee} sat/byte</Typography>
-              </Stack>
             </AccordionDetails>
           </Accordion>
         </Box>
 
-        <Box mt={2} textAlign={'center'}>
-          <Paper style={{ padding: 20 }}>
-            <QRCodeSVG
-              value={qrCodeVal}
-              width={250}
-              height={250}
-              imageSettings={{
-                src: 'http://127.0.0.1:8888/btc.svg',
-                width: 35,
-                height: 35,
-                excavate: false,
-              }}
-            />
-          </Paper>
-        </Box>
+        {order.orderStatus === ORDER_STATUS.Processing && (
+          <Box mt={2} textAlign={'center'}>
+            <Paper style={{ padding: 20 }}>
+              <QRCodeSVG
+                value={qrCodeVal}
+                width={250}
+                height={250}
+                imageSettings={{
+                  src: GetImgSrcByCrypto(order.crypto),
+                  width: 35,
+                  height: 35,
+                  excavate: false,
+                }}
+              />
+            </Paper>
+          </Box>
+        )}
 
         <Box mt={4}>
           <Typography>ADDRESS</Typography>
@@ -232,11 +281,13 @@ const InvoiceDetails = () => {
           </Stack>
         </Box>
 
-        <Box mt={2}>
-          <Button variant={'contained'} size={'large'} fullWidth onClick={() => {}}>
-            Pay in wallet
-          </Button>
-        </Box>
+        {order.orderStatus === ORDER_STATUS.Processing && (
+          <Box mt={2}>
+            <Button variant={'contained'} size={'large'} fullWidth onClick={() => {}}>
+              Pay in wallet
+            </Button>
+          </Box>
+        )}
       </Container>
     </Box>
   );
