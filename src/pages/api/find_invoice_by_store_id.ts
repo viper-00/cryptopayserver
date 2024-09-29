@@ -9,9 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     switch (req.method) {
       case 'GET':
         const connection = await connectDatabase();
+        const storeId = req.query.store_id;
+        const network = req.query.network;
 
-        const query = 'SELECT * FROM invoices where status = ?';
-        const values = [1];
+        const query = 'SELECT * FROM invoices where store_id = ? and network = ? and status = ? order by id desc';
+        const values = [storeId, network, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });
       case 'POST':

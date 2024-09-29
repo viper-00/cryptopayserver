@@ -1,23 +1,45 @@
-import { NextResponse } from 'next/server';
-import cron from 'node-cron';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { connectDatabase } from 'packages/db/mysql';
+import { ResponseData, CorsMiddleware, CorsMethod } from '.';
+import { ORDER_STATUS } from 'packages/constants';
+import mysql from 'mysql2/promise';
 
-export async function POST() {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
-    cron.schedule('*/20 * * * *', async () => {
-      console.log('');
-      console.log('######################################');
-      console.log('#                                    #');
-      console.log('# Running scheduler every 20 minutes #');
-      console.log('#                                    #');
-      console.log('######################################');
-      console.log('');
+    await CorsMiddleware(req, res, CorsMethod);
 
-      // Perform your action here
-    });
+    switch (req.method) {
+      case 'GET':
+        console.log('Schduler Task: Checkout status of order');
+        const connection = await connectDatabase();
+        const query = 'SELECT * FROM invoices where order_status = ? and status = ?';
+        const values = [ORDER_STATUS.Processing, 1];
+        const [rows] = await connection.query(query, values);
 
-    return NextResponse.json({ data: 'Success', status: 200 });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ error: error }, { status: 500 });
+        if (Array.isArray(rows) && rows.length > 0) {
+          const items = rows as mysql.RowDataPacket[];
+
+          items.forEach(async (item) => {
+            const currentTime = Date.now();
+            const remainingTime = item.expiration_date - currentTime;
+
+            if (remainingTime <= 0) {
+              // update status from processing to expired
+              const update_query = 'UPDATE invoices set order_status = ? where status = 1';
+              const update_values = [ORDER_STATUS.Expired];
+              await connection.query(update_query, update_values);
+            }
+          });
+        }
+
+        return res.status(200).json({ message: '', result: true, data: null });
+      case 'POST':
+        break;
+      default:
+        throw 'no support the method of api';
+    }
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: '', result: false, data: e });
   }
 }

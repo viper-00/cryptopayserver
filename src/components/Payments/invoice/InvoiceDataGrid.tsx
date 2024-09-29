@@ -77,7 +77,7 @@ export default function InvoiceDataGrid() {
 
   const init = async () => {
     try {
-      const invoice_resp: any = await axios.get(Http.find_invoice, {
+      const invoice_resp: any = await axios.get(Http.find_invoice_by_store_id, {
         params: {
           store_id: getStoreId(),
           network: getNetwork() === 'mainnet' ? 1 : 2,
@@ -128,7 +128,7 @@ export default function InvoiceDataGrid() {
         }}
         pageSizeOptions={[10]}
         onRowClick={(e: any) => {
-          window.location.href = "/payments/invoices/" + e.row.orderId
+          window.location.href = '/payments/invoices/' + e.row.orderId;
         }}
         // checkboxSelection
         // disableRowSelectionOnClick

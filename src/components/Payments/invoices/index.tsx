@@ -91,18 +91,6 @@ const PaymentInvoices = () => {
     const ln_notification_url = notificationUrl;
     const ln_notification_email = notificationEmail;
 
-    console.log(
-      'test',
-      ln_amount,
-      ln_currency,
-      ln_crypto,
-      ln_desc,
-      ln_buyer_email,
-      ln_metadata,
-      ln_notification_url,
-      ln_notification_email,
-    );
-
     try {
       const create_invoice_resp: any = await axios.post(Http.create_invoice, {
         user_id: getUserId(),
