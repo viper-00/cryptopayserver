@@ -18,9 +18,11 @@ import {
 } from '@mui/material';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
+import { COINGECKO_IDS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { BigDiv } from 'utils/number';
 
 type OrderType = {
   orderId: number;
@@ -38,6 +40,9 @@ type OrderType = {
   paymentMethod: string;
   createdDate: number;
   expirationDate: number;
+  rate: number;
+  totalPrice: string;
+  amountDue: string;
 };
 
 const PaymentInvoiceDetails = () => {
@@ -64,6 +69,9 @@ const PaymentInvoiceDetails = () => {
     paymentMethod: '',
     createdDate: 0,
     expirationDate: 0,
+    rate: 0,
+    totalPrice: '0',
+    amountDue: '0',
   });
 
   const init = async (id: any) => {
@@ -75,6 +83,17 @@ const PaymentInvoiceDetails = () => {
       });
 
       if (invoice_resp.result && invoice_resp.data.length === 1) {
+        const ids = COINGECKO_IDS[invoice_resp.data[0].crypto];
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids,
+            currency: invoice_resp.data[0].currency,
+          },
+        });
+
+        const rate = rate_response.data[ids][(invoice_resp.data[0].currency as string).toLowerCase()];
+        const totalPrice = parseFloat(BigDiv(invoice_resp.data[0].amount, rate)).toFixed(8);
+
         setOrder({
           orderId: invoice_resp.data[0].order_id,
           amount: invoice_resp.data[0].amount,
@@ -91,6 +110,9 @@ const PaymentInvoiceDetails = () => {
           paymentMethod: invoice_resp.data[0].payment_method,
           createdDate: invoice_resp.data[0].created_date,
           expirationDate: invoice_resp.data[0].expiration_date,
+          rate: rate,
+          totalPrice: totalPrice,
+          amountDue: totalPrice,
         });
       } else {
         setSnackSeverity('error');
@@ -176,7 +198,7 @@ const PaymentInvoiceDetails = () => {
                   <Typography>Created Date</Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <Typography>{order.createdDate}</Typography>
+                  <Typography>{new Date(order.createdDate).toLocaleString()}</Typography>
                 </Grid>
               </Grid>
             </ListItem>
@@ -187,7 +209,7 @@ const PaymentInvoiceDetails = () => {
                   <Typography>Expiration Date</Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <Typography>{order.expirationDate}</Typography>
+                  <Typography>{new Date(order.expirationDate).toLocaleString()}</Typography>
                 </Grid>
               </Grid>
             </ListItem>
@@ -290,7 +312,9 @@ const PaymentInvoiceDetails = () => {
                   <Typography>Rate</Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <Typography>123 USD</Typography>
+                  <Typography>
+                    {order.rate} {order.currency}
+                  </Typography>
                 </Grid>
               </Grid>
             </ListItem>
@@ -301,7 +325,9 @@ const PaymentInvoiceDetails = () => {
                   <Typography>Total due</Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <Typography>0.0123123 BTC</Typography>
+                  <Typography>
+                    {order.amountDue} {order.crypto}
+                  </Typography>
                 </Grid>
               </Grid>
             </ListItem>
@@ -312,7 +338,7 @@ const PaymentInvoiceDetails = () => {
                   <Typography>Paid</Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <Typography>{order.paid}</Typography>
+                  <Typography>{order.paid === 1 ? 'True' : 'False'}</Typography>
                 </Grid>
               </Grid>
             </ListItem>
