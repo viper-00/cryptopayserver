@@ -23,6 +23,7 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { BigDiv } from 'utils/number';
+import { InvoiceEventDataTab } from '../Invoice/invoiceEventDataTab';
 
 type OrderType = {
   orderId: number;
@@ -352,7 +353,7 @@ const PaymentInvoiceDetails = () => {
           </Typography>
 
           <Box mt={4}>
-            <EventTab />
+            <InvoiceEventDataTab orderId={order.orderId}/>
           </Box>
         </Box>
       </Container>
@@ -361,43 +362,3 @@ const PaymentInvoiceDetails = () => {
 };
 
 export default PaymentInvoiceDetails;
-
-function createData(date: string, message: string) {
-  return { date, message };
-}
-
-const rows = [
-  createData('6/14/24, 2:52:11 AM', 'Creation of invoice starting'),
-  createData('6/14/24, 2:52:11 AM', 'Creation of invoice starting'),
-  createData('6/14/24, 2:52:11 AM', 'Creation of invoice starting'),
-  createData('6/14/24, 2:52:11 AM', 'Creation of invoice starting'),
-  createData('6/14/24, 2:52:11 AM', 'Creation of invoice starting'),
-  createData('6/14/24, 2:52:11 AM', 'Creation of invoice starting'),
-];
-
-export function EventTab() {
-  return (
-    <Box>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Date</TableCell>
-              <TableCell align="left">Message</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.date} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component="th" scope="row">
-                  {row.date}
-                </TableCell>
-                <TableCell align="left">{row.message}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-}

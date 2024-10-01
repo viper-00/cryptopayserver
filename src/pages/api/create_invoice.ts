@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
-import { WEB3 } from 'packages/web3';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import { GenerateOrderIDByTime } from 'utils/number';
 import mysql from 'mysql2/promise';
@@ -26,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const notificationUrl = req.body.notification_url;
         const notificationEmail = req.body.notification_email;
 
-        const order_id = GenerateOrderIDByTime();
+        const orderId = GenerateOrderIDByTime();
 
         const paymentSettingsQuery =
           'SELECT current_used_address_id, payment_expire FROM payment_settings where user_id = ? and store_id = ? and chain_id = ?';
@@ -58,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               storeId,
               chainId,
               network,
-              order_id,
+              orderId,
               amount,
               crypto,
               currency,
@@ -79,6 +78,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             if (invoiceId === 0) {
               return res.status(200).json({ message: 'Something wrong', result: false, data: null });
             }
+
+            // create event of invoice
+            let invoiceEventMessage = 'Creation of invoice starting';
+            let invoiceEventCreateDate = new Date().getTime();
+            let invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+            let invoiceEventCreateValues = [invoiceId, orderId, invoiceEventMessage, invoiceEventCreateDate, 1];
+            await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
+
+            invoiceEventMessage = `${crypto}_${currency}: The rating rule is coingecko(${crypto}_${currency})`;
+            invoiceEventCreateDate = new Date().getTime();
+            invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+            invoiceEventCreateValues = [invoiceId, orderId, invoiceEventMessage, invoiceEventCreateDate, 1];
+            await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
+
+            invoiceEventMessage = `Invoice ${orderId} new event: invoice_created`;
+            invoiceEventCreateDate = new Date().getTime();
+            invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+            invoiceEventCreateValues = [invoiceId, orderId, invoiceEventMessage, invoiceEventCreateDate, 1];
+            await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
 
             return res.status(200).json({
               message: '',

@@ -48,6 +48,10 @@ export class Http {
   static find_invoice_by_id = this.httpPath + '/find_invoice_by_id';
   static find_invoice_by_store_id = this.httpPath + '/find_invoice_by_store_id';
 
+  // invoice event
+  static create_invoice_event = this.httpPath + '/create_invoice_event';
+  static find_invoice_event_by_order_id = this.httpPath + '/find_invoice_event_by_order_id';
+
   // tool
   static find_crypto_price = this.httpPath + '/find_crypto_price';
 }

@@ -25,9 +25,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             if (remainingTime <= 0) {
               // update status from processing to expired
-              const update_query = 'UPDATE invoices set order_status = ? where status = 1';
-              const update_values = [ORDER_STATUS.Expired];
+              const update_query = 'UPDATE invoices set order_status = ? where id = ? and status = 1';
+              const update_values = [ORDER_STATUS.Expired, item.id];
               await connection.query(update_query, update_values);
+
+              let invoiceEventMessage = 'Invoice status is Expired';
+              let invoiceEventCreateDate = new Date().getTime();
+              let invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+              let invoiceEventCreateValues = [item.id, item.order_id, invoiceEventMessage, invoiceEventCreateDate, 1];
+              await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
+
+              invoiceEventMessage = `Invoice ${item.order_id} new event: invoice_expired`;
+              invoiceEventCreateDate = new Date().getTime();
+              invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+              invoiceEventCreateValues = [item.id, item.order_id, invoiceEventMessage, invoiceEventCreateDate, 1];
+              await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
+
+              invoiceEventMessage = `Invoice ${item.order_id} is not monitored anymore.`;
+              invoiceEventCreateDate = new Date().getTime();
+              invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+              invoiceEventCreateValues = [item.id, item.order_id, invoiceEventMessage, invoiceEventCreateDate, 1];
+              await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
             }
           });
         }
