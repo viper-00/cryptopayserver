@@ -5,11 +5,8 @@ import {
   AccordionSummary,
   Box,
   Button,
-  Checkbox,
   Container,
-  Divider,
   FormControl,
-  FormControlLabel,
   IconButton,
   MenuItem,
   OutlinedInput,
@@ -67,17 +64,22 @@ const PaymentInvoices = () => {
       return;
     }
 
-    if (!IsValidEmail(buyerEmail) || !IsValidEmail(notificationEmail)) {
+    if (!IsValidEmail(buyerEmail)) {
       console.log('Error: email');
       return;
     }
 
-    if (!IsValidJSON(metadata)) {
+    if (metadata !== '' && !IsValidJSON(metadata)) {
       console.log('Error: metadata');
       return;
     }
 
-    if (!IsValidHTTPUrl(notificationUrl)) {
+    if (notificationEmail !== '' && !IsValidEmail(notificationEmail)) {
+      console.log('Error: email');
+      return;
+    }
+
+    if (notificationUrl !== '' && !IsValidHTTPUrl(notificationUrl)) {
       console.log('Error: notificationUrl');
       return;
     }
@@ -107,13 +109,13 @@ const PaymentInvoices = () => {
         notification_email: ln_notification_email,
       });
 
-      if (create_invoice_resp.result) {
+      if (create_invoice_resp.result && create_invoice_resp.data.order_id) {
         setSnackSeverity('success');
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
-        // setTimeout(() => {
-        //   window.location.href = '/';
-        // }, 2000);
+        setTimeout(() => {
+          window.location.href = '/payments/invoices/' + create_invoice_resp.data.order_id;
+        }, 2000);
       }
     } catch (e) {
       console.error(e);
@@ -146,7 +148,7 @@ const PaymentInvoices = () => {
 
               <Stack direction={'row'} alignItems={'baseline'}>
                 <Box mt={5}>
-                  <Typography>Amount</Typography>
+                  <Typography>* Amount</Typography>
                   <Box mt={1}>
                     <TextField
                       fullWidth
@@ -162,7 +164,7 @@ const PaymentInvoices = () => {
                   </Box>
                 </Box>
                 <Box ml={5}>
-                  <Typography>Currency</Typography>
+                  <Typography>* Currency</Typography>
                   <Box mt={1}>
                     <FormControl sx={{ minWidth: 300 }}>
                       <Select
@@ -186,7 +188,7 @@ const PaymentInvoices = () => {
                   </Box>
                 </Box>
                 <Box ml={5}>
-                  <Typography>Crypto</Typography>
+                  <Typography>* Crypto</Typography>
                   <Box mt={1}>
                     <TextField fullWidth hiddenLabel size="small" value={crypto} disabled />
                   </Box>
@@ -210,7 +212,7 @@ const PaymentInvoices = () => {
               </Box> */}
 
               <Box mt={4}>
-                <Typography>Item Description</Typography>
+                <Typography>* Item Description</Typography>
                 <Box mt={1}>
                   <TextField
                     fullWidth
@@ -258,7 +260,7 @@ const PaymentInvoices = () => {
             <Box mt={5}>
               <Typography variant="h6">Customer Information</Typography>
               <Box mt={4}>
-                <Typography>Buyer Email</Typography>
+                <Typography>* Buyer Email</Typography>
                 <Box mt={1}>
                   <TextField
                     fullWidth

@@ -129,6 +129,14 @@ const Bitcoin = () => {
     }
   };
 
+  const onClickRescanAddress = async () => {
+    await getBitcoinWalletAddress();
+
+    setSnackSeverity('success');
+    setSnackMessage('Successful rescan!');
+    setSnackOpen(true);
+  };
+
   const init = async () => {
     await getBitcoinWalletAddress();
     await getBitcoinPaymentSetting();
@@ -164,6 +172,11 @@ const Bitcoin = () => {
                 }}
               >
                 Receive
+              </Button>
+            </Box>
+            <Box>
+              <Button variant={'contained'} onClick={onClickRescanAddress}>
+                Rescan address
               </Button>
             </Box>
             <IconButton
@@ -449,7 +462,6 @@ const Bitcoin = () => {
                         >
                           Check onChain
                         </Button>
-                        <Button>Rescan address</Button>
                       </Box>
                     </Stack>
                     <Box mt={5}>

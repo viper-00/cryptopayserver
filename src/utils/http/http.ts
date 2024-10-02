@@ -47,6 +47,7 @@ export class Http {
   static find_invoice = this.httpPath + '/find_invoice';
   static find_invoice_by_id = this.httpPath + '/find_invoice_by_id';
   static find_invoice_by_store_id = this.httpPath + '/find_invoice_by_store_id';
+  static update_invoice_order_status_by_order_id = this.httpPath + '/update_invoice_order_status_by_order_id';
 
   // invoice event
   static create_invoice_event = this.httpPath + '/create_invoice_event';

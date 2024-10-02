@@ -1,24 +1,7 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Grid,
-  List,
-  ListItem,
-  Stack,
-  TableContainer,
-  Typography,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from '@mui/material';
+import { Box, Button, Container, Divider, Grid, List, ListItem, Stack, Typography } from '@mui/material';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
-import { COINGECKO_IDS } from 'packages/constants';
+import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -129,6 +112,29 @@ const PaymentInvoiceDetails = () => {
     id && init(id);
   }, [id]);
 
+  const onClickArchive = async () => {
+    try {
+      const resposne: any = await axios.put(Http.update_invoice_order_status_by_order_id, {
+        order_id: order.orderId,
+        order_status: ORDER_STATUS.Invalid,
+      });
+
+      if (resposne.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful update!');
+        setSnackOpen(true);
+
+        window.location.reload();
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Something wrong, please try it again');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <Box>
       <Container>
@@ -150,9 +156,11 @@ const PaymentInvoiceDetails = () => {
           >
             Checkout
           </Button>
-          <Button variant={'outlined'} onClick={() => {}} style={{ marginLeft: 20 }}>
-            Archive
-          </Button>
+          {order.orderStatus !== ORDER_STATUS.Invalid && (
+            <Button variant={'outlined'} onClick={onClickArchive} style={{ marginLeft: 20 }}>
+              Archive
+            </Button>
+          )}
         </Stack>
 
         <Box mt={4}>
@@ -188,7 +196,21 @@ const PaymentInvoiceDetails = () => {
                   <Typography>State</Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <Typography>{order.orderStatus}</Typography>
+                  <Typography
+                    color={
+                      order.orderStatus === ORDER_STATUS.Expired
+                        ? 'red'
+                        : order.orderStatus === ORDER_STATUS.Settled
+                        ? 'green'
+                        : order.orderStatus === ORDER_STATUS.Processing
+                        ? 'orange'
+                        : order.orderStatus === ORDER_STATUS.Invalid
+                        ? 'red'
+                        : ''
+                    }
+                  >
+                    {order.orderStatus}
+                  </Typography>
                 </Grid>
               </Grid>
             </ListItem>
@@ -353,7 +375,7 @@ const PaymentInvoiceDetails = () => {
           </Typography>
 
           <Box mt={4}>
-            <InvoiceEventDataTab orderId={order.orderId}/>
+            <InvoiceEventDataTab orderId={order.orderId} />
           </Box>
         </Box>
       </Container>

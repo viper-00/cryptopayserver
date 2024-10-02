@@ -3,26 +3,16 @@ import {
   Box,
   Button,
   Container,
-  Divider,
-  Grid,
-  List,
-  ListItem,
   Stack,
-  TableContainer,
   Typography,
   Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Alert,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   IconButton,
 } from '@mui/material';
-import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { useSnackPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -214,6 +204,13 @@ const InvoiceDetails = () => {
             <Alert variant="filled" severity="warning">
               <Stack direction={'row'} alignItems={'center'}>
                 <Typography>The order has expired, please do not continue to pay</Typography>
+              </Stack>
+            </Alert>
+          )}
+           {order.orderStatus === ORDER_STATUS.Invalid && (
+            <Alert variant="filled" severity="error">
+              <Stack direction={'row'} alignItems={'center'}>
+                <Typography>The order has invalid, please do not continue to pay</Typography>
               </Stack>
             </Alert>
           )}

@@ -29,7 +29,14 @@ export const useSnackPresistStore = create(
     (set, get) => ({
       ...initialSnackState,
 
-      setSnackOpen: (value) => set(() => ({ snackOpen: value })),
+      setSnackOpen: (value) => {
+        set(() => ({ snackOpen: value }));
+        if (value) {
+          setTimeout(() => {
+            set(() => ({ snackOpen: !value }));
+          }, 5000);
+        }
+      },
       getSnackOpen: () => get().snackOpen,
       setSnackMessage: (value) => set(() => ({ snackMessage: value })),
       getSnackMessage: () => get().snackMessage,
