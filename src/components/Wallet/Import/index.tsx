@@ -22,7 +22,7 @@ const WalletImport = () => {
   };
 
   const onClickMnemonicPhraseAndPrivateKey = () => {
-    window.location.href = '/wallets/import/mnemonicphrase';
+    window.location.href = '/wallet/import/mnemonicphrase';
   };
 
   const onClickNoPrivateKeyWallet = () => {

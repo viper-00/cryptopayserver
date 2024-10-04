@@ -42,7 +42,7 @@ const GenerateWallet = () => {
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
         setTimeout(() => {
-          window.location.href = '/wallets/setPassword';
+          window.location.href = '/wallet/setPassword';
         }, 2000);
       }
     } catch (e) {

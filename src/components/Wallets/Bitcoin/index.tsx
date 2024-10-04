@@ -158,7 +158,7 @@ const Bitcoin = () => {
               <Button
                 variant={'contained'}
                 onClick={() => {
-                  window.location.href = '/wallet/bitcoin/send';
+                  window.location.href = '/wallets/bitcoin/send';
                 }}
               >
                 Send
@@ -168,7 +168,7 @@ const Bitcoin = () => {
               <Button
                 variant={'contained'}
                 onClick={() => {
-                  window.location.href = '/wallet/bitcoin/receive';
+                  window.location.href = '/wallets/bitcoin/receive';
                 }}
               >
                 Receive

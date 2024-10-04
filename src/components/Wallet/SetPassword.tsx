@@ -58,7 +58,7 @@ const SetPassword = () => {
             if (resp.data.is_backup === 1) {
               window.location.href = '/dashboard';
             } else if (resp.data.is_backup === 2) {
-              window.location.href = '/wallets/phrase/intro';
+              window.location.href = '/wallet/phrase/intro';
             } else {
               setSnackMessage('Input is wrong');
               setSnackSeverity('error');

@@ -28,6 +28,8 @@ export class Http {
 
   // address of wallet
   static find_wallet_address_by_chain_and_network = this.httpPath + '/find_wallet_address_by_chain_and_network';
+  static find_wallet_address_by_network = this.httpPath + '/find_wallet_address_by_network';
+  static save_wallet_to_block_scan = this.httpPath + '/save_wallet_to_block_scan';
 
   // notification
   static find_notification = this.httpPath + '/find_notification';

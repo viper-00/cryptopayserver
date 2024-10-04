@@ -69,7 +69,7 @@ const Login = () => {
                   setIsWallet(true);
                   window.location.href = '/dashboard';
                 } else {
-                  window.location.href = '/wallets/create';
+                  window.location.href = '/wallet/create';
                 }
               } else {
                 setSnackSeverity('error');

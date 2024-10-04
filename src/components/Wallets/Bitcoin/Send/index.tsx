@@ -488,7 +488,7 @@ const BitcoinSend = () => {
                   variant={'contained'}
                   style={{ width: 500 }}
                   onClick={() => {
-                    window.location.href = '/wallet/bitcoin';
+                    window.location.href = '/wallets/bitcoin';
                   }}
                 >
                   Done

@@ -14,7 +14,7 @@ const PhraseBackup = () => {
   const [phrase, setPhrase] = useState<string[]>([]);
 
   const onClickReConfirm = () => {
-    window.location.href = '/wallets/phrase/backup/confirm';
+    window.location.href = '/wallet/phrase/backup/confirm';
   };
 
   const groupSize = 2;

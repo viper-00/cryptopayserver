@@ -7,7 +7,7 @@ const PhraseIntro = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
   const onClickBackup = () => {
-    window.location.href = '/wallets/phrase/backup';
+    window.location.href = '/wallet/phrase/backup';
   };
 
   const onClickBackupLater = () => {

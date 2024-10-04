@@ -5,11 +5,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const CreateWallet = () => {
   const onClickImport = () => {
-    window.location.href = '/wallets/import';
+    window.location.href = '/wallet/import';
   };
 
   const onClickGenerate = () => {
-    window.location.href = '/wallets/generate';
+    window.location.href = '/wallet/generate';
   };
 
   return (
