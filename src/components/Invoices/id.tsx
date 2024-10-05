@@ -85,42 +85,34 @@ const InvoiceDetails = () => {
       });
 
       if (invoice_resp.result && invoice_resp.data.length === 1) {
-        const ids = COINGECKO_IDS[invoice_resp.data[0].crypto];
-        const rate_response: any = await axios.get(Http.find_crypto_price, {
-          params: {
-            ids: ids,
-            currency: invoice_resp.data[0].currency,
-          },
+        setOrder({
+          orderId: invoice_resp.data[0].order_id,
+          amount: invoice_resp.data[0].amount,
+          buyerEmail: invoice_resp.data[0].buyer_email,
+          crypto: invoice_resp.data[0].crypto,
+          currency: invoice_resp.data[0].currency,
+          description: invoice_resp.data[0].description,
+          destinationAddress: invoice_resp.data[0].destination_address,
+          metadata: invoice_resp.data[0].metadata,
+          notificationEmail: invoice_resp.data[0].notification_email,
+          notificationUrl: invoice_resp.data[0].notification_url,
+          orderStatus: invoice_resp.data[0].order_status,
+          paid: invoice_resp.data[0].paid,
+          paymentMethod: invoice_resp.data[0].payment_method,
+          createdDate: invoice_resp.data[0].created_date,
+          expirationDate: invoice_resp.data[0].expiration_date,
+          rate: invoice_resp.data[0].rate,
+          totalPrice: invoice_resp.data[0].crypto_amount,
+          amountDue: invoice_resp.data[0].crypto_amount,
         });
 
-        const rate = rate_response.data[ids][(invoice_resp.data[0].currency as string).toLowerCase()];
-        const totalPrice = parseFloat(BigDiv(invoice_resp.data[0].amount, rate)).toFixed(8);
-
-        if (rate_response.result) {
-          setOrder({
-            orderId: invoice_resp.data[0].order_id,
-            amount: invoice_resp.data[0].amount,
-            buyerEmail: invoice_resp.data[0].buyer_email,
-            crypto: invoice_resp.data[0].crypto,
-            currency: invoice_resp.data[0].currency,
-            description: invoice_resp.data[0].description,
-            destinationAddress: invoice_resp.data[0].destination_address,
-            metadata: invoice_resp.data[0].metadata,
-            notificationEmail: invoice_resp.data[0].notification_email,
-            notificationUrl: invoice_resp.data[0].notification_url,
-            orderStatus: invoice_resp.data[0].order_status,
-            paid: invoice_resp.data[0].paid,
-            paymentMethod: invoice_resp.data[0].payment_method,
-            createdDate: invoice_resp.data[0].created_date,
-            expirationDate: invoice_resp.data[0].expiration_date,
-            rate: rate,
-            totalPrice: totalPrice,
-            amountDue: totalPrice,
-          });
-        }
-
         const qrVal =
-          'bitcoin:' + invoice_resp.data[0].destination_address + '?amount=' + totalPrice + '&pj=' + location.href;
+          'bitcoin:' +
+          invoice_resp.data[0].destination_address +
+          '?amount=' +
+          invoice_resp.data[0].crypto_amount +
+          '&pj=' +
+          location.href;
         setQrCodeVal(qrVal);
       } else {
         setSnackSeverity('error');
@@ -207,7 +199,7 @@ const InvoiceDetails = () => {
               </Stack>
             </Alert>
           )}
-           {order.orderStatus === ORDER_STATUS.Invalid && (
+          {order.orderStatus === ORDER_STATUS.Invalid && (
             <Alert variant="filled" severity="error">
               <Stack direction={'row'} alignItems={'center'}>
                 <Typography>The order has invalid, please do not continue to pay</Typography>

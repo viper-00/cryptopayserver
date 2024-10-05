@@ -5,7 +5,6 @@ import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { BigDiv } from 'utils/number';
 import { InvoiceEventDataTab } from '../Invoice/invoiceEventDataTab';
 
 type OrderType = {
@@ -67,17 +66,6 @@ const PaymentInvoiceDetails = () => {
       });
 
       if (invoice_resp.result && invoice_resp.data.length === 1) {
-        const ids = COINGECKO_IDS[invoice_resp.data[0].crypto];
-        const rate_response: any = await axios.get(Http.find_crypto_price, {
-          params: {
-            ids: ids,
-            currency: invoice_resp.data[0].currency,
-          },
-        });
-
-        const rate = rate_response.data[ids][(invoice_resp.data[0].currency as string).toLowerCase()];
-        const totalPrice = parseFloat(BigDiv(invoice_resp.data[0].amount, rate)).toFixed(8);
-
         setOrder({
           orderId: invoice_resp.data[0].order_id,
           amount: invoice_resp.data[0].amount,
@@ -94,9 +82,9 @@ const PaymentInvoiceDetails = () => {
           paymentMethod: invoice_resp.data[0].payment_method,
           createdDate: invoice_resp.data[0].created_date,
           expirationDate: invoice_resp.data[0].expiration_date,
-          rate: rate,
-          totalPrice: totalPrice,
-          amountDue: totalPrice,
+          rate: invoice_resp.data[0].rate,
+          totalPrice: invoice_resp.data[0].crypto_amount,
+          amountDue: invoice_resp.data[0].crypto_amount,
         });
       } else {
         setSnackSeverity('error');

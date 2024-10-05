@@ -4,8 +4,9 @@
   "license": "MIT",
   "description": "Free services to help you buy and sell products and collect cryptocurrencies.",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "concurrently \"next dev -p 8888\" \"node corn.ts\"",
+    "dev": "concurrently \"next dev -p 8888\" \"node corn.js\"",
     "build": "next build",
     "start": "next start -p 8888",
     "lint": "next lint"

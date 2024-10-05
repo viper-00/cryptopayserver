@@ -15,15 +15,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import InvoiceDataGrid from '../Invoice/InvoiceDataGrid';
-import { CURRENCY, ORDER_TIME } from 'packages/constants';
+import { COINGECKO_IDS, CURRENCY, ORDER_TIME } from 'packages/constants';
 import { IsValidEmail, IsValidHTTPUrl, IsValidJSON } from 'utils/verify';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { CHAINS } from 'packages/constants/blockchain';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { ORDER_STATUS } from 'packages/constants';
+import { BigDiv } from 'utils/number';
 
 const PaymentInvoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
@@ -32,6 +33,8 @@ const PaymentInvoices = () => {
   const [amount, setAmount] = useState<number>();
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
   const [crypto, setCrypto] = useState<string>('BTC');
+  const [cryptoAmount, setCryptoAmount] = useState<string>();
+  const [rate, setRate] = useState<number>();
   const [description, setDescription] = useState<string>('');
   const [buyerEmail, setBuyerEmail] = useState<string>('');
   const [metadata, setMetadata] = useState<string>('');
@@ -45,6 +48,31 @@ const PaymentInvoices = () => {
   const { getUserId, getNetwork } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  const updateRate = async () => {
+    try {
+      const ids = COINGECKO_IDS[crypto];
+      const rate_response: any = await axios.get(Http.find_crypto_price, {
+        params: {
+          ids: ids,
+          currency: currency,
+        },
+      });
+
+      const rate = rate_response.data[ids][currency.toLowerCase()];
+      setRate(rate);
+      const totalPrice = parseFloat(BigDiv((amount as number).toString(), rate)).toFixed(8);
+      setCryptoAmount(totalPrice);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (crypto && amount && currency && amount > 0) {
+      updateRate();
+    }
+  }, [crypto, amount, currency]);
 
   const checkAmount = (amount: number): boolean => {
     if (amount > 0) {
@@ -87,6 +115,8 @@ const PaymentInvoices = () => {
     const ln_amount = amount;
     const ln_currency = currency;
     const ln_crypto = crypto;
+    const ln_crypto_amount = cryptoAmount;
+    const ln_rate = rate;
     const ln_desc = description;
     const ln_buyer_email = buyerEmail;
     const ln_metadata = metadata;
@@ -102,6 +132,8 @@ const PaymentInvoices = () => {
         amount: ln_amount,
         currency: ln_currency,
         crypto: ln_crypto,
+        crypto_amount: ln_crypto_amount,
+        rate: ln_rate,
         description: ln_desc,
         buyer_email: ln_buyer_email,
         metadata: ln_metadata,
@@ -166,7 +198,7 @@ const PaymentInvoices = () => {
                 <Box ml={5}>
                   <Typography>* Currency</Typography>
                   <Box mt={1}>
-                    <FormControl sx={{ minWidth: 300 }}>
+                    <FormControl sx={{ minWidth: 200 }}>
                       <Select
                         size={'small'}
                         inputProps={{ 'aria-label': 'Without label' }}
@@ -191,6 +223,18 @@ const PaymentInvoices = () => {
                   <Typography>* Crypto</Typography>
                   <Box mt={1}>
                     <TextField fullWidth hiddenLabel size="small" value={crypto} disabled />
+                  </Box>
+                </Box>
+                <Box ml={5}>
+                  <Typography>Rate</Typography>
+                  <Box mt={1}>
+                    <TextField fullWidth hiddenLabel size="small" value={rate} disabled />
+                  </Box>
+                </Box>
+                <Box ml={5}>
+                  <Typography>Crypto Amount</Typography>
+                  <Box mt={1}>
+                    <TextField fullWidth hiddenLabel size="small" value={cryptoAmount} disabled />
                   </Box>
                 </Box>
               </Stack>

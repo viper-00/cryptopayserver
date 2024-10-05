@@ -19,6 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const amount = req.body.amount;
         const currency = req.body.currency;
         const crypto = req.body.crypto;
+        const crypto_amount = req.body.crypto_amount;
+        const rate = req.body.rate;
         const description = req.body.description;
         const buyerEmail = req.body.buyer_email;
         const metadata = req.body.metadata;
@@ -50,9 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const expirationDate = now.getTime() + parseInt(paymentExpire) * 60 * 1000;
 
             const createQuery = `INSERT INTO invoices 
-        (store_id, chain_id, network, order_id, amount, crypto, currency, description, buyer_email, destination_address, paid, metadata, notification_url, notification_email, order_status, created_date, expiration_date, status) 
+        (store_id, chain_id, network, order_id, amount, crypto, crypto_amount, currency, rate, description, buyer_email, destination_address, paid, metadata, notification_url, notification_email, order_status, created_date, expiration_date, status) 
         VALUES 
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const createValues = [
               storeId,
               chainId,
@@ -60,7 +62,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               orderId,
               amount,
               crypto,
+              crypto_amount,
               currency,
+              rate,
               description,
               buyerEmail,
               destinationAddress,
@@ -87,6 +91,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
 
             invoiceEventMessage = `${crypto}_${currency}: The rating rule is coingecko(${crypto}_${currency})`;
+            invoiceEventCreateDate = new Date().getTime();
+            invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+            invoiceEventCreateValues = [invoiceId, orderId, invoiceEventMessage, invoiceEventCreateDate, 1];
+            await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
+
+            invoiceEventMessage = `${crypto}_${currency}: The evaluated rating rule is ${rate}`;
             invoiceEventCreateDate = new Date().getTime();
             invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
             invoiceEventCreateValues = [invoiceId, orderId, invoiceEventMessage, invoiceEventCreateDate, 1];
