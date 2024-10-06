@@ -37,12 +37,21 @@ type walletType = {
   transactions: TransactionDetail[];
 };
 
+type feeType = {
+  fastest: number;
+  halfHour: number;
+  hour: number;
+  economy: number;
+  minimum: number;
+};
+
 const Bitcoin = () => {
   const [isSettings, setIsSettings] = useState<boolean>(false);
   const { getWalletId } = useWalletPresistStore((state) => state);
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
   const [wallet, setWallet] = useState<walletType[]>([]);
+  const [feeObj, setFeeObj] = useState<feeType>();
 
   const [settingId, setSettingId] = useState<number>(0);
   const [paymentExpire, setPaymentExpire] = useState<number>(0);
@@ -129,6 +138,28 @@ const Bitcoin = () => {
     }
   };
 
+  const getBitcoinFeeRate = async () => {
+    try {
+      const find_fee_resp: any = await axios.get(Http.find_fee_rate, {
+        params: {
+          chain_id: CHAINS.BITCOIN,
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
+      if (find_fee_resp.result) {
+        setFeeObj({
+          fastest: find_fee_resp.data.fastest,
+          halfHour: find_fee_resp.data.halfHour,
+          hour: find_fee_resp.data.hour,
+          economy: find_fee_resp.data.economy,
+          minimum: find_fee_resp.data.minimum,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const onClickRescanAddress = async () => {
     await getBitcoinWalletAddress();
 
@@ -140,6 +171,7 @@ const Bitcoin = () => {
   const init = async () => {
     await getBitcoinWalletAddress();
     await getBitcoinPaymentSetting();
+    await getBitcoinFeeRate();
   };
 
   useEffect(() => {
@@ -189,7 +221,43 @@ const Bitcoin = () => {
           </Stack>
         </Stack>
 
-        <Box mt={5}>
+        <Box mt={8}>
+          <Typography variant="h6">Transaction fee</Typography>
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-around'} mt={2}>
+            <Box>
+              <Typography>Minimum</Typography>
+              <Typography mt={2} fontWeight={'bold'}>
+                {feeObj?.minimum} sat/vB
+              </Typography>
+            </Box>
+            <Box>
+              <Typography>Economy</Typography>
+              <Typography mt={2} fontWeight={'bold'}>
+                {feeObj?.economy} sat/vB
+              </Typography>
+            </Box>
+            <Box>
+              <Typography>Hour</Typography>
+              <Typography mt={2} fontWeight={'bold'}>
+                {feeObj?.hour} sat/vB
+              </Typography>
+            </Box>
+            <Box>
+              <Typography>HalfHour</Typography>
+              <Typography mt={2} fontWeight={'bold'}>
+                {feeObj?.halfHour} sat/vB
+              </Typography>
+            </Box>
+            <Box>
+              <Typography>Fastest</Typography>
+              <Typography mt={2} fontWeight={'bold'}>
+                {feeObj?.fastest} sat/vB
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
+
+        <Box mt={8}>
           {isSettings ? (
             <Box>
               {/* <Typography variant="h6">BTC Wallet Settings</Typography>
