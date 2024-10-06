@@ -51,3 +51,7 @@ export function GenerateOrderIDByTime(): number {
 
   return parseInt(orderIDString, 10);
 }
+
+export function WeiToGwei(wei: number): number {
+  return wei / 1e9;
+}

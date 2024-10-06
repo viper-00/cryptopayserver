@@ -381,8 +381,9 @@ export class ETH {
   static async getGasPrice(isMainnet: boolean): Promise<ETHGasPrice> {
     try {
       const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETGASPRICE, []);
+      console.log("response", response)
       if (!response || response === null) {
-        throw new Error('can not get gasPrice');
+        throw new Error('can not get the gasPrice');
       }
 
       const gasPrice = new Big(parseInt(response.result, 16));

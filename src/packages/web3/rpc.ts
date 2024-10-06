@@ -2,6 +2,10 @@ import { BLOCKCHAINNAMES, CHAINIDS } from 'packages/constants/blockchain';
 import axios, { AxiosRequestConfig } from 'axios';
 
 export class RPC {
+  static axiosInstance = axios.create({
+    timeout: 10000,
+  });
+
   static async callRPC(chainIds: CHAINIDS, method: string, params: any): Promise<any> {
     console.log('callRPC', chainIds, method, params);
 
@@ -26,7 +30,8 @@ export class RPC {
     };
 
     try {
-      const response = await axios.request(config);
+      const response = await this.axiosInstance.request(config);
+
       if (response.status !== 200) {
         console.error(response.data);
         return null;
