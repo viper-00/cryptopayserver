@@ -11,6 +11,8 @@ import {
   AccordionSummary,
   AccordionDetails,
   IconButton,
+  Card,
+  CardContent,
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
@@ -19,9 +21,10 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { QRCodeSVG } from 'qrcode.react';
 import { OmitMiddleString } from 'utils/strings';
-import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
-import { BigDiv } from 'utils/number';
+import { ORDER_STATUS } from 'packages/constants';
 import { GetImgSrcByCrypto } from 'utils/qrcode';
+import Link from 'next/link';
+import { GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 
 type OrderType = {
   orderId: number;
@@ -42,6 +45,12 @@ type OrderType = {
   rate: number;
   totalPrice: string;
   amountDue: string;
+  fromAddress: string;
+  toAddress: string;
+  hash: string;
+  blockTimestamp: number;
+  network: number;
+  chainId: number;
 };
 
 const InvoiceDetails = () => {
@@ -52,8 +61,6 @@ const InvoiceDetails = () => {
 
   const [qrCodeVal, setQrCodeVal] = useState<string>('');
   const [countdownVal, setCountdownVal] = useState<string>('0');
-
-  const [payStatus, setPayStatus] = useState<number>(1);
 
   const [order, setOrder] = useState<OrderType>({
     orderId: 0,
@@ -74,6 +81,12 @@ const InvoiceDetails = () => {
     rate: 0,
     totalPrice: '0',
     amountDue: '0',
+    fromAddress: '',
+    toAddress: '',
+    hash: '',
+    blockTimestamp: 0,
+    network: 0,
+    chainId: 0,
   });
 
   const init = async (id: any) => {
@@ -104,6 +117,12 @@ const InvoiceDetails = () => {
           rate: invoice_resp.data[0].rate,
           totalPrice: invoice_resp.data[0].crypto_amount,
           amountDue: invoice_resp.data[0].crypto_amount,
+          fromAddress: invoice_resp.data[0].from_address,
+          toAddress: invoice_resp.data[0].to_address,
+          hash: invoice_resp.data[0].hash,
+          blockTimestamp: invoice_resp.data[0].block_timestamp,
+          network: invoice_resp.data[0].network,
+          chainId: invoice_resp.data[0].chain_id,
         });
 
         const qrVal =
@@ -242,6 +261,52 @@ const InvoiceDetails = () => {
           </Accordion>
         </Box>
 
+        {order.orderStatus === ORDER_STATUS.Settled && (
+          <Box mt={2}>
+            <Card>
+              <CardContent>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
+                  <Typography>From Address</Typography>
+                  <Link
+                    target="_blank"
+                    href={
+                      GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
+                      '/' +
+                      order.fromAddress
+                    }
+                  >
+                    {order.fromAddress}
+                  </Link>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
+                  <Typography>To Address</Typography>
+                  <Link
+                    target="_blank"
+                    href={
+                      GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
+                      '/' +
+                      order.toAddress
+                    }
+                  >
+                    {order.toAddress}
+                  </Link>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={1}>
+                  <Typography>Hash</Typography>
+                  <Link
+                    target="_blank"
+                    href={
+                      GetBlockchainTxUrlByChainIds(order.network === 1 ? true : false, order.chainId) + '/' + order.hash
+                    }
+                  >
+                    {OmitMiddleString(order.hash, 10)}
+                  </Link>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
+
         {order.orderStatus === ORDER_STATUS.Processing && (
           <Box mt={2} textAlign={'center'}>
             <Paper style={{ padding: 20 }}>
@@ -264,7 +329,15 @@ const InvoiceDetails = () => {
           <Typography>ADDRESS</Typography>
           <Stack direction={'row'} alignItems={'center'}>
             <Typography mr={1}>{OmitMiddleString(order.destinationAddress, 10)}</Typography>
-            <IconButton>
+            <IconButton
+              onClick={async () => {
+                await navigator.clipboard.writeText(order.destinationAddress);
+
+                setSnackMessage('Successfully copy');
+                setSnackSeverity('success');
+                setSnackOpen(true);
+              }}
+            >
               <ContentCopy fontSize={'small'} />
             </IconButton>
           </Stack>

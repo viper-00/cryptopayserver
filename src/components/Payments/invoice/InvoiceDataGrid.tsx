@@ -10,6 +10,7 @@ type RowType = {
   orderId: number;
   amount: number;
   currency: string;
+  cryptoAmount: number;
   crypto: string;
   createdDate: string;
   expirationDate: string;
@@ -40,6 +41,11 @@ export default function InvoiceDataGrid() {
       field: 'currency',
       headerName: 'Currency',
       width: 100,
+    },
+    {
+      field: 'cryptoAmount',
+      headerName: 'Crypto Amount',
+      width: 150,
     },
     {
       field: 'crypto',
@@ -80,6 +86,7 @@ export default function InvoiceDataGrid() {
               orderId: item.order_id,
               amount: item.amount,
               currency: item.currency,
+              cryptoAmount: item.crypto_amount,
               crypto: item.crypto,
               createdDate: new Date(item.created_date).toLocaleString(),
               expirationDate: new Date(item.expiration_date).toLocaleString(),

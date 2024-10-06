@@ -1,11 +1,13 @@
 import { Box, Button, Container, Divider, Grid, List, ListItem, Stack, Typography } from '@mui/material';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
-import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
+import { ORDER_STATUS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { InvoiceEventDataTab } from '../Invoice/invoiceEventDataTab';
+import { GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
+import Link from 'next/link';
 
 type OrderType = {
   orderId: number;
@@ -26,14 +28,19 @@ type OrderType = {
   rate: number;
   totalPrice: string;
   amountDue: string;
+  fromAddress: string;
+  toAddress: string;
+  hash: string;
+  blockTimestamp: number;
+  network: number;
+  chainId: number;
 };
 
 const PaymentInvoiceDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { getNetwork } = useUserPresistStore((state) => state);
-  const { getStoreId, getStoreName } = useStorePresistStore((state) => state);
+  const { getStoreName } = useStorePresistStore((state) => state);
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const [order, setOrder] = useState<OrderType>({
@@ -55,6 +62,12 @@ const PaymentInvoiceDetails = () => {
     rate: 0,
     totalPrice: '0',
     amountDue: '0',
+    fromAddress: '',
+    toAddress: '',
+    hash: '',
+    blockTimestamp: 0,
+    network: 0,
+    chainId: 0,
   });
 
   const init = async (id: any) => {
@@ -85,6 +98,12 @@ const PaymentInvoiceDetails = () => {
           rate: invoice_resp.data[0].rate,
           totalPrice: invoice_resp.data[0].crypto_amount,
           amountDue: invoice_resp.data[0].crypto_amount,
+          fromAddress: invoice_resp.data[0].from_address,
+          toAddress: invoice_resp.data[0].to_address,
+          hash: invoice_resp.data[0].hash,
+          blockTimestamp: invoice_resp.data[0].block_timestamp,
+          network: invoice_resp.data[0].network,
+          chainId: invoice_resp.data[0].chain_id,
         });
       } else {
         setSnackSeverity('error');
@@ -354,6 +373,81 @@ const PaymentInvoiceDetails = () => {
               </Grid>
             </ListItem>
             <Divider />
+            {order.orderStatus === ORDER_STATUS.Settled && (
+              <>
+                <ListItem>
+                  <Grid container>
+                    <Grid item xs={3}>
+                      <Typography>From Address</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Link
+                        target="_blank"
+                        href={
+                          GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
+                          '/' +
+                          order.fromAddress
+                        }
+                      >
+                        {order.fromAddress}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <Divider />
+                <ListItem>
+                  <Grid container>
+                    <Grid item xs={3}>
+                      <Typography>To Address</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Link
+                        target="_blank"
+                        href={
+                          GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
+                          '/' +
+                          order.toAddress
+                        }
+                      >
+                        {order.toAddress}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <Divider />
+                <ListItem>
+                  <Grid container>
+                    <Grid item xs={3}>
+                      <Typography>Hash</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Link
+                        target="_blank"
+                        href={
+                          GetBlockchainTxUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
+                          '/' +
+                          order.hash
+                        }
+                      >
+                        {order.hash}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <Divider />
+                <ListItem>
+                  <Grid container>
+                    <Grid item xs={3}>
+                      <Typography>Block Timestamp</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Typography>{new Date(order.blockTimestamp).toLocaleString()}</Typography>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <Divider />
+              </>
+            )}
           </List>
         </Box>
 

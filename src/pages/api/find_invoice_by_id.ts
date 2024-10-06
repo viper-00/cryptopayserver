@@ -9,9 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     switch (req.method) {
       case 'GET':
         const connection = await connectDatabase();
-        const id = req.query.id
+        const id = req.query.id;
 
-        const query = 'SELECT * FROM invoices where order_id = ? and status = ?';
+        const query =
+          'SELECT invoices.*, node_own_transactions.hash, node_own_transactions.address, node_own_transactions.from_address, node_own_transactions.to_address, node_own_transactions.transact_type, node_own_transactions.block_timestamp FROM invoices LEFT JOIN node_own_transactions ON invoices.match_tx_id = node_own_transactions.id WHERE invoices.order_id = ? and invoices.status = ?';
         const values = [id, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });

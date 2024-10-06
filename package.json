@@ -6,7 +6,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"next dev -p 8888\" \"node corn.js\"",
+    "dev": "concurrently \"next dev -p 8888\" \"node task.js\"",
     "build": "next build",
     "start": "next start -p 8888",
     "lint": "next lint"

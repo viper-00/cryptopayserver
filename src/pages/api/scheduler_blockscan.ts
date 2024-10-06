@@ -36,6 +36,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 'UPDATE invoices set order_status = ?, paid = ?, match_tx_id = ? where id = ? and order_status = ? and status = ?';
               const updateInvoiceValues = [ORDER_STATUS.Settled, 1, txRow.id, item.id, ORDER_STATUS.Processing, 1];
               await connection.query(updateInvoiceQuery, updateInvoiceValues);
+
+              let invoiceEventMessage = `Monitor the transaction hash: ${txRow.hash}`;
+              let invoiceEventCreateDate = new Date().getTime();
+              let invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+              let invoiceEventCreateValues = [item.id, item.order_id, invoiceEventMessage, invoiceEventCreateDate, 1];
+              await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
+
+              invoiceEventMessage = 'Invoice status is Settled';
+              invoiceEventCreateDate = new Date().getTime();
+              invoiceEventCreateQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
+              invoiceEventCreateValues = [item.id, item.order_id, invoiceEventMessage, invoiceEventCreateDate, 1];
+              await connection.query(invoiceEventCreateQuery, invoiceEventCreateValues);
             }
           });
         }

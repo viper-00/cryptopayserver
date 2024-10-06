@@ -1,4 +1,4 @@
-import { Box, IconButton, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Container, IconButton, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ContentCopy, QrCode } from '@mui/icons-material';
@@ -6,10 +6,10 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
+import { GetImgSrcByCrypto } from 'utils/qrcode';
 
 const BitcoinReceive = () => {
-  const { getWalletId } = useWalletPresistStore((state) => state);
-  const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
 
   const [lightning, setLightning] = useState<string>('');
@@ -47,85 +47,80 @@ const BitcoinReceive = () => {
   }, []);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
-      <Typography variant="h4" mt={4}>
-        Receive BTC
-      </Typography>
-      <Box mt={2}>
-        <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleChange} aria-label="type">
-          <ToggleButton value="lightning">Lightning</ToggleButton>
-          <ToggleButton value="bitcoin">Bitcoin</ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
+    <Box mt={4}>
+      <Container maxWidth="sm">
+        <Typography variant="h4" mt={4} textAlign={'center'}>
+          Receive BTC
+        </Typography>
+        <Box mt={2} textAlign={'center'}>
+          <ToggleButtonGroup color="primary" value={alignment} exclusive onChange={handleChange} aria-label="type">
+            <ToggleButton value="lightning">Lightning</ToggleButton>
+            <ToggleButton value="bitcoin">Bitcoin</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
 
-      {alignment === 'lightning' ? (
-        <>
-          <Box mt={4} display="flex" justifyContent="center" width="100%" maxWidth={350}>
-            <Typography>No support right now!</Typography>
-          </Box>
-        </>
-      ) : (
-        <>
-          <Box mt={4} display="flex" justifyContent="center" width="100%" maxWidth={350}>
-            <Paper
-              style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <QRCodeSVG
-                value={bitcoin}
-                width={250}
-                height={350}
-                imageSettings={{
-                  src: 'http://127.0.0.1:8888/btc.svg',
-                  width: 35,
-                  height: 35,
-                  excavate: false,
-                }}
-              />
-            </Paper>
-          </Box>
+        {alignment === 'lightning' ? (
+          <>
+            <Box mt={4} textAlign={'center'}>
+              <Typography>No support right now!</Typography>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box mt={4} textAlign={'center'}>
+              <Paper style={{ padding: 20 }}>
+                <QRCodeSVG
+                  value={bitcoin}
+                  width={250}
+                  height={250}
+                  imageSettings={{
+                    src: GetImgSrcByCrypto('BTC'),
+                    width: 35,
+                    height: 35,
+                    excavate: false,
+                  }}
+                />
+              </Paper>
+            </Box>
 
-          <Box mt={2}>
-            <Stack direction="row" alignItems="center" justifyContent="center">
-              <Typography mr={1}>{bitcoin}</Typography>
-              <IconButton>
-                <ContentCopy fontSize={'small'} />
-              </IconButton>
-            </Stack>
+            <Box mt={2}>
+              <Stack direction="row" alignItems="center" justifyContent="center">
+                <Typography mr={1}>{bitcoin}</Typography>
+                <IconButton>
+                  <ContentCopy fontSize={'small'} />
+                </IconButton>
+              </Stack>
 
-            <Stack mt={5} direction="row" alignItems="center" justifyContent={'space-between'}>
-              <Box textAlign={'center'}>
-                <IconButton>
-                  <QrCode fontSize={'small'} />
-                </IconButton>
-                <Typography mt={1} fontSize={'small'}>
-                  Copy QR Code
-                </Typography>
-              </Box>
-              <Box textAlign={'center'}>
-                <IconButton>
-                  <QrCode fontSize={'small'} />
-                </IconButton>
-                <Typography mt={1} fontSize={'small'}>
-                  Copy Address
-                </Typography>
-              </Box>
-              <Box textAlign={'center'}>
-                <IconButton>
-                  <QrCode fontSize={'small'} />
-                </IconButton>
-                <Typography mt={1} fontSize={'small'}>
-                  Download QR
-                </Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </>
-      )}
+              <Stack mt={5} direction="row" alignItems="center" justifyContent={'center'} gap={6}>
+                <Box textAlign={'center'}>
+                  <IconButton>
+                    <QrCode fontSize={'small'} />
+                  </IconButton>
+                  <Typography mt={1} fontSize={'small'}>
+                    Copy QR Code
+                  </Typography>
+                </Box>
+                <Box textAlign={'center'}>
+                  <IconButton>
+                    <QrCode fontSize={'small'} />
+                  </IconButton>
+                  <Typography mt={1} fontSize={'small'}>
+                    Copy Address
+                  </Typography>
+                </Box>
+                <Box textAlign={'center'}>
+                  <IconButton>
+                    <QrCode fontSize={'small'} />
+                  </IconButton>
+                  <Typography mt={1} fontSize={'small'}>
+                    Download QR
+                  </Typography>
+                </Box>
+              </Stack>
+            </Box>
+          </>
+        )}
+      </Container>
     </Box>
   );
 };
