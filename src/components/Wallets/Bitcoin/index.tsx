@@ -1,4 +1,4 @@
-import { ContentCopy, CopyAll, QrCode, Settings } from '@mui/icons-material';
+import { Settings } from '@mui/icons-material';
 import {
   Box,
   Button,

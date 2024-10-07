@@ -5,6 +5,7 @@ import {
   ChainAccountType,
   CreateTransaction,
   ERC20TransactionDetail,
+  EthereumTransactionDetail,
   ETHGasPrice,
   ETHMaxPriorityFeePerGas,
   SendTransaction,
@@ -21,9 +22,14 @@ import { FindDecimalsByChainIdsAndContractAddress, FindTokenByChainIdsAndContrac
 import { BigMul } from 'utils/number';
 import Big from 'big.js';
 import { GetBlockchainTxUrl } from 'utils/chain/eth';
+import { BLOCKSCAN } from '../block_scan';
 
 export class ETH {
   static chain = CHAINS.ETHEREUM;
+
+  static axiosInstance = axios.create({
+    timeout: 10000,
+  });
 
   static getChainIds(isMainnet: boolean): CHAINIDS {
     return isMainnet ? CHAINIDS.ETHEREUM : CHAINIDS.ETHEREUM_SEPOLIA;
@@ -181,6 +187,8 @@ export class ETH {
       const contract = new Contract(contractAddress, ERC20Abi, provider);
       const result = await contract.balanceOf(address);
       const tokenDecimals = await this.getERC20Decimals(isMainnet, contractAddress);
+
+      console.log("tokenDecimals", tokenDecimals)
       return ethers.formatUnits(result, tokenDecimals);
     } catch (e) {
       console.error(e);
@@ -277,6 +285,28 @@ export class ETH {
     } catch (e) {
       console.error(e);
       throw new Error('can not get tx result of eth');
+    }
+  }
+
+  static async getTransactions(isMainnet: boolean, address: string, symbol?: string): Promise<EthereumTransactionDetail[]> {
+    try {
+      symbol = symbol ? symbol : '';
+      
+      const url = `${BLOCKSCAN.baseUrl}/node/eth/getTransactions?chain_id=${this.getChainIds(
+        isMainnet,
+      )}&address=${address}&asset=${symbol}`;
+      const response = await this.axiosInstance.get(url);
+
+      if (response.data.code === 10200 && response.data.data) {
+        const txs = response.data.data;
+
+        return txs;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      console.error(e);
+      throw new Error('can not get the transactions of eth');
     }
   }
 
@@ -381,7 +411,6 @@ export class ETH {
   static async getGasPrice(isMainnet: boolean): Promise<ETHGasPrice> {
     try {
       const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETGASPRICE, []);
-      console.log("response", response)
       if (!response || response === null) {
         throw new Error('can not get the gasPrice');
       }

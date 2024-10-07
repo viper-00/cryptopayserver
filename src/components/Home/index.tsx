@@ -44,6 +44,8 @@ import ControlCameraIcon from '@mui/icons-material/ControlCamera';
 // import Invoices from 'components/Invoices/index';
 import InvoicesDetails from 'components/Invoices/id';
 import BlockScan from 'components/Wallets/BlockScan';
+import EthereumSend from 'components/Wallets/Ethereum/Send';
+import EthereumReceive from 'components/Wallets/Ethereum/Receive';
 
 const Home = () => {
   const router = useRouter();
@@ -80,6 +82,8 @@ const Home = () => {
   const otherWhiteList: any = {
     '/wallets/bitcoin/send': <BitcoinSend />,
     '/wallets/bitcoin/receive': <BitcoinReceive />,
+    '/wallets/ethereum/send': <EthereumSend />,
+    '/wallets/ethereum/receive': <EthereumReceive />,
     '/invoices/[id]': <InvoicesDetails />,
   };
 
@@ -92,6 +96,8 @@ const Home = () => {
     '/wallets/bitcoin/receive': <BitcoinReceive />,
     '/wallets/bitcoin/lightning': <Lightning />,
     '/wallets/ethereum': <Ethereum />,
+    '/wallets/ethereum/send': <EthereumSend />,
+    '/wallets/ethereum/receive': <EthereumReceive />,
     '/wallets/litecoin': <Litecoin />,
     '/wallets/solana': <Solana />,
     '/wallets/ton': <Ton />,

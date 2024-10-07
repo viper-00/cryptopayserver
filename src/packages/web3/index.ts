@@ -2,7 +2,7 @@ import { WalletAccountType, ChainAccountType, AssetBalance, TransactionDetail, S
 import { Bip39 } from './bip39';
 import { BTC } from './chain/btc';
 import { ETH } from './chain/eth';
-import { CHAINIDS, CHAINS } from 'packages/constants/blockchain';
+import { CHAINIDS, CHAINS, COIN } from 'packages/constants/blockchain';
 
 export class WEB3 {
   // support: Import and generate wallet
@@ -101,12 +101,17 @@ export class WEB3 {
     }
   }
 
-  static async getTransactions(isMainnet: boolean, chain: CHAINS, address: string): Promise<TransactionDetail[]> {
+  static async getTransactions(
+    isMainnet: boolean,
+    chain: CHAINS,
+    address: string,
+    token?: COIN,
+  ): Promise<any[]> {
     switch (chain) {
       case CHAINS.BITCOIN:
         return await BTC.getTransactions(isMainnet, address);
       case CHAINS.ETHEREUM:
-        return [];
+        return await ETH.getTransactions(isMainnet, address, token?.symbol);
       default:
         return [];
     }

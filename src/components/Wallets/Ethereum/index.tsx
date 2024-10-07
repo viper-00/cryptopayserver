@@ -1,10 +1,40 @@
-import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material';
-import { useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { Settings } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { useSnackPresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import Link from 'next/link';
 import { CHAINS } from 'packages/constants/blockchain';
+import { EthereumTransactionDetail } from 'packages/web3/types';
 import { useEffect, useState } from 'react';
+import { GetBlockchainAddressUrl, GetBlockchainTxUrl } from 'utils/chain/eth';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { WeiToGwei } from 'utils/number';
+
+type walletType = {
+  id: number;
+  address: string;
+  type: string;
+  ethBalance: string;
+  usdtBalance: string;
+  daiBalance: string;
+  usdcBalance: string;
+  transactions: EthereumTransactionDetail[];
+};
+
 type feeType = {
   high: number;
   average: number;
@@ -14,9 +44,52 @@ type feeType = {
 const Ethereum = () => {
   const { getWalletId } = useWalletPresistStore((state) => state);
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+
+  const [isSettings, setIsSettings] = useState<boolean>(false);
+  const [wallet, setWallet] = useState<walletType[]>([]);
   const [feeObj, setFeeObj] = useState<feeType>();
 
-  const onClickRescanAddress = async () => {};
+  const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  const onClickRescanAddress = async () => {
+    await getEthereumWalletAddress();
+
+    setSnackSeverity('success');
+    setSnackMessage('Successful rescan!');
+    setSnackOpen(true);
+  };
+
+  const getEthereumWalletAddress = async () => {
+    try {
+      const find_address_resp: any = await axios.get(Http.find_wallet_address_by_chain_and_network, {
+        params: {
+          user_id: getUserId(),
+          wallet_id: getWalletId(),
+          chain_id: CHAINS.ETHEREUM,
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
+
+      if (find_address_resp.result && find_address_resp.data.length > 0) {
+        let ws: walletType[] = [];
+        find_address_resp.data.forEach(async (item: any) => {
+          ws.push({
+            id: item.id,
+            address: item.address,
+            type: item.note,
+            ethBalance: item.balance.ETH,
+            usdtBalance: item.balance.USDT,
+            daiBalance: item.balance.DAI,
+            usdcBalance: item.balance.USDC,
+            transactions: item.transactions,
+          });
+        });
+        setWallet(ws);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const getEthereumFeeRate = async () => {
     try {
@@ -39,6 +112,8 @@ const Ethereum = () => {
   };
 
   const init = async () => {
+    await getEthereumWalletAddress();
+    // await getEthereumPaymentSetting();
     await getEthereumFeeRate();
   };
 
@@ -79,13 +154,13 @@ const Ethereum = () => {
                 Rescan address
               </Button>
             </Box>
-            {/* <IconButton
+            <IconButton
               onClick={() => {
                 setIsSettings(!isSettings);
               }}
             >
               <Settings />
-            </IconButton> */}
+            </IconButton>
           </Stack>
         </Stack>
 
@@ -112,9 +187,101 @@ const Ethereum = () => {
             </Box>
           </Stack>
         </Box>
+
+        <Box mt={8}>
+          {isSettings ? (
+            <Box></Box>
+          ) : (
+            <Box>
+              {wallet &&
+                wallet.length > 0 &&
+                wallet.map((item, index) => (
+                  <Box key={index} mb={10}>
+                    <Stack direction={'row'} justifyContent={'space-between'}>
+                      <Box>
+                        <Typography fontWeight={'bold'} fontSize={18}>
+                          {item.type}
+                        </Typography>
+                        <Typography mt={1}>{item.address}</Typography>
+                        <Typography mt={1} fontWeight={'bold'}>
+                          {item.ethBalance} ETH
+                        </Typography>
+                        <Typography mt={1} fontWeight={'bold'}>
+                          {item.usdtBalance} USDT
+                        </Typography>
+                        <Typography mt={1} fontWeight={'bold'}>
+                          {item.usdcBalance} USDC
+                        </Typography>
+                        <Typography mt={1} fontWeight={'bold'}>
+                          {item.daiBalance} DAI
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Button
+                          href={GetBlockchainAddressUrl(getNetwork() === 'mainnet' ? true : false) + '/' + item.address}
+                          target={'_blank'}
+                        >
+                          Check onChain
+                        </Button>
+                      </Box>
+                    </Stack>
+                    <Box mt={5}>
+                      {item.transactions && item.transactions.length > 0 ? (
+                        <TransactionsTab rows={item.transactions} />
+                      ) : (
+                        <Typography>There are no transactions yet.</Typography>
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+            </Box>
+          )}
+        </Box>
       </Container>
     </Box>
   );
 };
 
 export default Ethereum;
+
+function TransactionsTab({ rows }: { rows: EthereumTransactionDetail[] }) {
+  const { getNetwork } = useUserPresistStore((state) => state);
+
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Hash</TableCell>
+            <TableCell>Value</TableCell>
+            <TableCell>Asset</TableCell>
+            <TableCell>Contract Address</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Block Timestamp</TableCell>
+            <TableCell>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell component="th" scope="row">
+                <Link
+                  href={GetBlockchainTxUrl(getNetwork() === 'mainnet' ? true : false) + '/' + row.hash}
+                  target={'_blank'}
+                >
+                  {row.hash}
+                </Link>
+              </TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.asset}</TableCell>
+              <TableCell>{row.contractAddress}</TableCell>
+              <TableCell>{row.type}</TableCell>
+              <TableCell>{new Date((row.blockTimestamp as number) * 1000).toLocaleString()}</TableCell>
+              <TableCell>{row.status}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}

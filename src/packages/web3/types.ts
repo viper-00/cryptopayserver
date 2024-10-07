@@ -61,6 +61,19 @@ export type TransactionDetail = {
   url: string;
 };
 
+export type EthereumTransactionDetail = {
+  chainId: number;
+  address: string;
+  hash: string;
+  amount: string;
+  asset: string;
+  contractAddress: string;
+  type: string;
+  category: string;
+  status: TRANSACTIONSTATUS;
+  blockTimestamp: number;
+};
+
 export enum TRANSACTIONTYPE {
   RECEIVED = 'RECEIVED',
   SEND = 'SEND',
