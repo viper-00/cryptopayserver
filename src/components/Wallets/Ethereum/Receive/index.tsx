@@ -9,7 +9,7 @@ import { CHAINS } from 'packages/constants/blockchain';
 import { GetImgSrcByCrypto } from 'utils/qrcode';
 
 const EthereumReceive = () => {
-  const { getUserId } = useUserPresistStore((state) => state);
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
 
   const [ethereum, setEthereum] = useState<string>('');
@@ -21,6 +21,7 @@ const EthereumReceive = () => {
           user_id: getUserId(),
           chain_id: CHAINS.ETHEREUM,
           store_id: getStoreId(),
+          network: getNetwork(),
         },
       });
 

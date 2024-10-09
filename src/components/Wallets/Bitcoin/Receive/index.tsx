@@ -9,7 +9,7 @@ import { CHAINS } from 'packages/constants/blockchain';
 import { GetImgSrcByCrypto } from 'utils/qrcode';
 
 const BitcoinReceive = () => {
-  const { getUserId } = useUserPresistStore((state) => state);
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
 
   const [lightning, setLightning] = useState<string>('');
@@ -27,6 +27,7 @@ const BitcoinReceive = () => {
           user_id: getUserId(),
           chain_id: CHAINS.BITCOIN,
           store_id: getStoreId(),
+          network: getNetwork(),
         },
       });
 

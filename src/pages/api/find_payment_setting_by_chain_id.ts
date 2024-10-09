@@ -12,10 +12,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const userId = req.query.user_id;
         const storeId = req.query.store_id;
         const chainId = req.query.chain_id;
+        const network = req.query.network
 
         const query =
-          'SELECT id, payment_expire, confirm_block, show_recommended_fee, current_used_address_id FROM payment_settings where user_id = ? and store_id = ? and chain_id = ?';
-        const values = [userId, storeId, chainId];
+          'SELECT id, payment_expire, confirm_block, show_recommended_fee, current_used_address_id FROM payment_settings where user_id = ? and store_id = ? and chain_id = ? and network = ?';
+        const values = [userId, storeId, chainId, network];
         const [rows] = await connection.query(query, values);
         
         return res.status(200).json({ message: '', result: true, data: rows });

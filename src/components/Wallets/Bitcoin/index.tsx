@@ -121,6 +121,7 @@ const Bitcoin = () => {
           user_id: getUserId(),
           chain_id: CHAINS.BITCOIN,
           store_id: getStoreId(),
+          network: getNetwork(),
         },
       });
 

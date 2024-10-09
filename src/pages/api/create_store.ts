@@ -18,14 +18,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const createQuery = 'INSERT INTO stores (user_id, name, currency, price_source, status) VALUES (?, ?, ?, ?, ?)';
         const createValues = [userId, name, currency, priceSource, 1];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
-        const storeId = ResultSetHeader.insertId 
+        const storeId = ResultSetHeader.insertId;
         if (storeId === 0) {
           return res.status(200).json({ message: 'Something wrong', result: false, data: null });
         }
 
         // create payment setting for btc chain
-        const createPaymentSettingQuery = 'INSERT INTO payment_settings (user_id, chain_id, store_id, payment_expire, confirm_block, show_recommended_fee) VALUES (?, ?, ?, ?, ?, ?)';
-        const createPaymentSettingValues = [userId, CHAINS.BITCOIN, storeId, 30, 1, 1];
+        let createPaymentSettingQuery =
+          'INSERT INTO payment_settings (user_id, chain_id, network, store_id, payment_expire, confirm_block, show_recommended_fee) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        let createPaymentSettingValues = [userId, CHAINS.BITCOIN, 1, storeId, 30, 1, 1];
+        await connection.query(createPaymentSettingQuery, createPaymentSettingValues);
+
+        createPaymentSettingQuery =
+          'INSERT INTO payment_settings (user_id, chain_id, network, store_id, payment_expire, confirm_block, show_recommended_fee) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        createPaymentSettingValues = [userId, CHAINS.BITCOIN, 2, storeId, 30, 1, 1];
+        await connection.query(createPaymentSettingQuery, createPaymentSettingValues);
+
+        // create payment setting for eth chain
+        createPaymentSettingQuery =
+          'INSERT INTO payment_settings (user_id, chain_id, network, store_id, payment_expire, confirm_block, show_recommended_fee) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        createPaymentSettingValues = [userId, CHAINS.ETHEREUM, 1, storeId, 30, 1, 1];
+        await connection.query(createPaymentSettingQuery, createPaymentSettingValues);
+
+        createPaymentSettingQuery =
+          'INSERT INTO payment_settings (user_id, chain_id, network, store_id, payment_expire, confirm_block, show_recommended_fee) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        createPaymentSettingValues = [userId, CHAINS.ETHEREUM, 2, storeId, 30, 1, 1];
         await connection.query(createPaymentSettingQuery, createPaymentSettingValues);
 
         const findQuery = 'SELECT * FROM stores where id = ? and status = ?';
