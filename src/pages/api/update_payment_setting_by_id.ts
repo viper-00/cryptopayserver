@@ -13,14 +13,26 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse<R
         const userId = req.body.user_id;
         const chainId = req.body.chain_id;
         const storeId = req.body.store_id;
+        const network = req.body.network;
 
-        const paymentExpire = req.body.payment_expire
-        const confirmBlock = req.body.confirm_block
-        const showRecommendedFee = req.body.show_recommended_fee
-        const currentUsedAddressId = req.body.current_used_address_id
+        const paymentExpire = req.body.payment_expire;
+        const confirmBlock = req.body.confirm_block;
+        const showRecommendedFee = req.body.show_recommended_fee;
+        const currentUsedAddressId = req.body.current_used_address_id;
 
-        const query = 'UPDATE payment_settings set payment_expire = ?, confirm_block = ?, show_recommended_fee = ?, current_used_address_id = ? where id = ? and user_id = ? and store_id = ? and chain_id = ?';
-        const values = [paymentExpire, confirmBlock, showRecommendedFee, currentUsedAddressId, id, userId, storeId, chainId]
+        const query =
+          'UPDATE payment_settings set payment_expire = ?, confirm_block = ?, show_recommended_fee = ?, current_used_address_id = ? where id = ? and user_id = ? and store_id = ? and chain_id = ? and network = ?';
+        const values = [
+          paymentExpire,
+          confirmBlock,
+          showRecommendedFee,
+          currentUsedAddressId,
+          id,
+          userId,
+          storeId,
+          chainId,
+          network,
+        ];
         await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: null });
     }

@@ -90,7 +90,7 @@ const BitcoinSend = () => {
           user_id: getUserId(),
           chain_id: CHAINS.BITCOIN,
           store_id: getStoreId(),
-          network: getNetwork(),
+          network: getNetwork() === 'mainnet' ? 1 : 2,
         },
       });
       if (find_payment_resp.result) {

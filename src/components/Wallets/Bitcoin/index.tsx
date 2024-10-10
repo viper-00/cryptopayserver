@@ -61,13 +61,14 @@ const Bitcoin = () => {
 
   const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
 
-  const updateBitcoinPaymentSetting = async () => {
+  const updatePaymentSetting = async () => {
     try {
       const resp: any = await axios.put(Http.update_payment_setting_by_id, {
         id: settingId,
         user_id: getUserId(),
         chain_id: CHAINS.BITCOIN,
         store_id: getStoreId(),
+        network: getNetwork() === 'mainnet' ? 1 : 2,
         payment_expire: paymentExpire,
         confirm_block: confirmBlock,
         show_recommended_fee: showRecommendedFee ? 1 : 2,
@@ -121,7 +122,7 @@ const Bitcoin = () => {
           user_id: getUserId(),
           chain_id: CHAINS.BITCOIN,
           store_id: getStoreId(),
-          network: getNetwork(),
+          network: getNetwork() === 'mainnet' ? 1 : 2,
         },
       });
 
@@ -477,7 +478,6 @@ const Bitcoin = () => {
                     />
                     <Box ml={2}>
                       <Typography>Show recommended fee</Typography>
-                      <Typography>Fee will be shown for BTC and LTC onchain payments only.</Typography>
                     </Box>
                   </Stack>
                 </Box>
@@ -497,7 +497,7 @@ const Bitcoin = () => {
                 </Box> */}
 
                 <Box mt={6}>
-                  <Button variant={'contained'} onClick={updateBitcoinPaymentSetting}>
+                  <Button variant={'contained'} onClick={updatePaymentSetting}>
                     Save Payment Settings
                   </Button>
                 </Box>

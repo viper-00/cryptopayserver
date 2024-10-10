@@ -1,16 +1,17 @@
-import { Box, Container, IconButton, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Container, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { ContentCopy, QrCode } from '@mui/icons-material';
+import { ContentCopy } from '@mui/icons-material';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { CHAINS } from 'packages/constants/blockchain';
 import { GetImgSrcByCrypto } from 'utils/qrcode';
 
 const EthereumReceive = () => {
   const { getUserId, getNetwork } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackOpen, setSnackSeverity, setSnackMessage } = useSnackPresistStore((state) => state);
 
   const [ethereum, setEthereum] = useState<string>('');
 
@@ -21,7 +22,7 @@ const EthereumReceive = () => {
           user_id: getUserId(),
           chain_id: CHAINS.ETHEREUM,
           store_id: getStoreId(),
-          network: getNetwork(),
+          network: getNetwork() === 'mainnet' ? 1 : 2,
         },
       });
 
@@ -49,55 +50,36 @@ const EthereumReceive = () => {
         </Typography>
 
         <Box mt={4} textAlign={'center'}>
-          <Paper style={{ padding: 20 }}>
+          <Typography>Send only Ethereum network assets to this address</Typography>
+          <Paper style={{ padding: 80, marginTop: 20 }}>
             <QRCodeSVG
               value={ethereum}
               width={250}
               height={250}
               imageSettings={{
                 src: GetImgSrcByCrypto('ETH'),
-                width: 35,
-                height: 50,
+                width: 30,
+                height: 40,
                 excavate: false,
               }}
             />
+            <Box mt={4}>
+              <Stack direction="row" alignItems="center" justifyContent="center">
+                <Typography mr={1}>{ethereum}</Typography>
+                <IconButton
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(ethereum);
+
+                    setSnackMessage('Successfully copy');
+                    setSnackSeverity('success');
+                    setSnackOpen(true);
+                  }}
+                >
+                  <ContentCopy fontSize={'small'} />
+                </IconButton>
+              </Stack>
+            </Box>
           </Paper>
-        </Box>
-
-        <Box mt={2}>
-          <Stack direction="row" alignItems="center" justifyContent="center">
-            <Typography mr={1}>{ethereum}</Typography>
-            <IconButton>
-              <ContentCopy fontSize={'small'} />
-            </IconButton>
-          </Stack>
-
-          <Stack mt={5} direction="row" alignItems="center" justifyContent={'center'} gap={6}>
-            <Box textAlign={'center'}>
-              <IconButton>
-                <QrCode fontSize={'small'} />
-              </IconButton>
-              <Typography mt={1} fontSize={'small'}>
-                Copy QR Code
-              </Typography>
-            </Box>
-            <Box textAlign={'center'}>
-              <IconButton>
-                <QrCode fontSize={'small'} />
-              </IconButton>
-              <Typography mt={1} fontSize={'small'}>
-                Copy Address
-              </Typography>
-            </Box>
-            <Box textAlign={'center'}>
-              <IconButton>
-                <QrCode fontSize={'small'} />
-              </IconButton>
-              <Typography mt={1} fontSize={'small'}>
-                Download QR
-              </Typography>
-            </Box>
-          </Stack>
         </Box>
       </Container>
     </Box>

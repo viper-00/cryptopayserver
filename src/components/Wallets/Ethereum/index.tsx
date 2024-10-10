@@ -3,9 +3,15 @@ import {
   Box,
   Button,
   Container,
+  FormControl,
   IconButton,
+  InputAdornment,
+  MenuItem,
+  OutlinedInput,
   Paper,
+  Select,
   Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -14,7 +20,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useSnackPresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import Link from 'next/link';
 import { CHAINS } from 'packages/constants/blockchain';
 import { EthereumTransactionDetail } from 'packages/web3/types';
@@ -44,10 +50,17 @@ type feeType = {
 const Ethereum = () => {
   const { getWalletId } = useWalletPresistStore((state) => state);
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
 
   const [isSettings, setIsSettings] = useState<boolean>(false);
   const [wallet, setWallet] = useState<walletType[]>([]);
   const [feeObj, setFeeObj] = useState<feeType>();
+
+  const [settingId, setSettingId] = useState<number>(0);
+  const [paymentExpire, setPaymentExpire] = useState<number>(0);
+  const [confirmBlock, setConfirmBlock] = useState<number>(0);
+  const [showRecommendedFee, setShowRecommendedFee] = useState<boolean>(false);
+  const [currentUsedAddressId, setCurrentUsedAddressId] = useState<number>(0);
 
   const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
 
@@ -91,6 +104,31 @@ const Ethereum = () => {
     }
   };
 
+  const getEthereumPaymentSetting = async () => {
+    try {
+      const find_setting_resp: any = await axios.get(Http.find_payment_setting_by_chain_id, {
+        params: {
+          user_id: getUserId(),
+          chain_id: CHAINS.ETHEREUM,
+          store_id: getStoreId(),
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
+
+      if (find_setting_resp.result && find_setting_resp.data.length === 1) {
+        setSettingId(find_setting_resp.data[0].id);
+        setPaymentExpire(find_setting_resp.data[0].payment_expire);
+        setConfirmBlock(find_setting_resp.data[0].confirm_block);
+        setShowRecommendedFee(find_setting_resp.data[0].show_recommended_fee === 1 ? true : false);
+        setCurrentUsedAddressId(
+          find_setting_resp.data[0].current_used_address_id ? find_setting_resp.data[0].current_used_address_id : 0,
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const getEthereumFeeRate = async () => {
     try {
       const find_fee_resp: any = await axios.get(Http.find_fee_rate, {
@@ -111,9 +149,34 @@ const Ethereum = () => {
     }
   };
 
+  const updatePaymentSetting = async () => {
+    try {
+      const resp: any = await axios.put(Http.update_payment_setting_by_id, {
+        id: settingId,
+        user_id: getUserId(),
+        chain_id: CHAINS.ETHEREUM,
+        store_id: getStoreId(),
+        network: getNetwork() === 'mainnet' ? 1 : 2,
+        payment_expire: paymentExpire,
+        confirm_block: confirmBlock,
+        show_recommended_fee: showRecommendedFee ? 1 : 2,
+        current_used_address_id: currentUsedAddressId,
+      });
+      if (resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful update!');
+        setSnackOpen(true);
+
+        await init();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const init = async () => {
     await getEthereumWalletAddress();
-    // await getEthereumPaymentSetting();
+    await getEthereumPaymentSetting();
     await getEthereumFeeRate();
   };
 
@@ -170,19 +233,19 @@ const Ethereum = () => {
             <Box>
               <Typography>Low</Typography>
               <Typography mt={2} fontWeight={'bold'}>
-                {WeiToGwei(feeObj?.low as number)} gwei
+                {WeiToGwei(feeObj?.low as number)} Gwei
               </Typography>
             </Box>
             <Box>
               <Typography>Average</Typography>
               <Typography mt={2} fontWeight={'bold'}>
-                {WeiToGwei(feeObj?.average as number)}gwei
+                {WeiToGwei(feeObj?.average as number)}Gwei
               </Typography>
             </Box>
             <Box>
               <Typography>High</Typography>
               <Typography mt={2} fontWeight={'bold'}>
-                {WeiToGwei(feeObj?.high as number)}gwei
+                {WeiToGwei(feeObj?.high as number)}Gwei
               </Typography>
             </Box>
           </Stack>
@@ -190,7 +253,92 @@ const Ethereum = () => {
 
         <Box mt={8}>
           {isSettings ? (
-            <Box></Box>
+            <Box>
+              <Box mt={5}>
+                <Typography variant="h6">Payment</Typography>
+                <Box mt={3}>
+                  <Typography>The transaction address currently used</Typography>
+                  <Box mt={1}>
+                    <FormControl sx={{ minWidth: 300 }}>
+                      <Select
+                        size={'small'}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        value={currentUsedAddressId}
+                        onChange={(e: any) => {
+                          setCurrentUsedAddressId(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={0}>None</MenuItem>
+                        {wallet.map((item, index) => (
+                          <MenuItem value={item.id} key={index}>
+                            {item.address}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Box>
+                <Box mt={3}>
+                  <Typography>Payment invalid if transactions fails to confirm … after invoice expiration</Typography>
+                  <Box mt={1}>
+                    <FormControl variant="outlined">
+                      <OutlinedInput
+                        size={'small'}
+                        type="number"
+                        endAdornment={<InputAdornment position="end">minutes</InputAdornment>}
+                        aria-describedby="outlined-weight-helper-text"
+                        inputProps={{
+                          'aria-label': 'weight',
+                        }}
+                        value={paymentExpire}
+                        onChange={(e: any) => {
+                          setPaymentExpire(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Box>
+                </Box>
+                <Box mt={3}>
+                  <Typography>Consider the invoice settled when the payment transaction …</Typography>
+                  <Box mt={1}>
+                    <FormControl sx={{ minWidth: 300 }}>
+                      <Select
+                        size={'small'}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        value={confirmBlock}
+                        onChange={(e: any) => {
+                          setConfirmBlock(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={0}>Is unconfirmed</MenuItem>
+                        <MenuItem value={1}>Has at least 1 confirmation</MenuItem>
+                        <MenuItem value={2}>Has at least 2 confirmation</MenuItem>
+                        <MenuItem value={3}>Has at least 6 confirmation</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Box>
+                <Box mt={3}>
+                  <Stack direction={'row'} alignItems={'center'}>
+                    <Switch
+                      checked={showRecommendedFee}
+                      onChange={(e: any) => {
+                        setShowRecommendedFee(e.target.checked);
+                      }}
+                    />
+                    <Box ml={2}>
+                      <Typography>Show recommended fee</Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+
+                <Box mt={6}>
+                  <Button variant={'contained'} onClick={updatePaymentSetting}>
+                    Save Payment Settings
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
           ) : (
             <Box>
               {wallet &&

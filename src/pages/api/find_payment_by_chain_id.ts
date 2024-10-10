@@ -14,22 +14,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const userId = req.query.user_id;
         const storeId = req.query.store_id;
         const chainId = req.query.chain_id;
+        const network = req.query.network;
 
         const query =
-          'SELECT current_used_address_id FROM payment_settings where user_id = ? and store_id = ? and chain_id = ?';
-        const values = [userId, storeId, chainId];
+          'SELECT current_used_address_id FROM payment_settings where user_id = ? and store_id = ? and chain_id = ? and network = ?';
+        const values = [userId, storeId, chainId, network];
         const [rows] = await connection.query(query, values);
         if (Array.isArray(rows) && rows.length === 1) {
           const row = rows[0] as mysql.RowDataPacket;
 
-          const addressQuery = 'SELECT address, network FROM addresses where id = ? and status = 1';
+          const addressQuery = 'SELECT address FROM addresses where id = ? and status = 1';
           const addressValues = [row.current_used_address_id];
           const [addressRows] = await connection.query(addressQuery, addressValues);
 
           if (Array.isArray(addressRows) && addressRows.length === 1) {
             const addressRow = addressRows[0] as mysql.RowDataPacket;
             const balance = await WEB3.getAssetBalance(
-              addressRow.network === 1 ? true : false,
+              parseInt(network as string) === 1 ? true : false,
               parseInt(chainId as string),
               addressRow.address,
             );
