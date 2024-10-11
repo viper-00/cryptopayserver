@@ -188,7 +188,7 @@ export class ETH {
       const result = await contract.balanceOf(address);
       const tokenDecimals = await this.getERC20Decimals(isMainnet, contractAddress);
 
-      console.log("tokenDecimals", tokenDecimals)
+      console.log('tokenDecimals', tokenDecimals);
       return ethers.formatUnits(result, tokenDecimals);
     } catch (e) {
       console.error(e);
@@ -288,10 +288,14 @@ export class ETH {
     }
   }
 
-  static async getTransactions(isMainnet: boolean, address: string, symbol?: string): Promise<EthereumTransactionDetail[]> {
+  static async getTransactions(
+    isMainnet: boolean,
+    address: string,
+    symbol?: string,
+  ): Promise<EthereumTransactionDetail[]> {
     try {
       symbol = symbol ? symbol : '';
-      
+
       const url = `${BLOCKSCAN.baseUrl}/node/eth/getTransactions?chain_id=${this.getChainIds(
         isMainnet,
       )}&address=${address}&asset=${symbol}`;
@@ -392,9 +396,14 @@ export class ETH {
           value: txParams.value,
         },
       ]);
+
+      console.log("1111111", response)
+
       if (!response || response === null) {
         throw new Error('can not estimate gas of eth');
       }
+
+      console.log("1111111", response)
 
       const gasLimit = new Big(parseInt(response.result, 16));
       if (gasLimit && gasLimit.gt(0)) {
@@ -556,17 +565,12 @@ export class ETH {
     try {
       const params = [address, 'latest'];
       const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETNONCE, params);
+
       if (!response || response === null) {
         throw new Error('can not get nonce of eth');
       }
 
-      const nonce = parseInt(response.result, 16);
-
-      if (nonce) {
-        return nonce;
-      }
-
-      throw new Error('can not get nonce of eth');
+      return parseInt(response.result, 16);
     } catch (e) {
       console.error(e);
       throw new Error('can not get nonce of eth');

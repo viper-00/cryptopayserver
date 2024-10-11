@@ -44,6 +44,11 @@ export class Http {
   static find_fee_rate = this.httpPath + '/find_fee_rate';
   static send_transaction = this.httpPath + '/send_transaction';
 
+  // ethereum
+  static find_nonce = this.httpPath + '/find_nonce';
+  static find_gas_limit = this.httpPath + '/find_gas_limit';
+  static find_max_priorty_fee = this.httpPath + '/find_max_priorty_fee';
+
   // invoice
   static create_invoice = this.httpPath + '/create_invoice';
   static find_invoice = this.httpPath + '/find_invoice';

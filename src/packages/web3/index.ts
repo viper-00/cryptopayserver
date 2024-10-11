@@ -90,6 +90,40 @@ export class WEB3 {
     }
   }
 
+  static async getNonce(isMainnet: boolean, chain: CHAINS, address: string): Promise<number> {
+    switch (chain) {
+      case CHAINS.ETHEREUM:
+        return await ETH.getNonce(isMainnet, address);
+      default:
+        return 0;
+    }
+  }
+
+  static async getGasLimit(
+    isMainnet: boolean,
+    chain: CHAINS,
+    contractAddress: string,
+    from: string,
+    to: string,
+    value: string,
+  ): Promise<number> {
+    switch (chain) {
+      case CHAINS.ETHEREUM:
+        return await ETH.getGasLimit(isMainnet, contractAddress, from, to, value);
+      default:
+        return 0;
+    }
+  }
+
+  static async getMaxPriortyFee(isMainnet: boolean, chain: CHAINS): Promise<any> {
+    switch (chain) {
+      case CHAINS.ETHEREUM:
+        return await ETH.getMaxPriorityFeePerGas(isMainnet);
+      default:
+        return 0;
+    }
+  }
+
   static async getTransactionDetail(isMainnet: boolean, chain: CHAINS, hash: string): Promise<TransactionDetail> {
     switch (chain) {
       case CHAINS.BITCOIN:
@@ -101,12 +135,7 @@ export class WEB3 {
     }
   }
 
-  static async getTransactions(
-    isMainnet: boolean,
-    chain: CHAINS,
-    address: string,
-    token?: COIN,
-  ): Promise<any[]> {
+  static async getTransactions(isMainnet: boolean, chain: CHAINS, address: string, token?: COIN): Promise<any[]> {
     switch (chain) {
       case CHAINS.BITCOIN:
         return await BTC.getTransactions(isMainnet, address);
