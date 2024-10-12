@@ -53,5 +53,13 @@ export function GenerateOrderIDByTime(): number {
 }
 
 export function WeiToGwei(wei: number): number {
-  return wei / 1e9;
+  return wei / 1_000_000_000;
+}
+
+export function GweiToWei(wei: number): number {
+  return parseInt((wei * 1_000_000_000).toString());
+}
+
+export function GweiToEther(gwei: number): number {
+  return gwei / 1_000_000_000;
 }

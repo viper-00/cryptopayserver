@@ -1,3 +1,4 @@
+import { BigNumberish } from 'ethers';
 import { CHAINIDS, CHAINS, COIN, COINS } from 'packages/constants/blockchain';
 
 export type WalletAccountType = {
@@ -116,7 +117,7 @@ export type TransactionRequest = {
   gasPrice?: number;
 
   // data?: BytesLike,
-  value?: number;
+  value?: BigNumberish;
   // chainId?: number
 
   // type?: number;
@@ -129,20 +130,18 @@ export type TransactionRequest = {
   // ccipReadEnabled?: boolean;
 };
 
-export type CreateTransaction = {
+export type CreateEthereumTransaction = {
   privateKey?: string;
   from: string;
   to: string;
   value: string;
   contractAddress?: string;
   type?: number;
-  chainId: CHAINS;
+  chainId: CHAINIDS;
   data?: string;
   nonce?: number;
 
-  gasPrice: string;
-  maxFeePerGas?: string;
-
+  maxFeePerGas: string;
   gasLimit: number;
   maxPriorityFeePerGas?: string;
 };
@@ -158,4 +157,5 @@ export type SendTransaction = {
   maxPriorityFeePerGas?: string;
   feeRate?: number;
   btcType?: BTCTYPE;
+  nonce?: number;
 };

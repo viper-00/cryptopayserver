@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { CHAINS } from 'packages/constants/blockchain';
+import { CHAINS, COINS } from 'packages/constants/blockchain';
 import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import { WEB3 } from 'packages/web3';
 import mysql from 'mysql2/promise';
-import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
+import { FindTokenByChainIdsAndContractAddress, FindTokenByChainIdsAndSymbol } from 'utils/web3';
 import { BTC } from 'packages/web3/chain/btc';
+import { GweiToEther, GweiToWei } from 'utils/number';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -22,6 +23,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const toAddress = req.body.to_address;
         const feeRate = req.body.fee_rate;
         const value = req.body.value;
+        const coin = req.body.coin;
+        const nonce = req.body.nonce;
+        const maxFee = req.body.max_fee;
+        const maxPriortyFee = req.body.max_priorty_fee;
+        const gasLimit = req.body.gas_limit;
 
         const addressQuery =
           'SELECT private_key, note, network, address FROM addresses where chain_id = ? and network = ? and address = ? and wallet_id = ? and user_id = ? and status = 1';
@@ -31,16 +37,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           const addressRow = addressRows[0] as mysql.RowDataPacket;
 
           const hash = await WEB3.sendTransaction(addressRow.network === 1 ? true : false, {
-            coin: FindTokenByChainIdsAndContractAddress(
+            coin: FindTokenByChainIdsAndSymbol(
               WEB3.getChainIds(addressRow.network === 1 ? true : false, chainId),
-              '',
+              coin,
             ),
             value: value,
             privateKey: addressRow.private_key,
             feeRate: feeRate,
-            btcType: BTC.getType(addressRow.note),
+            btcType: coin === COINS.BTC ? BTC.getType(addressRow.note) : undefined,
             from: addressRow.address,
             to: toAddress,
+            gasPrice: maxFee ? GweiToWei(maxFee).toString() : '',
+            gasLimit: gasLimit ? gasLimit : '',
+            maxPriorityFeePerGas: maxPriortyFee ? GweiToWei(maxPriortyFee).toString() : '',
+            nonce: nonce ? nonce : '',
           });
 
           return res.status(200).json({

@@ -1,4 +1,4 @@
-import { BLOCKCHAINNAMES, CHAINIDS, CHAINS, COIN } from 'packages/constants/blockchain';
+import { BLOCKCHAINNAMES, CHAINIDS, CHAINS, COIN, COINS } from 'packages/constants/blockchain';
 import {
   GetBlockchainAddressUrl as GetBTCBlockchainAddressUrl,
   GetBlockchainTxUrl as GetBTCBlockchainTxUrl,
@@ -11,6 +11,12 @@ import {
 export function FindTokenByChainIdsAndContractAddress(chainIds: CHAINIDS, contractAddress: string): COIN {
   const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
   const token = coins?.find((item) => item.contractAddress?.toLowerCase() === contractAddress.toLowerCase());
+  return token as COIN;
+}
+
+export function FindTokenByChainIdsAndSymbol(chainIds: CHAINIDS, symbol: COINS): COIN {
+  const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
+  const token = coins?.find((item) => item.symbol?.toLowerCase() === symbol.toLowerCase());
   return token as COIN;
 }
 

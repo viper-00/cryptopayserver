@@ -3,7 +3,7 @@ import { BLOCKCHAINNAMES, CHAINIDS, CHAINS, COINS } from 'packages/constants/blo
 import {
   AssetBalance,
   ChainAccountType,
-  CreateTransaction,
+  CreateEthereumTransaction,
   ERC20TransactionDetail,
   EthereumTransactionDetail,
   ETHGasPrice,
@@ -188,7 +188,6 @@ export class ETH {
       const result = await contract.balanceOf(address);
       const tokenDecimals = await this.getERC20Decimals(isMainnet, contractAddress);
 
-      console.log('tokenDecimals', tokenDecimals);
       return ethers.formatUnits(result, tokenDecimals);
     } catch (e) {
       console.error(e);
@@ -397,13 +396,9 @@ export class ETH {
         },
       ]);
 
-      console.log("1111111", response)
-
       if (!response || response === null) {
         throw new Error('can not estimate gas of eth');
       }
-
-      console.log("1111111", response)
 
       const gasLimit = new Big(parseInt(response.result, 16));
       if (gasLimit && gasLimit.gt(0)) {
@@ -480,13 +475,16 @@ export class ETH {
     const txParams: TransactionRequest = {
       from: from,
       to: to,
-      value: new Big(value).toNumber(),
+      value: ethers.toQuantity(1),
     };
 
     return await this.estimateGas(isMainnet, txParams);
   }
 
-  static async createTransaction(isMainnet: boolean, request: CreateTransaction): Promise<CreateTransaction> {
+  static async createTransaction(
+    isMainnet: boolean,
+    request: CreateEthereumTransaction,
+  ): Promise<CreateEthereumTransaction> {
     if (request.contractAddress) {
       return await this.createERC20Transaction(isMainnet, request);
     } else {
@@ -494,14 +492,16 @@ export class ETH {
     }
   }
 
-  static async createETHTransaction(isMainnet: boolean, request: CreateTransaction): Promise<CreateTransaction> {
+  static async createETHTransaction(
+    isMainnet: boolean,
+    request: CreateEthereumTransaction,
+  ): Promise<CreateEthereumTransaction> {
     request.value = ethers.parseEther(request.value).toString();
     request.type = 2;
-    if (request.gasPrice) {
-      request.maxFeePerGas = request.gasPrice;
+    if (request.maxFeePerGas) {
+      request.maxFeePerGas = request.maxFeePerGas;
     } else {
       const price = await this.getGasPrice(isMainnet);
-      request.gasPrice = price.normal;
       request.maxFeePerGas = price.normal;
     }
 
@@ -523,10 +523,10 @@ export class ETH {
     return request;
   }
 
-  static async createERC20Transaction(isMainnet: boolean, request: CreateTransaction): Promise<CreateTransaction> {
-    request.value = '0';
-    request.type = 2;
-
+  static async createERC20Transaction(
+    isMainnet: boolean,
+    request: CreateEthereumTransaction,
+  ): Promise<CreateEthereumTransaction> {
     const decimals = await this.getERC20Decimals(isMainnet, request.contractAddress as string);
     const value = ethers.parseUnits(request.value, decimals).toString();
     const iface = new ethers.Interface(ERC20Abi);
@@ -534,11 +534,8 @@ export class ETH {
     request.data = data;
     request.to = request.contractAddress as string;
 
-    if (request.gasPrice) {
-      request.maxFeePerGas = request.gasPrice;
-    } else {
+    if (!request.maxFeePerGas) {
       const price = await this.getGasPrice(isMainnet);
-      request.gasPrice = price.normal;
       request.maxFeePerGas = price.normal;
     }
 
@@ -557,6 +554,9 @@ export class ETH {
       const fee = await this.getMaxPriorityFeePerGas(isMainnet);
       request.maxPriorityFeePerGas = fee.normal;
     }
+
+    request.value = '0';
+    request.type = 2;
 
     return request;
   }
@@ -577,12 +577,12 @@ export class ETH {
     }
   }
 
-  static async getFee(isMainnet: boolean, request: CreateTransaction): Promise<string> {
+  static async getFee(isMainnet: boolean, request: CreateEthereumTransaction): Promise<string> {
     const tx = await this.createTransaction(isMainnet, request);
-    return ethers.formatEther(BigMul(tx.gasPrice, tx.gasLimit.toString()));
+    return ethers.formatEther(BigMul(tx.maxFeePerGas, tx.gasLimit.toString()));
   }
 
-  static async sendAccelerateTransaction(isMainnet: boolean, request: CreateTransaction): Promise<string> {
+  static async sendAccelerateTransaction(isMainnet: boolean, request: CreateEthereumTransaction): Promise<string> {
     if (!request.privateKey || request.privateKey === '') {
       throw new Error('can not get private key of eth');
     }
@@ -621,19 +621,21 @@ export class ETH {
       throw new Error('can not get private key of eth');
     }
 
-    const cRequest: CreateTransaction = {
-      chainId: request.coin.chainId,
+    const cRequest: CreateEthereumTransaction = {
+      chainId: this.getChainIds(isMainnet),
       from: request.from,
       to: request.to,
       privateKey: request.privateKey,
       value: request.value,
-      gasPrice: request.gasPrice as string,
+      contractAddress: request.coin.contractAddress,
       gasLimit: request.gasLimit as number,
+      maxFeePerGas: request.gasPrice as string,
       maxPriorityFeePerGas: request.maxPriorityFeePerGas,
+      nonce: request.nonce,
     };
 
     let tx = await this.createTransaction(isMainnet, cRequest);
-    tx.nonce = await this.getNonce(isMainnet, tx.from);
+    tx.nonce = tx.nonce ? tx.nonce : await this.getNonce(isMainnet, tx.from);
 
     try {
       const provider = await this.getProvider(isMainnet);

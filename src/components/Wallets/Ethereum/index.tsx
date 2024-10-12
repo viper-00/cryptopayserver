@@ -239,13 +239,13 @@ const Ethereum = () => {
             <Box>
               <Typography>Average</Typography>
               <Typography mt={2} fontWeight={'bold'}>
-                {WeiToGwei(feeObj?.average as number)}Gwei
+                {WeiToGwei(feeObj?.average as number)} Gwei
               </Typography>
             </Box>
             <Box>
               <Typography>High</Typography>
               <Typography mt={2} fontWeight={'bold'}>
-                {WeiToGwei(feeObj?.high as number)}Gwei
+                {WeiToGwei(feeObj?.high as number)} Gwei
               </Typography>
             </Box>
           </Stack>

@@ -21,7 +21,6 @@ export const BITCOIN_COINS: COIN[] = [
     decimals: 8,
     displayDecimals: 8,
     icon: '',
-    contractAddress: "",
   },
 ];
 
@@ -33,7 +32,6 @@ export const ETHEREUM_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    contractAddress: '0x0000000000000000000000000000000000000000',
     icon: '',
   },
   {
@@ -126,7 +124,6 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    contractAddress: '0x0000000000000000000000000000000000000000',
     icon: '',
   },
   {

@@ -18,7 +18,7 @@ import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
-import { CHAINS } from 'packages/constants/blockchain';
+import { CHAINS, COINS } from 'packages/constants/blockchain';
 import { OmitMiddleString } from 'utils/strings';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
@@ -208,6 +208,7 @@ const BitcoinSend = () => {
         user_id: getUserId(),
         value: amount,
         fee_rate: feeRate,
+        coin: COINS.BTC,
       });
 
       if (send_transaction_resp.result) {
@@ -366,7 +367,7 @@ const BitcoinSend = () => {
             <Box textAlign={'center'}>
               <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} mt={4}>
                 <Image src={BitcoinSVG} alt="" width={25} height={25} />
-                <Typography ml={1}>Bitcoin Testnet</Typography>
+                <Typography ml={1}>{getNetwork() === 'mainnet' ? 'Bitcoin Mainnet' : 'Bitcoin Testnet'}</Typography>
               </Stack>
 
               <Box mt={4}>
@@ -380,11 +381,11 @@ const BitcoinSend = () => {
                   <Typography mt={1} variant={'h4'}>
                     {amount}
                   </Typography>
-                  <Typography ml={1}>tBTC</Typography>
+                  <Typography ml={1}>BTC</Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'baseline'} justifyContent={'center'}>
                   <Typography mt={1}>{networkFee}</Typography>
-                  <Typography ml={1}>tBTC</Typography>
+                  <Typography ml={1}>BTC</Typography>
                   <Typography ml={1}>(network fee)</Typography>
                 </Stack>
               </Box>
@@ -395,7 +396,7 @@ const BitcoinSend = () => {
                   <FormControl variant="outlined">
                     <OutlinedInput
                       size={'small'}
-                      endAdornment={<InputAdornment position="end">tBTC</InputAdornment>}
+                      endAdornment={<InputAdornment position="end">BTC</InputAdornment>}
                       aria-describedby="outlined-weight-helper-text"
                       inputProps={{
                         'aria-label': 'weight',
@@ -430,7 +431,7 @@ const BitcoinSend = () => {
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                   <Typography>{OmitMiddleString(fromAddress)}</Typography>
                   <Typography ml={10}>{balance}</Typography>
-                  <Typography ml={1}>tBTC</Typography>
+                  <Typography ml={1}>BTC</Typography>
                 </Stack>
               </Box>
 
@@ -439,14 +440,14 @@ const BitcoinSend = () => {
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                   <Typography>{OmitMiddleString(destinationAddress)}</Typography>
                   <Typography ml={10}>{parseFloat(amount as string).toFixed(8)}</Typography>
-                  <Typography ml={1}>tBTC</Typography>
+                  <Typography ml={1}>BTC</Typography>
                 </Stack>
                 <Stack mt={1} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                   <Typography>{OmitMiddleString(fromAddress)}</Typography>
                   <Typography ml={10}>
                     {(parseFloat(balance) - parseFloat(amount as string) - (networkFee as number)).toFixed(8)}
                   </Typography>
-                  <Typography ml={1}>tBTC</Typography>
+                  <Typography ml={1}>BTC</Typography>
                 </Stack>
               </Box>
 
