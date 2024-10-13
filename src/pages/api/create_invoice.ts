@@ -41,6 +41,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           const addressValues = [paymentSettingRow.current_used_address_id];
           const [addressRows] = await connection.query(addressQuery, addressValues);
           if (Array.isArray(addressRows) && addressRows.length === 1) {
+
+          console.log("12312312")
+
             const addressRow = addressRows[0] as mysql.RowDataPacket;
 
             const destinationAddress = addressRow.address;

@@ -24,7 +24,7 @@ import { OmitMiddleString } from 'utils/strings';
 import { ORDER_STATUS } from 'packages/constants';
 import { GetImgSrcByCrypto } from 'utils/qrcode';
 import Link from 'next/link';
-import { GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
+import { FindChainNamesByChains, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 
 type OrderType = {
   orderId: number;
@@ -126,7 +126,8 @@ const InvoiceDetails = () => {
         });
 
         const qrVal =
-          'bitcoin:' +
+          FindChainNamesByChains(invoice_resp.data[0].chain_id) +
+          ':' +
           invoice_resp.data[0].destination_address +
           '?amount=' +
           invoice_resp.data[0].crypto_amount +

@@ -21,10 +21,11 @@ import { COINGECKO_IDS, CURRENCY, ORDER_TIME } from 'packages/constants';
 import { IsValidEmail, IsValidHTTPUrl, IsValidJSON } from 'utils/verify';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { CHAINS } from 'packages/constants/blockchain';
+import { CHAINNAMES, CHAINS, COINS } from 'packages/constants/blockchain';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { ORDER_STATUS } from 'packages/constants';
 import { BigDiv } from 'utils/number';
+import { FindChainIdsByChainNames } from 'utils/web3';
 
 const PaymentInvoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
@@ -32,7 +33,8 @@ const PaymentInvoices = () => {
 
   const [amount, setAmount] = useState<number>();
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
-  const [crypto, setCrypto] = useState<string>('BTC');
+  const [network, setNetwork] = useState<CHAINNAMES>();
+  const [crypto, setCrypto] = useState<COINS>();
   const [cryptoAmount, setCryptoAmount] = useState<string>();
   const [rate, setRate] = useState<number>();
   const [description, setDescription] = useState<string>('');
@@ -51,6 +53,10 @@ const PaymentInvoices = () => {
 
   const updateRate = async () => {
     try {
+      if (!crypto) {
+        return;
+      }
+
       const ids = COINGECKO_IDS[crypto];
       const rate_response: any = await axios.get(Http.find_crypto_price, {
         params: {
@@ -83,32 +89,58 @@ const PaymentInvoices = () => {
 
   const onClickCreateInvoice = async () => {
     if (!checkAmount(amount as number)) {
-      console.log('Error: amount');
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect amount');
+      setSnackOpen(true);
       return;
     }
 
     if (!CURRENCY.includes(currency)) {
-      console.log('Error: currency');
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect currency');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (!network) {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect network');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (!crypto) {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect crypto');
+      setSnackOpen(true);
       return;
     }
 
     if (!IsValidEmail(buyerEmail)) {
-      console.log('Error: email');
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect email');
+      setSnackOpen(true);
       return;
     }
 
     if (metadata !== '' && !IsValidJSON(metadata)) {
-      console.log('Error: metadata');
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect metadata');
+      setSnackOpen(true);
       return;
     }
 
     if (notificationEmail !== '' && !IsValidEmail(notificationEmail)) {
-      console.log('Error: email');
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect email');
+      setSnackOpen(true);
       return;
     }
 
     if (notificationUrl !== '' && !IsValidHTTPUrl(notificationUrl)) {
-      console.log('Error: notificationUrl');
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect notificationUrl');
+      setSnackOpen(true);
       return;
     }
 
@@ -127,7 +159,7 @@ const PaymentInvoices = () => {
       const create_invoice_resp: any = await axios.post(Http.create_invoice, {
         user_id: getUserId(),
         store_id: getStoreId(),
-        chain_id: CHAINS.BITCOIN,
+        chain_id: FindChainIdsByChainNames(network),
         network: getNetwork() === 'mainnet' ? 1 : 2,
         amount: ln_amount,
         currency: ln_currency,
@@ -220,9 +252,49 @@ const PaymentInvoices = () => {
                   </Box>
                 </Box>
                 <Box ml={5}>
+                  <Typography>* Network</Typography>
+                  <Box mt={1}>
+                    <FormControl sx={{ minWidth: 200 }}>
+                      <Select
+                        size={'small'}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        onChange={(e) => {
+                          setNetwork(e.target.value as CHAINNAMES);
+                        }}
+                        value={network}
+                      >
+                        {CHAINNAMES &&
+                          Object.entries(CHAINNAMES).length > 0 &&
+                          Object.entries(CHAINNAMES).map((item, index) => (
+                            <MenuItem value={item[1]} key={index}>
+                              {item[1]}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Box>
+                <Box ml={5}>
                   <Typography>* Crypto</Typography>
                   <Box mt={1}>
-                    <TextField fullWidth hiddenLabel size="small" value={crypto} disabled />
+                    <FormControl sx={{ minWidth: 200 }}>
+                      <Select
+                        size={'small'}
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        onChange={(e) => {
+                          setCrypto(e.target.value as COINS);
+                        }}
+                        value={crypto}
+                      >
+                        {CHAINNAMES &&
+                          Object.entries(COINS).length > 0 &&
+                          Object.entries(COINS).map((item, index) => (
+                            <MenuItem value={item[0]} key={index}>
+                              {item[0]}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
                   </Box>
                 </Box>
                 <Box ml={5}>

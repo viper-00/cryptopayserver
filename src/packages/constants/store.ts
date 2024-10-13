@@ -1,3 +1,5 @@
+import { COINS } from './blockchain';
+
 export const CURRENCY = [
   'USD', // 美元
   'AED', // 阿联酋迪拉姆
@@ -66,6 +68,48 @@ export const ORDER_TIME = {
   CustomRange: 'Custom Range',
 };
 
-export const COINGECKO_IDS: { [key: string]: string } = {
-  BTC: 'bitcoin',
+export const COINGECKO_IDS: { [key in COINS]: string } = {
+  [COINS.BTC]: 'bitcoin',
+  [COINS.ETH]: 'ethereum',
+  [COINS.USDT]: 'tether',
+  [COINS.BNB]: 'binancecoin',
+  [COINS.SOL]: 'solana',
+  [COINS.USDC]: 'usd-coin',
+  [COINS.XRP]: 'ripple',
+  [COINS.TON]: 'the-open-network',
+  [COINS.DOGE]: 'dogecoin',
+  [COINS.ADA]: 'cardano',
+  [COINS.TRX]: 'tron',
+  [COINS.AVAX]: 'avalanche-2',
+  [COINS.SHIB]: 'shiba-inu',
+  [COINS.DOT]: 'polkadot',
+  [COINS.LINK]: 'chainlink',
+  [COINS.BCH]: 'bitcoin-cash',
+  [COINS.DAI]: 'dai',
+  [COINS.LTC]: 'litecoin',
+  [COINS.MATIC]: 'matic-network',
+  [COINS.UNI]: 'uniswap',
+  [COINS.PEPE]: 'pepe',
+  [COINS.FIL]: 'filecoin',
+  [COINS.ARB]: 'arbitrum',
+  [COINS.OP]: 'optimism',
+  [COINS.FDUSD]: 'fdusd',
+  [COINS.WIF]: 'wif',
+  [COINS.NOT]: 'not',
+  [COINS.BONK]: 'bonk',
+  [COINS.AAVE]: 'aave',
+  [COINS.BGB]: 'bgb',
+  [COINS.FLOKI]: 'floki-inu',
+  [COINS.JUP]: 'jupiter',
+  [COINS.CORE]: 'core',
+  [COINS.ENS]: 'ethereum-name-service',
+  [COINS.W]: 'wrapped-eth',
+  [COINS.SATS]: 'sats',
+  [COINS.CRV]: 'curve-dao-token',
+  [COINS.PEOPLE]: 'people',
+  [COINS.NEW]: 'meow',
+  [COINS.ETHFI]: 'ethfi',
+  [COINS.BUSD]: 'binance-usd',
+  [COINS.WBTC]: 'wrapped-bitcoin',
+  [COINS.WETH]: 'wrapped-ether',
 };
