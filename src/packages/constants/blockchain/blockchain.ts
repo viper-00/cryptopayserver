@@ -158,6 +158,70 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
   },
 ];
 
+export const SOLANA_COINS: COIN[] = [
+  {
+    chainId: CHAINS.SOLANA,
+    name: COINS.SOL,
+    isMainCoin: true,
+    symbol: COINS.SOL,
+    decimals: 9,
+    displayDecimals: 6,
+    icon: '',
+  },
+  {
+    chainId: CHAINS.SOLANA,
+    name: COINS.WSOL,
+    isMainCoin: false,
+    symbol: COINS.WSOL,
+    decimals: 9,
+    displayDecimals: 6,
+    contractAddress: 'So11111111111111111111111111111111111111112',
+    icon: '',
+  },
+  {
+    chainId: CHAINS.SOLANA,
+    name: COINS.USDT,
+    isMainCoin: false,
+    symbol: COINS.USDT,
+    decimals: 6,
+    displayDecimals: 2,
+    contractAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    icon: '',
+  },
+  {
+    chainId: CHAINS.SOLANA,
+    name: COINS.USDC,
+    isMainCoin: false,
+    symbol: COINS.USDC,
+    decimals: 6,
+    displayDecimals: 2,
+    contractAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    icon: '',
+  },
+];
+
+export const SOLANA_DEVNET_COINS: COIN[] = [
+  {
+    chainId: CHAINS.SOLANA,
+    name: COINS.SOL,
+    isMainCoin: true,
+    symbol: COINS.SOL,
+    decimals: 9,
+    displayDecimals: 6,
+    icon: '',
+  },
+  {
+    chainId: CHAINS.SOLANA,
+    name: COINS.USDC,
+    isMainCoin: false,
+    symbol: COINS.USDC,
+    decimals: 6,
+    displayDecimals: 2,
+    contractAddress: 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr',
+    icon: '',
+  },
+];
+
 type BLOCKCHAIN = {
   name: CHAINNAMES;
   chainId: CHAINIDS;
@@ -203,5 +267,27 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: false,
     coins: ETHEREUM_SEPOLIA_COINS,
     rpc: ['https://ethereum-sepolia.publicnode.com'],
+  },
+  {
+    name: CHAINNAMES.SOLANA,
+    chainId: CHAINIDS.SOLANA,
+    explorerUrl: '',
+    websiteUrl: '',
+    isMainnet: true,
+    coins: SOLANA_COINS,
+    rpc: ['https://api.mainnet-beta.solana.com', 'https://rpc.ankr.com/solana'],
+  },
+  {
+    name: CHAINNAMES.SOLANA,
+    chainId: CHAINIDS.SOLANA_DEVNET,
+    explorerUrl: '',
+    websiteUrl: '',
+    isMainnet: false,
+    coins: SOLANA_DEVNET_COINS,
+    rpc: [
+      'https://api.devnet.solana.com',
+      'https://rpc.ankr.com/solana_devnet',
+      'https://quiet-evocative-sanctuary.solana-devnet.quiknode.pro/9546a31f74b22b085dc30ae790d10b23014825af',
+    ],
   },
 ];

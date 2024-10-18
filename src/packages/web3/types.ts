@@ -58,7 +58,8 @@ export type TransactionDetail = {
   type?: TRANSACTIONTYPE;
   status: TRANSACTIONSTATUS;
   blockTimestamp?: number;
-  blockNumber: number;
+  blockNumber?: number;
+  slot?: number;
   url: string;
 };
 
@@ -71,6 +72,20 @@ export type EthereumTransactionDetail = {
   contractAddress: string;
   type: string;
   category: string;
+  status: TRANSACTIONSTATUS;
+  blockTimestamp: number;
+};
+
+export type SolanaTransactionDetail = {
+  from?: string;
+  to?: string;
+  value?: string;
+  chainId: number;
+  address: string;
+  hash: string;
+  asset: string;
+  contractAddress: string;
+  type: 'Send' | 'Received' | 'None';
   status: TRANSACTIONSTATUS;
   blockTimestamp: number;
 };

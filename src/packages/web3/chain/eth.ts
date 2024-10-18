@@ -212,29 +212,29 @@ export class ETH {
     }
   }
 
-  static async decodeERC20Transfer(isMainnet: boolean, hash: string): Promise<ERC20TransactionDetail> {
-    try {
-      const params = [hash];
-      const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETTXBYHASH, params);
-      if (!response || response === null) {
-        throw new Error('can not get tx by hash');
-      }
+  // static async decodeERC20Transfer(isMainnet: boolean, hash: string): Promise<ERC20TransactionDetail> {
+  //   try {
+  //     const params = [hash];
+  //     const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETTXBYHASH, params);
+  //     if (!response || response === null) {
+  //       throw new Error('can not get tx by hash');
+  //     }
 
-      const input = response.result.input;
-      const { to, amount, token } = await this.getERC20TransferToAmountAndTokenByInput(isMainnet, input);
+  //     const input = response.result.input;
+  //     const { to, amount, token } = await this.getERC20TransferToAmountAndTokenByInput(isMainnet, input);
 
-      return {
-        from: response.result.from,
-        to: to,
-        hash: response.result.hash,
-        asset: token.symbol,
-        value: amount,
-      };
-    } catch (e) {
-      console.error(e);
-      throw new Error('can not decode erc20 transfer of eth');
-    }
-  }
+  //     return {
+  //       from: response.result.from,
+  //       to: to,
+  //       hash: response.result.hash,
+  //       asset: token.symbol,
+  //       value: amount,
+  //     };
+  //   } catch (e) {
+  //     console.error(e);
+  //     throw new Error('can not decode erc20 transfer of eth');
+  //   }
+  // }
 
   static async getERC20TransferToAmountAndTokenByInput(isMainnet: boolean, input: string): Promise<any> {
     const iface = new ethers.Interface(ERC20Abi);
@@ -272,20 +272,20 @@ export class ETH {
     }
   }
 
-  static async getTransactionResult(isMainnet: boolean, hash: string): Promise<any> {
-    try {
-      const params = [hash];
-      const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETTXRECEIPT, params);
-      if (!response || response === null) {
-        throw new Error('can not get tx by hash');
-      }
+  // static async getTransactionResult(isMainnet: boolean, hash: string): Promise<any> {
+  //   try {
+  //     const params = [hash];
+  //     const response = await RPC.callRPC(this.getChainIds(isMainnet), TRANSACTIONFUNCS.GETTXRECEIPT, params);
+  //     if (!response || response === null) {
+  //       throw new Error('can not get tx by hash');
+  //     }
 
-      return response.result;
-    } catch (e) {
-      console.error(e);
-      throw new Error('can not get tx result of eth');
-    }
-  }
+  //     return response.result;
+  //   } catch (e) {
+  //     console.error(e);
+  //     throw new Error('can not get tx result of eth');
+  //   }
+  // }
 
   static async getTransactions(
     isMainnet: boolean,
