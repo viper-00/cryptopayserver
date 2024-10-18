@@ -618,7 +618,7 @@ export class ETH {
 
   static async sendTransaction(isMainnet: boolean, request: SendTransaction): Promise<string> {
     if (!request.privateKey || request.privateKey === '') {
-      throw new Error('can not get private key of eth');
+      throw new Error('can not get the private key of eth');
     }
 
     const cRequest: CreateEthereumTransaction = {
@@ -645,10 +645,10 @@ export class ETH {
         return response.hash;
       }
 
-      throw new Error('can not send transaction of eth');
+      throw new Error('can not send the transaction of eth');
     } catch (e) {
       console.error(e);
-      throw new Error('can not send transaction of eth');
+      throw new Error('can not send the transaction of eth');
     }
   }
 

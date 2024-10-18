@@ -10,77 +10,77 @@ const connection = new Connection(
 const mintAddress = new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
 const ownerAddress = new PublicKey('D7zyyjwhbQAD3xSKhmRZ8swsMfqvPmseRqqvvpBozrvF');
 
-const signatures = await connection.getSignaturesForAddress(ownerAddress, {
-  limit: 10,
-});
+// const signatures = await connection.getSignaturesForAddress(ownerAddress, {
+//   limit: 10,
+// });
 
-let signaturesArray = [];
+// let signaturesArray = [];
 
-signatures.forEach((item) => {
-  signaturesArray.push(item.signature);
-});
+// signatures.forEach((item) => {
+//   signaturesArray.push(item.signature);
+// });
 
-const txs = await connection.getParsedTransactions(signaturesArray, {
-  commitment: 'confirmed',
-  maxSupportedTransactionVersion: 0,
-});
+// const txs = await connection.getParsedTransactions(signaturesArray, {
+//   commitment: 'confirmed',
+//   maxSupportedTransactionVersion: 0,
+// });
 
-txs.forEach(async (tx) => {
-    console.log("tx", tx.transaction.signatures.length)
-    console.log("tx", tx)
+// txs.forEach(async (tx) => {
+//     console.log("tx", tx.transaction.signatures.length)
+//     console.log("tx", tx)
 
-  tx.transaction.message.instructions.forEach(async (instruction) => {
-    //   console.log('instruction.programId', instruction);
+//   tx.transaction.message.instructions.forEach(async (instruction) => {
+//     //   console.log('instruction.programId', instruction);
 
-    // 检查是否是系统转账指令
-    if (instruction.programId.equals(PublicKey.default)) {
-      const parsed = instruction.parsed;
+//     // 检查是否是系统转账指令
+//     if (instruction.programId.equals(PublicKey.default)) {
+//       const parsed = instruction.parsed;
 
-      if (parsed.type && parsed.type === 'transfer') {
-        const from = parsed.info.source; // 发起者地址
-        const to = parsed.info.destination; // 接收者地址
-        const amount = parsed.info.lamports; // 数据中是转账金额的字符串形式，需解析
+//       if (parsed.type && parsed.type === 'transfer') {
+//         const from = parsed.info.source; // 发起者地址
+//         const to = parsed.info.destination; // 接收者地址
+//         const amount = parsed.info.lamports; // 数据中是转账金额的字符串形式，需解析
 
-        console.log('From:', new PublicKey(from).toBase58());
-        console.log('To:', new PublicKey(to).toBase58());
-        console.log('Amount (in lamports):', amount);
+//         console.log('From:', new PublicKey(from).toBase58());
+//         console.log('To:', new PublicKey(to).toBase58());
+//         console.log('Amount (in lamports):', amount);
 
-        // 如果需要以 SOL 表示，转换为 SOL（1 SOL = 1,000,000,000 lamports）
-        const amountInSol = amount / 1_000_000_000;
-        console.log('Amount (in SOL):', amountInSol);
-      }
-    }
+//         // 如果需要以 SOL 表示，转换为 SOL（1 SOL = 1,000,000,000 lamports）
+//         const amountInSol = amount / 1_000_000_000;
+//         console.log('Amount (in SOL):', amountInSol);
+//       }
+//     }
 
-    if (instruction.programId.equals(TOKEN_PROGRAM_ID)) {
-      const parsed = instruction.parsed;
+//     if (instruction.programId.equals(TOKEN_PROGRAM_ID)) {
+//       const parsed = instruction.parsed;
 
-    //   console.log('parsed', parsed.info.tokenAmount);
+//     //   console.log('parsed', parsed.info.tokenAmount);
 
-      if (parsed.type && parsed.type === 'transferChecked') {
-        const from = parsed.info.source; // 发起者地址
-        const to = parsed.info.destination; // 接收者地址
+//       if (parsed.type && parsed.type === 'transferChecked') {
+//         const from = parsed.info.source; // 发起者地址
+//         const to = parsed.info.destination; // 接收者地址
 
-        const amount = ethers.formatUnits(parsed.info.tokenAmount.amount, parsed.info.tokenAmount.decimals); // 数据中是转账金额的字符串形式，需解析
+//         const amount = ethers.formatUnits(parsed.info.tokenAmount.amount, parsed.info.tokenAmount.decimals); // 数据中是转账金额的字符串形式，需解析
 
-        console.log('From:', new PublicKey(from).toBase58());
-        console.log('To:', new PublicKey(to).toBase58());
-        console.log('Amount:', amount);
-        console.log("info", parsed.info)
+//         console.log('From:', new PublicKey(from).toBase58());
+//         console.log('To:', new PublicKey(to).toBase58());
+//         console.log('Amount:', amount);
+//         console.log("info", parsed.info)
 
-        // 检查是否是转账指令
-        //   const from = parsed.info.source;
-        //   const to = parsed.info.destination;
-        //   const amount = parsed.info.amount;
-        //   const mint = parsed.info.mint;
+//         // 检查是否是转账指令
+//         //   const from = parsed.info.source;
+//         //   const to = parsed.info.destination;
+//         //   const amount = parsed.info.amount;
+//         //   const mint = parsed.info.mint;
 
-        //   console.log('From:', new PublicKey(from).toBase58());
-        //   console.log('To:', new PublicKey(to).toBase58());
-        //   console.log('Amount:', amount);
-        //   console.log('Mint:', new PublicKey(mint).toBase58());
-      }
-    }
-  });
-});
+//         //   console.log('From:', new PublicKey(from).toBase58());
+//         //   console.log('To:', new PublicKey(to).toBase58());
+//         //   console.log('Amount:', amount);
+//         //   console.log('Mint:', new PublicKey(mint).toBase58());
+//       }
+//     }
+//   });
+// });
 
 // const tx = await connection.getParsedTransaction(
 //   'TpZHMkPQjFAaciD9pm4rPFYoZLds4uYCDoAEjaGG3TU1FbL6agGRxcH39qNJKg7cujpijnh26hBdq55QsnFarTQ',

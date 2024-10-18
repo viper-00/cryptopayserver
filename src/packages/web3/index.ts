@@ -3,6 +3,7 @@ import { Bip39 } from './bip39';
 import { BTC } from './chain/btc';
 import { ETH } from './chain/eth';
 import { CHAINIDS, CHAINS, COIN } from 'packages/constants/blockchain';
+import { SOLANA } from './chain/solana';
 
 export class WEB3 {
   // support: Import and generate wallet
@@ -28,7 +29,11 @@ export class WEB3 {
   }
 
   static async createAccountBySeed(isMainnet: boolean, seed: Buffer): Promise<Array<ChainAccountType>> {
-    return await Promise.all([...BTC.createAccountBySeed(isMainnet, seed), ETH.createAccountBySeed(isMainnet, seed)]);
+    return await Promise.all([
+      ...BTC.createAccountBySeed(isMainnet, seed),
+      ETH.createAccountBySeed(isMainnet, seed),
+      SOLANA.createAccountBySeed(isMainnet, seed),
+    ]);
   }
 
   static async createAccountByPrivateKey(
@@ -41,6 +46,8 @@ export class WEB3 {
         return BTC.createAccountByPrivateKey(isMainnet, privateKey);
       case CHAINS.ETHEREUM:
         return Array<ChainAccountType>(ETH.createAccountByPrivateKey(isMainnet, privateKey));
+      case CHAINS.SOLANA:
+        return Array<ChainAccountType>(SOLANA.createAccountByPrivateKey(isMainnet, privateKey));
       default:
         return [];
     }
@@ -52,6 +59,8 @@ export class WEB3 {
         return BTC.checkAddress(isMainnet, address);
       case CHAINS.ETHEREUM:
         return ETH.checkAddress(address);
+      case CHAINS.SOLANA:
+        return SOLANA.checkAddress(address);
       default:
         return false;
     }
@@ -63,6 +72,8 @@ export class WEB3 {
         return BTC.getCurrentFeeRate(isMainnet);
       case CHAINS.ETHEREUM:
         return ETH.getGasPrice(isMainnet);
+      case CHAINS.SOLANA:
+        return null;
       default:
         return null;
     }
@@ -74,6 +85,8 @@ export class WEB3 {
         return BTC.getChainIds(isMainnet);
       case CHAINS.ETHEREUM:
         return ETH.getChainIds(isMainnet);
+      case CHAINS.SOLANA:
+        return SOLANA.getChainIds(isMainnet);
       default:
         return CHAINIDS.NONE;
     }
@@ -85,6 +98,8 @@ export class WEB3 {
         return await BTC.getAssetBalance(isMainnet, address);
       case CHAINS.ETHEREUM:
         return await ETH.getAssetBalance(isMainnet, address);
+      case CHAINS.SOLANA:
+        return await SOLANA.getAssetBalance(isMainnet, address);
       default:
         return {} as AssetBalance;
     }
@@ -130,6 +145,8 @@ export class WEB3 {
         return await BTC.getTransactionDetail(isMainnet, hash);
       case CHAINS.ETHEREUM:
         return await ETH.getTransactionDetail(isMainnet, hash);
+      case CHAINS.SOLANA:
+        return await SOLANA.getTransactionDetail(isMainnet, hash);
       default:
         return {} as TransactionDetail;
     }
@@ -141,6 +158,8 @@ export class WEB3 {
         return await BTC.getTransactions(isMainnet, address);
       case CHAINS.ETHEREUM:
         return await ETH.getTransactions(isMainnet, address, token?.symbol);
+      case CHAINS.SOLANA:
+        return await SOLANA.getTransactions(isMainnet, address, token?.contractAddress);
       default:
         return [];
     }
@@ -152,6 +171,8 @@ export class WEB3 {
         return await BTC.sendTransaction(isMainnet, req);
       case CHAINS.ETHEREUM:
         return await ETH.sendTransaction(isMainnet, req);
+      case CHAINS.SOLANA:
+        return await SOLANA.sendTransaction(isMainnet, req);
       default:
         return '';
     }

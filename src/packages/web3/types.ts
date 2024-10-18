@@ -145,6 +145,20 @@ export type TransactionRequest = {
   // ccipReadEnabled?: boolean;
 };
 
+export type SendTransaction = {
+  coin: COIN;
+  from: string;
+  to: string;
+  value: string;
+  privateKey: string;
+  gasPrice?: string;
+  gasLimit?: number;
+  maxPriorityFeePerGas?: string;
+  feeRate?: number;
+  btcType?: BTCTYPE;
+  nonce?: number;
+};
+
 export type CreateEthereumTransaction = {
   privateKey?: string;
   from: string;
@@ -161,16 +175,10 @@ export type CreateEthereumTransaction = {
   maxPriorityFeePerGas?: string;
 };
 
-export type SendTransaction = {
-  coin: COIN;
+export type CreateSolanaTransaction = {
+  privateKey?: string;
   from: string;
   to: string;
   value: string;
-  privateKey: string;
-  gasPrice?: string;
-  gasLimit?: number;
-  maxPriorityFeePerGas?: string;
-  feeRate?: number;
-  btcType?: BTCTYPE;
-  nonce?: number;
+  contractAddress?: string;
 };

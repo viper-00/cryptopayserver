@@ -2,18 +2,25 @@ import { BLOCKCHAINNAMES, CHAINIDS, CHAINS } from 'packages/constants/blockchain
 import {
   AssetBalance,
   ChainAccountType,
+  CreateSolanaTransaction,
   SendTransaction,
   SolanaTransactionDetail,
   TransactionDetail,
   TransactionRequest,
   TRANSACTIONSTATUS,
 } from '../types';
-import { Connection, Keypair, PublicKey, Transaction, TransactionSignature } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionSignature } from '@solana/web3.js';
 import { ethers } from 'ethers';
 import { RPC } from '../rpc';
 import { FindDecimalsByChainIdsAndContractAddress, FindTokenByChainIdsAndContractAddress } from 'utils/web3';
-import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import {
+  AccountLayout,
+  createTransferInstruction,
+  getOrCreateAssociatedTokenAccount,
+  TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
 import { GetBlockchainTxUrl } from 'utils/chain/solana';
+import { BigMul } from 'utils/number';
 
 export class SOLANA {
   static chain = CHAINS.SOLANA;
@@ -31,7 +38,7 @@ export class SOLANA {
     // const path = `m/44'/501'/0'/0`;
 
     try {
-      const keypair = Keypair.fromSeed(Uint8Array.from(seed));
+      const keypair = Keypair.fromSeed(Uint8Array.from(seed).slice(0, 32));
       const privateKey = keypair.secretKey.toString();
       const address = keypair.publicKey.toString();
 
@@ -118,7 +125,7 @@ export class SOLANA {
     amount?: string,
   ): Promise<string> {
     let qrcodeText = `solana:${address}`;
-    const decimal = contractAddress ? await this.getERC20Decimals(isMainnet, contractAddress) : 18;
+    const decimal = contractAddress ? await this.getTokenDecimals(isMainnet, contractAddress) : 18;
 
     amount = amount || '0';
     const value = ethers.parseUnits(amount, decimal).toString();
@@ -143,7 +150,7 @@ export class SOLANA {
 
         const promises = tokens.map(async (token) => {
           if (token.contractAddress && token.contractAddress !== '') {
-            const balance = await this.getERC20Balance(isMainnet, address, token.contractAddress);
+            const balance = await this.getTokenBalance(isMainnet, address, token.contractAddress);
             items[token.symbol] = balance;
           }
         });
@@ -168,7 +175,7 @@ export class SOLANA {
     }
   }
 
-  static async getERC20Balance(isMainnet: boolean, address: string, contractAddress: string): Promise<string> {
+  static async getTokenBalance(isMainnet: boolean, address: string, contractAddress: string): Promise<string> {
     try {
       const connection = await this.getConnection(isMainnet);
 
@@ -184,7 +191,7 @@ export class SOLANA {
         const amount = accountInfo.amount.toString();
 
         if (accountInfo.mint === mintAddress) {
-          const tokenDecimals = await this.getERC20Decimals(isMainnet, contractAddress);
+          const tokenDecimals = await this.getTokenDecimals(isMainnet, contractAddress);
           return ethers.formatUnits(amount, tokenDecimals);
         }
       });
@@ -192,11 +199,11 @@ export class SOLANA {
       return '';
     } catch (e) {
       console.error(e);
-      throw new Error('can not get the erc20 balance of solana');
+      throw new Error('can not get the token balance of solana');
     }
   }
 
-  static async getERC20Decimals(isMainnet: boolean, contractAddress: string): Promise<number> {
+  static async getTokenDecimals(isMainnet: boolean, contractAddress: string): Promise<number> {
     const decimals = FindDecimalsByChainIdsAndContractAddress(this.getChainIds(isMainnet), contractAddress);
     if (decimals && decimals > 0) {
       return decimals;
@@ -213,7 +220,7 @@ export class SOLANA {
     }
   }
 
-  // static async decodeERC20Transfer(isMainnet: boolean, hash: string): Promise<ERC20TransactionDetail> {
+  // static async decodeTokenTransfer(isMainnet: boolean, hash: string): Promise<TokenTransactionDetail> {
   //   try {
   //     const connection = await this.getConnection(isMainnet)
   //     const tx = await connection.getParsedTransaction(hash, {
@@ -228,11 +235,11 @@ export class SOLANA {
 
   //   } catch (e) {
   //     console.error(e);
-  //     throw new Error('can not decode erc20 transfer of solana');
+  //     throw new Error('can not decode token transfer of solana');
   //   }
   // }
 
-  static async getERC20TransferToAmountAndTokenByInput(isMainnet: boolean, input: string): Promise<any> {}
+  static async getTokenTransferToAmountAndTokenByInput(isMainnet: boolean, input: string): Promise<any> {}
 
   static async getTransactionStatus(isMainnet: boolean, hash: string): Promise<TRANSACTIONSTATUS> {
     try {
@@ -459,20 +466,106 @@ export class SOLANA {
     }
   }
 
-  static async createTransaction(
-    isMainnet: boolean,
-    request: CreateEthereumTransaction,
-  ): Promise<CreateEthereumTransaction> {}
+  static async createTransaction(isMainnet: boolean, request: CreateSolanaTransaction): Promise<Transaction> {
+    if (request.contractAddress) {
+      return await this.createTokenTransaction(isMainnet, request);
+    } else {
+      return await this.createSolTransaction(isMainnet, request);
+    }
+  }
 
-  static async createSolTransaction(
-    isMainnet: boolean,
-    request: CreateEthereumTransaction,
-  ): Promise<CreateEthereumTransaction> {}
+  static async createSolTransaction(isMainnet: boolean, request: CreateSolanaTransaction): Promise<Transaction> {
+    const connection = await this.getConnection(isMainnet);
+    const { blockhash } = await connection.getRecentBlockhash();
 
-  static async createERC20Transaction(
-    isMainnet: boolean,
-    request: CreateEthereumTransaction,
-  ): Promise<CreateEthereumTransaction> {}
+    // whether same from and privateKey
+    const sender = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(request.privateKey as string)));
+    if (sender.publicKey.toString() !== request.from) {
+      throw new Error('The private key and the address do not match');
+    }
 
-  static async sendTransaction(isMainnet: boolean, request: SendTransaction): Promise<string> {}
+    const transaction = new Transaction({
+      recentBlockhash: blockhash,
+      feePayer: sender.publicKey,
+    });
+
+    const amount = parseFloat(BigMul(request.value, '1000000000'));
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: new PublicKey(request.to),
+        lamports: amount,
+      }),
+    );
+
+    return transaction;
+  }
+
+  static async createTokenTransaction(isMainnet: boolean, request: CreateSolanaTransaction): Promise<Transaction> {
+    const connection = await this.getConnection(isMainnet);
+    const { blockhash } = await connection.getRecentBlockhash();
+
+    // whether same from and privateKey
+    const sender = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(request.privateKey as string)));
+    if (sender.publicKey.toString() !== request.from) {
+      throw new Error('The private key and the address do not match');
+    }
+
+    if (!request.contractAddress || request.contractAddress === '') {
+      throw new Error('can not get the contract address of solana');
+    }
+
+    const mintPubKey = new PublicKey(request.contractAddress);
+    const toPubkey = new PublicKey(request.to);
+
+    // Get the token account of the fromWallet Solana address, if it does not exist, create it
+    const fromTokenAccount = await getOrCreateAssociatedTokenAccount(connection, sender, mintPubKey, sender.publicKey);
+
+    // Get the token account of the toWallet Solana address, if it does not exist, create it
+    const toTokenAccount = await getOrCreateAssociatedTokenAccount(connection, sender, mintPubKey, toPubkey);
+
+    const transaction = new Transaction({
+      recentBlockhash: blockhash,
+    }).add(
+      createTransferInstruction(
+        fromTokenAccount.address,
+        toTokenAccount.address,
+        sender.publicKey,
+        parseFloat(request.value),
+      ),
+    );
+
+    return transaction;
+  }
+
+  static async sendTransaction(isMainnet: boolean, request: SendTransaction): Promise<string> {
+    try {
+      if (!request.privateKey || request.privateKey === '') {
+        throw new Error('can not get the private key of solana');
+      }
+
+      const connection = await this.getConnection(isMainnet);
+
+      const cRequest: CreateSolanaTransaction = {
+        from: request.from,
+        to: request.to,
+        privateKey: request.privateKey,
+        value: request.value,
+        contractAddress: request.coin.contractAddress,
+      };
+
+      const sender = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(request.privateKey as string)));
+
+      const tx = await this.createTransaction(isMainnet, cRequest);
+
+      const signature = await connection.sendTransaction(tx, [sender]);
+      if (signature) {
+        return signature;
+      }
+
+      throw new Error('can not send the transaction of solana');
+    } catch (e) {
+      throw new Error('can not send the transaction of solana');
+    }
+  }
 }
