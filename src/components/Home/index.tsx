@@ -46,6 +46,8 @@ import InvoicesDetails from 'components/Invoices/id';
 import BlockScan from 'components/Wallets/BlockScan';
 import EthereumSend from 'components/Wallets/Ethereum/Send';
 import EthereumReceive from 'components/Wallets/Ethereum/Receive';
+import SolanaSend from 'components/Wallets/Solana/Send';
+import SolanaReceive from 'components/Wallets/Solana/Receive';
 
 const Home = () => {
   const router = useRouter();
@@ -84,6 +86,8 @@ const Home = () => {
     '/wallets/bitcoin/receive': <BitcoinReceive />,
     '/wallets/ethereum/send': <EthereumSend />,
     '/wallets/ethereum/receive': <EthereumReceive />,
+    '/wallets/solana/send': <SolanaSend />,
+    '/wallets/solana/receive': <SolanaReceive />,
     '/invoices/[id]': <InvoicesDetails />,
   };
 
@@ -100,6 +104,8 @@ const Home = () => {
     '/wallets/ethereum/receive': <EthereumReceive />,
     '/wallets/litecoin': <Litecoin />,
     '/wallets/solana': <Solana />,
+    '/wallets/solana/send': <SolanaSend />,
+    '/wallets/solana/receive': <SolanaReceive />,
     '/wallets/ton': <Ton />,
     '/wallets/tron': <Tron />,
     '/wallets/bsc': <Bsc />,

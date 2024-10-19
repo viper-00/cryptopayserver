@@ -159,7 +159,7 @@ export class WEB3 {
       case CHAINS.ETHEREUM:
         return await ETH.getTransactions(isMainnet, address, token?.symbol);
       case CHAINS.SOLANA:
-        return await SOLANA.getTransactions(isMainnet, address, token?.contractAddress);
+        return await SOLANA.getTransactions(isMainnet, address);
       default:
         return [];
     }

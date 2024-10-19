@@ -1,12 +1,15 @@
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { CHAINNAMES } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { FindChainNamesByChains } from 'utils/web3';
 
 type RowType = {
   id: number;
+  chain: CHAINNAMES;
   orderId: number;
   amount: number;
   currency: string;
@@ -33,6 +36,11 @@ export default function InvoiceDataGrid() {
       width: 200,
     },
     {
+      field: 'currency',
+      headerName: 'Currency',
+      width: 100,
+    },
+    {
       field: 'amount',
       headerName: 'Amount',
       width: 100,
@@ -50,6 +58,11 @@ export default function InvoiceDataGrid() {
     {
       field: 'crypto',
       headerName: 'Crypto',
+      width: 100,
+    },
+    {
+      field: 'chain',
+      headerName: 'Chain',
       width: 100,
     },
     {
@@ -88,6 +101,7 @@ export default function InvoiceDataGrid() {
               currency: item.currency,
               cryptoAmount: item.crypto_amount,
               crypto: item.crypto,
+              chain: FindChainNamesByChains(item.chain_id),
               createdDate: new Date(item.created_date).toLocaleString(),
               expirationDate: new Date(item.expiration_date).toLocaleString(),
               orderStatus: item.order_status,

@@ -21,6 +21,7 @@ import {
 } from '@solana/spl-token';
 import { GetBlockchainTxUrl } from 'utils/chain/solana';
 import { BigMul } from 'utils/number';
+import bs58 from 'bs58';
 
 export class SOLANA {
   static chain = CHAINS.SOLANA;
@@ -186,17 +187,21 @@ export class SOLANA {
         programId: TOKEN_PROGRAM_ID,
       });
 
-      response.value.forEach(async (item) => {
-        const accountInfo = AccountLayout.decode(item.account.data);
-        const amount = accountInfo.amount.toString();
+      if (response.value && response.value.length > 0) {
+        for (const item of response.value) {
+          const accountInfo = AccountLayout.decode(item.account.data);
 
-        if (accountInfo.mint === mintAddress) {
-          const tokenDecimals = await this.getTokenDecimals(isMainnet, contractAddress);
-          return ethers.formatUnits(amount, tokenDecimals);
+          const amount = accountInfo.amount.toString();
+
+          if (accountInfo.mint.toString() === mintAddress.toString()) {
+            const tokenDecimals = await this.getTokenDecimals(isMainnet, contractAddress);
+
+            return ethers.formatUnits(amount, tokenDecimals);
+          }
         }
-      });
+      }
 
-      return '';
+      return '0';
     } catch (e) {
       console.error(e);
       throw new Error('can not get the token balance of solana');
@@ -265,12 +270,9 @@ export class SOLANA {
   static async getTransactions(
     isMainnet: boolean,
     address: string,
-    contractAddress?: string,
     limit: number = 10,
   ): Promise<SolanaTransactionDetail[]> {
     try {
-      contractAddress = contractAddress ? contractAddress : '';
-
       const connection = await this.getConnection(isMainnet);
       const ownerAddress = new PublicKey(address);
       const signatures = await connection.getSignaturesForAddress(ownerAddress, {
@@ -291,18 +293,18 @@ export class SOLANA {
         });
 
         if (txs && txs.length > 0) {
-          txs.forEach(async (tx: any) => {
+          const promises = txs.map(async (tx: any) => {
             for (const instruction of tx.transaction.message.instructions) {
               let detail: SolanaTransactionDetail = {
                 chainId: this.getChainIds(isMainnet),
                 address: address,
-                hash: tx.signatures[0],
-                contractAddress: contractAddress as string,
+                hash: tx.transaction.signatures[0],
                 status: tx.meta?.err ? TRANSACTIONSTATUS.FAILED : TRANSACTIONSTATUS.SUCCESS,
                 blockTimestamp: tx.blockTime,
                 from: '',
                 to: '',
                 value: '',
+                contractAddress: '',
                 asset: '',
                 type: 'None',
               };
@@ -317,47 +319,86 @@ export class SOLANA {
 
                   detail.from = new PublicKey(from).toBase58();
                   detail.to = new PublicKey(to).toBase58();
-                  detail.value = (amount / 1_000_000_000).toString();
+                  detail.value = ethers.formatUnits(amount, 9);
                   detail.asset = 'SOL';
-                  if (new PublicKey(from) === new PublicKey(address)) {
+                  if (new PublicKey(from).toString() === new PublicKey(address).toString()) {
                     detail.type = 'Send';
                   } else {
                     detail.type = 'Received';
                   }
-                } else {
-                  continue;
+
+                  details.push(detail);
+                  break;
                 }
               } else if (instruction.programId.equals(TOKEN_PROGRAM_ID)) {
                 const parsed = instruction.parsed;
 
-                if (parsed.type && parsed.type === 'transferChecked') {
-                  const from = parsed.info.source;
-                  const to = parsed.info.destination;
-                  const mint = parsed.info.mint;
+                if (parsed.type) {
+                  if (parsed.type === 'transferChecked') {
+                    const from = parsed.info.source;
+                    const to = parsed.info.destination;
+                    const mint = parsed.info.mint;
 
-                  detail.from = new PublicKey(from).toBase58();
-                  detail.to = new PublicKey(to).toBase58();
-                  detail.value = ethers.formatUnits(parsed.info.tokenAmount.amount, parsed.info.tokenAmount.decimals);
-                  const token = FindTokenByChainIdsAndContractAddress(this.getChainIds(isMainnet), mint);
-                  detail.asset = token.symbol;
+                    detail.from = new PublicKey(from).toBase58();
+                    detail.to = new PublicKey(to).toBase58();
+                    detail.value = ethers.formatUnits(parsed.info.tokenAmount.amount, parsed.info.tokenAmount.decimals);
+                    const token = FindTokenByChainIdsAndContractAddress(this.getChainIds(isMainnet), mint);
+                    detail.asset = token.symbol;
+                    detail.contractAddress = token.contractAddress as string;
 
-                  if (new PublicKey(from) === new PublicKey(address)) {
-                    detail.type = 'Send';
-                  } else {
-                    detail.type = 'Received';
+                    if (new PublicKey(from).toString() === new PublicKey(address).toString()) {
+                      detail.type = 'Send';
+                    } else {
+                      detail.type = 'Received';
+                    }
+
+                    details.push(detail);
+                    break;
+                  } else if (parsed.type === 'transfer') {
+                    const from = parsed.info.authority;
+                    const to = parsed.info.destination;
+                    let mint = '';
+
+                    const accounts = await connection.getParsedTokenAccountsByOwner(
+                      new PublicKey(parsed.info.authority),
+                      {
+                        programId: TOKEN_PROGRAM_ID,
+                      },
+                    );
+
+                    accounts.value.forEach((item) => {
+                      if (item.pubkey.toString() === parsed.info.source.toString()) {
+                        mint = item.account.data.parsed.info.mint.toString();
+                      }
+                    });
+
+                    const token = FindTokenByChainIdsAndContractAddress(this.getChainIds(isMainnet), mint);
+
+                    detail.from = new PublicKey(from).toBase58();
+                    detail.to = new PublicKey(to).toBase58();
+                    detail.value = ethers.formatUnits(parsed.info.amount, token.decimals);
+                    detail.asset = token.symbol;
+                    detail.contractAddress = token.contractAddress as string;
+
+                    if (new PublicKey(from).toString() === new PublicKey(address).toString()) {
+                      detail.type = 'Send';
+                    } else {
+                      detail.type = 'Received';
+                    }
+
+                    details.push(detail);
+                    break;
                   }
-                } else {
-                  continue;
                 }
-              } else {
-                continue;
               }
-
-              details.push(detail);
             }
           });
+
+          await Promise.all(promises);
         }
       }
+
+      details.sort((a, b) => b.blockTimestamp - a.blockTimestamp);
 
       return details;
     } catch (e) {
@@ -476,10 +517,13 @@ export class SOLANA {
 
   static async createSolTransaction(isMainnet: boolean, request: CreateSolanaTransaction): Promise<Transaction> {
     const connection = await this.getConnection(isMainnet);
-    const { blockhash } = await connection.getRecentBlockhash();
+    const { blockhash } = await connection.getLatestBlockhash();
 
-    // whether same from and privateKey
-    const sender = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(request.privateKey as string)));
+    if (!request.privateKey || request.privateKey === '') {
+      throw new Error('can not get the private key of solana');
+    }
+
+    const sender = Keypair.fromSecretKey(new Uint8Array(request.privateKey.split(',').map(Number)));
     if (sender.publicKey.toString() !== request.from) {
       throw new Error('The private key and the address do not match');
     }
@@ -489,12 +533,11 @@ export class SOLANA {
       feePayer: sender.publicKey,
     });
 
-    const amount = parseFloat(BigMul(request.value, '1000000000'));
     transaction.add(
       SystemProgram.transfer({
         fromPubkey: sender.publicKey,
         toPubkey: new PublicKey(request.to),
-        lamports: amount,
+        lamports: ethers.parseUnits(request.value, 9),
       }),
     );
 
@@ -503,10 +546,13 @@ export class SOLANA {
 
   static async createTokenTransaction(isMainnet: boolean, request: CreateSolanaTransaction): Promise<Transaction> {
     const connection = await this.getConnection(isMainnet);
-    const { blockhash } = await connection.getRecentBlockhash();
+    const { blockhash } = await connection.getLatestBlockhash();
 
-    // whether same from and privateKey
-    const sender = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(request.privateKey as string)));
+    if (!request.privateKey || request.privateKey === '') {
+      throw new Error('can not get the private key of solana');
+    }
+
+    const sender = Keypair.fromSecretKey(new Uint8Array(request.privateKey.split(',').map(Number)));
     if (sender.publicKey.toString() !== request.from) {
       throw new Error('The private key and the address do not match');
     }
@@ -517,11 +563,10 @@ export class SOLANA {
 
     const mintPubKey = new PublicKey(request.contractAddress);
     const toPubkey = new PublicKey(request.to);
+    const token = FindTokenByChainIdsAndContractAddress(this.getChainIds(isMainnet), request.contractAddress);
 
-    // Get the token account of the fromWallet Solana address, if it does not exist, create it
     const fromTokenAccount = await getOrCreateAssociatedTokenAccount(connection, sender, mintPubKey, sender.publicKey);
 
-    // Get the token account of the toWallet Solana address, if it does not exist, create it
     const toTokenAccount = await getOrCreateAssociatedTokenAccount(connection, sender, mintPubKey, toPubkey);
 
     const transaction = new Transaction({
@@ -531,7 +576,7 @@ export class SOLANA {
         fromTokenAccount.address,
         toTokenAccount.address,
         sender.publicKey,
-        parseFloat(request.value),
+        ethers.parseUnits(request.value, token.decimals),
       ),
     );
 
@@ -554,7 +599,7 @@ export class SOLANA {
         contractAddress: request.coin.contractAddress,
       };
 
-      const sender = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(request.privateKey as string)));
+      const sender = Keypair.fromSecretKey(new Uint8Array(request.privateKey.split(',').map(Number)));
 
       const tx = await this.createTransaction(isMainnet, cRequest);
 

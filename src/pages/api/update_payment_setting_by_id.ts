@@ -15,9 +15,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse<R
         const storeId = req.body.store_id;
         const network = req.body.network;
 
-        const paymentExpire = req.body.payment_expire;
-        const confirmBlock = req.body.confirm_block;
-        const showRecommendedFee = req.body.show_recommended_fee;
+        const paymentExpire = req.body.payment_expire ? req.body.payment_expire : 0;
+        const confirmBlock = req.body.confirm_block ? req.body.confirm_block : 0;
+        const showRecommendedFee = req.body.show_recommended_fee ? req.body.show_recommended_fee : 0;
         const currentUsedAddressId = req.body.current_used_address_id;
 
         const query =

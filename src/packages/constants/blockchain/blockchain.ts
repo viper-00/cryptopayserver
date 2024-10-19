@@ -285,8 +285,8 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: false,
     coins: SOLANA_DEVNET_COINS,
     rpc: [
-      'https://api.devnet.solana.com',
-      'https://rpc.ankr.com/solana_devnet',
+      // 'https://api.devnet.solana.com',
+      // 'https://rpc.ankr.com/solana_devnet',
       'https://quiet-evocative-sanctuary.solana-devnet.quiknode.pro/9546a31f74b22b085dc30ae790d10b23014825af',
     ],
   },

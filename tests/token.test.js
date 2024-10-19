@@ -7,8 +7,8 @@ const connection = new Connection(
   'confirmed',
 );
 
-const mintAddress = new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
-const ownerAddress = new PublicKey('D7zyyjwhbQAD3xSKhmRZ8swsMfqvPmseRqqvvpBozrvF');
+// const mintAddress = new PublicKey('mint');
+const ownerAddress = new PublicKey('3LAsjVjQeXqnxmHJgLAhseVVV3TP45WZ33tamXxPVMPV');
 
 // const signatures = await connection.getSignaturesForAddress(ownerAddress, {
 //   limit: 10,
@@ -110,11 +110,22 @@ const ownerAddress = new PublicKey('D7zyyjwhbQAD3xSKhmRZ8swsMfqvPmseRqqvvpBozrvF
 
 // 生成 PDA
 // const [pda, bump] = PublicKey.findProgramAddressSync(
-//   [mintAddress.toBuffer(), ownerAddress.toBuffer()],
+//   [ownerAddress.toBuffer()],
 //   new PublicKey(TOKEN_PROGRAM_ID),
 // );
 
 // console.log('pda', pda);
+
+// const accounts = await connection.getParsedTokenAccountsByOwner(ownerAddress, {
+//   programId: TOKEN_PROGRAM_ID,
+// });
+
+// console.log("accounts", accounts)
+
+// accounts.value.forEach((account) => {
+//   const mintAddress = account.account.data.parsed.info.mint;
+//   console.log('Mint Address:', mintAddress);
+// });
 
 // const accountInfo = await getAccount(connection, pda);
 
