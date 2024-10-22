@@ -5,8 +5,8 @@ import Dashboard from 'components/Dashboard';
 import Settings from 'components/Settings';
 import Bitcoin from 'components/Wallets/Bitcoin';
 import Lightning from 'components/Wallets/Bitcoin/Lightning';
-import PaymentInvoices from 'components/Payments/invoices/index';
-import PaymentInvoiceDetails from 'components/Payments/invoices/id';
+import PaymentInvoices from 'components/Payments/Invoices/index';
+import PaymentInvoiceDetails from 'components/Payments/Invoices/id';
 import Reporting from 'components/Payments/Reporting';
 import Requests from 'components/Payments/Requests';
 import Pullpayments from 'components/Payments/Pullpayments';
@@ -48,6 +48,7 @@ import EthereumSend from 'components/Wallets/Ethereum/Send';
 import EthereumReceive from 'components/Wallets/Ethereum/Receive';
 import SolanaSend from 'components/Wallets/Solana/Send';
 import SolanaReceive from 'components/Wallets/Solana/Receive';
+import PaymentTransactions from 'components/Payments/Transactions';
 
 const Home = () => {
   const router = useRouter();
@@ -110,6 +111,7 @@ const Home = () => {
     '/wallets/tron': <Tron />,
     '/wallets/bsc': <Bsc />,
     '/wallets/blockscan': <BlockScan />,
+    '/payments/transactions': <PaymentTransactions />,
     '/payments/invoices': <PaymentInvoices />,
     '/payments/invoices/[id]': <PaymentInvoiceDetails />,
     '/payments/reporting': <Reporting />,

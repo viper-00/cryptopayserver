@@ -271,6 +271,13 @@ const HomeSidebar = () => {
             >
               <MenuItem
                 icon={<Description />}
+                active={router.pathname === '/payments/transactions' ? true : false}
+                component={<Link href={'/payments/transactions'} />}
+              >
+                Transactions
+              </MenuItem>
+              <MenuItem
+                icon={<Description />}
                 active={router.pathname === '/payments/invoices' ? true : false}
                 component={<Link href={'/payments/invoices'} />}
               >

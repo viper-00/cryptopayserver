@@ -49,6 +49,9 @@ export class Http {
   static find_gas_limit = this.httpPath + '/find_gas_limit';
   static find_max_priorty_fee = this.httpPath + '/find_max_priorty_fee';
 
+  // transaction
+  static find_transaction_by_store_id = this.httpPath + '/find_transaction_by_store_id';
+
   // invoice
   static create_invoice = this.httpPath + '/create_invoice';
   static find_invoice = this.httpPath + '/find_invoice';

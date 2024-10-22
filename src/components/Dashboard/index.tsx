@@ -17,43 +17,55 @@ import BalanceBars from './Balance';
 import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
 import TransactionDataGrid from './Transaction';
 import { useStorePresistStore } from 'lib/store';
+import { useState } from 'react';
 
 const Dashboard = () => {
-  const onChangeToggle = () => {};
+  const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');
+  const [walletBalanceDayAlignment, setWalletBalanceDayAlignment] = useState<'WEEK' | 'MONTH' | 'YEAR'>('WEEK');
+
+  const onChangeCurrency = (e: any) => {
+    setWalletBalanceAlignment(e.target.value);
+  };
+
+  const onChangeDay = (e: any) => {
+    setWalletBalanceDayAlignment(e.target.value);
+  };
 
   const { getStoreName } = useStorePresistStore((state) => state);
 
   return (
     <Box>
       <Container>
-        <Typography variant="h5" pt={5}>{getStoreName()}</Typography>
+        <Typography variant="h5" pt={5}>
+          {getStoreName()}
+        </Typography>
         <Grid container spacing={2} mt={2}>
           <Grid item xs={8}>
             <Card variant="outlined">
               <CardContent>
                 <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
                   <Typography>Wallet Balance</Typography>
-                  <ToggleButtonGroup value={''} exclusive onChange={onChangeToggle} aria-label="text alignment">
-                    <ToggleButton value="left" aria-label="left aligned">
-                      <FormatAlignLeft />
+                  <ToggleButtonGroup value={walletBalanceAlignment} exclusive onChange={onChangeCurrency}>
+                    <ToggleButton value="USD" aria-label="left aligned">
+                      USD
                     </ToggleButton>
-                    <ToggleButton value="center" aria-label="centered">
-                      <FormatAlignCenter />
+                    <ToggleButton value="USDT" aria-label="centered">
+                      USDT
                     </ToggleButton>
-                    <ToggleButton value="right" aria-label="right aligned">
-                      <FormatAlignRight />
+                    <ToggleButton value="USDC" aria-label="right aligned">
+                      USDC
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </Stack>
                 <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} mt={2}>
-                  <Stack direction={'row'}>
-                    <Typography>0.00</Typography>
-                    <Typography ml={1}>USDC</Typography>
+                  <Stack direction={'row'} alignItems={'baseline'}>
+                    <Typography variant="h4">0.00</Typography>
+                    <Typography ml={1}>{walletBalanceAlignment}</Typography>
                   </Stack>
-                  <RadioGroup row aria-labelledby="demo-row-radio-buttons-group-label" name="row-radio-buttons-group">
-                    <FormControlLabel value="female" control={<Radio />} label="1W" />
-                    <FormControlLabel value="male" control={<Radio />} label="1M" />
-                    <FormControlLabel value="other" control={<Radio />} label="1Y" />
+                  <RadioGroup row value={walletBalanceDayAlignment} onChange={onChangeDay}>
+                    <FormControlLabel value="WEEK" control={<Radio />} label="1W" />
+                    <FormControlLabel value="MONTH" control={<Radio />} label="1M" />
+                    <FormControlLabel value="YEAR" control={<Radio />} label="1Y" />
                   </RadioGroup>
                 </Stack>
 
@@ -67,19 +79,72 @@ const Dashboard = () => {
           <Grid item xs={4}>
             <Card variant="outlined">
               <CardContent>
-                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                <Box>
+                  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'flex-start'}>
+                    <Box>
+                      <Typography>
+                        Paid invoices in the last&nbsp;
+                        {walletBalanceDayAlignment === 'WEEK' && '7 days'}
+                        {walletBalanceDayAlignment === 'MONTH' && '1 months'}
+                        {walletBalanceDayAlignment === 'YEAR' && '1 years'}
+                      </Typography>
+                      <Typography mt={2} variant="h6">
+                        0
+                      </Typography>
+                    </Box>
+                    <Button
+                      onClick={() => {
+                        window.location.href = '/payments/invoices';
+                      }}
+                    >
+                      Manage
+                    </Button>
+                  </Stack>
+                  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'flex-start'} mt={4}>
+                    <Box>
+                      <Typography>Payouts Pending</Typography>
+                      <Typography mt={2} variant="h6">
+                        0
+                      </Typography>
+                    </Box>
+                    <Button
+                      onClick={() => {
+                        window.location.href = '/payments/payouts';
+                      }}
+                    >
+                      Manage
+                    </Button>
+                  </Stack>
+                  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'flex-start'} mt={4}>
+                    <Box>
+                      <Typography>Refunds Issued</Typography>
+                      <Typography mt={2} variant="h6">
+                        0
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+                {/* <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
                   <Box>
-                    <Typography>Paid invoices in the last 7 days</Typography>
-                    <Typography mt={2}>0</Typography>
                     <Typography mt={5}>Payouts Pending</Typography>
-                    <Typography mt={2}>0</Typography>
-                    <Typography mt={5}>Refunds Issued</Typography>
-                    <Typography mt={2}>0</Typography>
+                    <Typography mt={2} variant="h6">
+                      0
+                    </Typography>
+                    <Typography mt={5}></Typography>
+                    <Typography mt={2} variant="h6">
+                      0
+                    </Typography>
                   </Box>
                   <Box>
-                    <Button>Manage</Button>
+                    <Button
+                      onClick={() => {
+                        window.location.href = '/payments/payout';
+                      }}
+                    >
+                      Manage
+                    </Button>
                   </Box>
-                </Stack>
+                </Stack> */}
               </CardContent>
             </Card>
           </Grid>
