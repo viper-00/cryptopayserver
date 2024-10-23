@@ -7,6 +7,10 @@ import {
   GetBlockchainAddressUrl as GetETHBlockchainAddressUrl,
   GetBlockchainTxUrl as GetETHBlockchainTxUrl,
 } from './chain/eth';
+import {
+  GetBlockchainAddressUrl as GetSolanaBlockchainAddressUrl,
+  GetBlockchainTxUrl as GetSolanaBlockchainTxUrl,
+} from './chain/solana';
 
 export function FindTokenByChainIdsAndContractAddress(chainIds: CHAINIDS, contractAddress: string): COIN {
   const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
@@ -92,23 +96,27 @@ export function FindChainNamesByChains(chains: CHAINS): CHAINNAMES {
   }
 }
 
-export function GetBlockchainTxUrlByChainIds(isMainnet: boolean, chain: CHAINS) {
+export function GetBlockchainTxUrlByChainIds(isMainnet: boolean, chain: CHAINS, hash: string) {
   switch (chain) {
     case CHAINS.BITCOIN:
-      return GetBTCBlockchainTxUrl(isMainnet);
+      return GetBTCBlockchainTxUrl(isMainnet, hash);
     case CHAINS.ETHEREUM:
-      return GetETHBlockchainTxUrl(isMainnet);
+      return GetETHBlockchainTxUrl(isMainnet, hash);
+    case CHAINS.SOLANA:
+      return GetSolanaBlockchainTxUrl(isMainnet, hash);
     default:
       return '';
   }
 }
 
-export function GetBlockchainAddressUrlByChainIds(isMainnet: boolean, chain: CHAINS) {
+export function GetBlockchainAddressUrlByChainIds(isMainnet: boolean, chain: CHAINS, address: string) {
   switch (chain) {
     case CHAINS.BITCOIN:
-      return GetBTCBlockchainAddressUrl(isMainnet);
+      return GetBTCBlockchainAddressUrl(isMainnet, address);
     case CHAINS.ETHEREUM:
-      return GetETHBlockchainAddressUrl(isMainnet);
+      return GetETHBlockchainAddressUrl(isMainnet, address);
+    case CHAINS.SOLANA:
+      return GetSolanaBlockchainAddressUrl(isMainnet, address);
     default:
       return '';
   }

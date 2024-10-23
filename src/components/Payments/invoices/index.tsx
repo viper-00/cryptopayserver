@@ -577,7 +577,7 @@ const PaymentInvoices = () => {
             </Stack>
 
             <Box mt={5}>
-              <InvoiceDataGrid />
+              <InvoiceDataGrid source='none'/>
             </Box>
           </Box>
         )}

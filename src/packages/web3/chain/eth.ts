@@ -318,7 +318,7 @@ export class ETH {
     hash: string,
     isPending: boolean = false,
   ): Promise<TransactionDetail> {
-    const explorerUrl = `${GetBlockchainTxUrl(isMainnet)}/tx/${hash}`;
+    const explorerUrl = GetBlockchainTxUrl(isMainnet, hash);
 
     try {
       if (isPending) {

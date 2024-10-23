@@ -81,7 +81,7 @@ const PaymentTransactions = () => {
           </Stack>
 
           <Box mt={5}>
-            <TransactionDataGrid />
+            <TransactionDataGrid source="none" />
           </Box>
         </Box>
       </Container>

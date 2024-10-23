@@ -20,7 +20,13 @@ type RowType = {
   orderStatus: string;
 };
 
-export default function InvoiceDataGrid() {
+type GridType = {
+  source: 'dashboard' | 'none';
+};
+
+export default function InvoiceDataGrid(props: GridType) {
+  const { source } = props;
+
   const [rows, setRows] = useState<RowType[]>([]);
 
   const { getNetwork } = useUserPresistStore((state) => state);
@@ -34,11 +40,6 @@ export default function InvoiceDataGrid() {
       headerName: 'Order Id',
       // editable: true,
       width: 200,
-    },
-    {
-      field: 'currency',
-      headerName: 'Currency',
-      width: 100,
     },
     {
       field: 'amount',
@@ -141,6 +142,8 @@ export default function InvoiceDataGrid() {
         }}
         // checkboxSelection
         // disableRowSelectionOnClick
+        hideFooter={source === 'dashboard' ? true : false}
+        disableColumnMenu
       />
     </Box>
   );

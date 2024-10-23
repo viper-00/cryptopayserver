@@ -408,7 +408,7 @@ export class BTC {
             blockNumber = item.status.block_height;
           }
 
-          const url = `${GetBlockchainTxUrl(isMainnet)}/${item.txid}`;
+          const url = GetBlockchainTxUrl(isMainnet, item.txid)
 
           txs.push({
             hash: item.txid,
@@ -478,7 +478,7 @@ export class BTC {
           blockNumber = response.data.status.block_height;
         }
 
-        const explorerUrl = `${GetBlockchainTxUrl(isMainnet)}/${response.data.txid}`;
+        const explorerUrl = GetBlockchainTxUrl(isMainnet, response.data.txid)
 
         if (address) {
           return {

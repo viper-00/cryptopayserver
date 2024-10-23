@@ -216,7 +216,7 @@ const BitcoinSend = () => {
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
 
-        setBlockExplorerLink(GetBlockchainTxUrl(getNetwork() === 'mainnet') + '/' + send_transaction_resp.data.hash);
+        setBlockExplorerLink(GetBlockchainTxUrl(getNetwork() === 'mainnet', send_transaction_resp.data.hash));
 
         setPage(3);
       }

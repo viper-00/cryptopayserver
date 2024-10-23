@@ -366,7 +366,7 @@ const Ethereum = () => {
                       </Box>
                       <Box>
                         <Button
-                          href={GetBlockchainAddressUrl(getNetwork() === 'mainnet' ? true : false) + '/' + item.address}
+                          href={GetBlockchainAddressUrl(getNetwork() === 'mainnet' ? true : false, item.address)}
                           target={'_blank'}
                         >
                           Check onChain
@@ -413,10 +413,7 @@ function TransactionsTab({ rows }: { rows: EthereumTransactionDetail[] }) {
           {rows.map((row, index) => (
             <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                <Link
-                  href={GetBlockchainTxUrl(getNetwork() === 'mainnet' ? true : false) + '/' + row.hash}
-                  target={'_blank'}
-                >
+                <Link href={GetBlockchainTxUrl(getNetwork() === 'mainnet' ? true : false, row.hash)} target={'_blank'}>
                   {row.hash}
                 </Link>
               </TableCell>

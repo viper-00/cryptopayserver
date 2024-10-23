@@ -2,16 +2,18 @@ import { Dialog, DialogTitle, Stack, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
-import { CHAINNAMES } from 'packages/constants/blockchain';
+import Link from 'next/link';
+import { CHAINNAMES, CHAINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { OmitMiddleString } from 'utils/strings';
-import { FindChainNamesByChains } from 'utils/web3';
+import { FindChainNamesByChains, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 
 type RowType = {
   id: number;
-  chain: CHAINNAMES;
+  chainId: number;
+  chainName: CHAINNAMES;
   hash: string;
   address: string;
   fromAddress: string;
@@ -22,7 +24,13 @@ type RowType = {
   blockTimestamp: string;
 };
 
-export default function TransactionDataGrid() {
+type GridType = {
+  source: 'dashboard' | 'none';
+};
+
+export default function TransactionDataGrid(props: GridType) {
+  const { source } = props;
+
   const [rows, setRows] = useState<RowType[]>([]);
 
   const { getNetwork } = useUserPresistStore((state) => state);
@@ -49,7 +57,7 @@ export default function TransactionDataGrid() {
   const columns: GridColDef<(typeof rows)[number]>[] = [
     { field: 'id', headerName: 'ID', width: 50 },
     {
-      field: 'chain',
+      field: 'chainName',
       headerName: 'Chain',
       width: 100,
     },
@@ -57,22 +65,26 @@ export default function TransactionDataGrid() {
       field: 'hash',
       headerName: 'Hash',
       width: 200,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'address',
       headerName: 'Address',
       width: 200,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
 
     {
       field: 'fromAddress',
       headerName: 'FromAddress',
       width: 200,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'toAddress',
       headerName: 'ToAddress',
       width: 200,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'token',
@@ -111,11 +123,12 @@ export default function TransactionDataGrid() {
           tx_resp.data.forEach(async (item: any, index: number) => {
             rt.push({
               id: item.id,
-              chain: FindChainNamesByChains(item.chain_id),
-              hash: OmitMiddleString(item.hash, 10),
-              address: OmitMiddleString(item.address, 10),
-              fromAddress: OmitMiddleString(item.from_address, 10),
-              toAddress: OmitMiddleString(item.to_address, 10),
+              chainId: item.chain_id,
+              chainName: FindChainNamesByChains(item.chain_id),
+              hash: item.hash,
+              address: item.address,
+              fromAddress: item.from_address,
+              toAddress: item.to_address,
               token: item.token,
               transactionType: item.transact_type,
               amount: item.amount,
@@ -154,8 +167,10 @@ export default function TransactionDataGrid() {
         onRowClick={(e: any) => {
           onClickRow(e.row);
         }}
-        checkboxSelection
-        disableRowSelectionOnClick
+        // checkboxSelection
+        // disableRowSelectionOnClick
+        hideFooter={source === 'dashboard' ? true : false}
+        disableColumnMenu
       />
 
       <TxDialog row={selectedValue as RowType} open={open} onClose={handleClose} />
@@ -172,6 +187,8 @@ export type TxDialogProps = {
 function TxDialog(props: TxDialogProps) {
   const { onClose, row, open } = props;
 
+  const { getNetwork } = useUserPresistStore((state) => state);
+
   if (!row) return;
 
   const handleClose = () => {
@@ -185,27 +202,59 @@ function TxDialog(props: TxDialogProps) {
         <Box mt={3}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Typography>Chain</Typography>
-            <Typography>{row.chain}</Typography>
+            <Typography>{row.chainName}</Typography>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>Hash</Typography>
-            <Typography>{row.hash}</Typography>
+            <Link
+              href={GetBlockchainTxUrlByChainIds(getNetwork() === 'mainnet' ? true : false, row.chainId, row.hash)}
+              target="_blank"
+            >
+              {OmitMiddleString(row.hash, 10)}
+            </Link>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>Address</Typography>
-            <Typography>{row.address}</Typography>
+            <Link
+              href={GetBlockchainAddressUrlByChainIds(
+                getNetwork() === 'mainnet' ? true : false,
+                row.chainId,
+                row.address,
+              )}
+              target="_blank"
+            >
+              {row.address}
+            </Link>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>From Address</Typography>
-            <Typography>{row.fromAddress}</Typography>
+            <Link
+              href={GetBlockchainAddressUrlByChainIds(
+                getNetwork() === 'mainnet' ? true : false,
+                row.chainId,
+                row.fromAddress,
+              )}
+              target="_blank"
+            >
+              {row.fromAddress}
+            </Link>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>To Address</Typography>
-            <Typography>{row.toAddress}</Typography>
+            <Link
+              href={GetBlockchainAddressUrlByChainIds(
+                getNetwork() === 'mainnet' ? true : false,
+                row.chainId,
+                row.toAddress,
+              )}
+              target="_blank"
+            >
+              {row.toAddress}
+            </Link>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>Token</Typography>
-            <Typography>{row.token}</Typography>
+            <Typography fontWeight={'bold'}>{row.token}</Typography>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>Transaction Type</Typography>
@@ -213,7 +262,7 @@ function TxDialog(props: TxDialogProps) {
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>Amount</Typography>
-            <Typography>{row.amount}</Typography>
+            <Typography fontWeight={'bold'}>{row.amount}</Typography>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
             <Typography>Block Timestamp</Typography>

@@ -15,9 +15,10 @@ import {
 } from '@mui/material';
 import BalanceBars from './Balance';
 import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
-import TransactionDataGrid from './Transaction';
 import { useStorePresistStore } from 'lib/store';
 import { useState } from 'react';
+import TransactionDataGrid from 'components/Payments/Transaction/TransactionDataGrid';
+import InvoiceDataGrid from 'components/Payments/Invoice/InvoiceDataGrid';
 
 const Dashboard = () => {
   const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');
@@ -154,11 +155,17 @@ const Dashboard = () => {
               <CardContent>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography variant="h5">Recent Transactions</Typography>
-                  <Button>View All</Button>
+                  <Button
+                    onClick={() => {
+                      window.location.href = '/payments/transactions';
+                    }}
+                  >
+                    View All
+                  </Button>
                 </Stack>
 
                 <Box mt={3}>
-                  <TransactionDataGrid />
+                  <TransactionDataGrid source="dashboard" />
                 </Box>
               </CardContent>
             </Card>
@@ -169,11 +176,17 @@ const Dashboard = () => {
               <CardContent>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography variant="h5">Recent Invoices</Typography>
-                  <Button>View All</Button>
+                  <Button
+                    onClick={() => {
+                      window.location.href = '/payments/invoices';
+                    }}
+                  >
+                    View All
+                  </Button>
                 </Stack>
 
                 <Box mt={3}>
-                  <TransactionDataGrid />
+                  <InvoiceDataGrid source="dashboard" />
                 </Box>
               </CardContent>
             </Card>
