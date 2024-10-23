@@ -93,7 +93,7 @@ export default function TickPlacementBars() {
   return (
     <BarChart
       series={series}
-      width={500}
+      // width={500}
       height={300}
     />
   );

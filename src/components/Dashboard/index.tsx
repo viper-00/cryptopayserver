@@ -41,7 +41,7 @@ const Dashboard = () => {
           {getStoreName()}
         </Typography>
         <Grid container spacing={2} mt={2}>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
             <Card variant="outlined">
               <CardContent>
                 <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
@@ -77,7 +77,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
 
-          <Grid item xs={4}>
+          {/* <Grid item xs={4}>
             <Card variant="outlined">
               <CardContent>
                 <Box>
@@ -125,30 +125,9 @@ const Dashboard = () => {
                     </Box>
                   </Stack>
                 </Box>
-                {/* <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                  <Box>
-                    <Typography mt={5}>Payouts Pending</Typography>
-                    <Typography mt={2} variant="h6">
-                      0
-                    </Typography>
-                    <Typography mt={5}></Typography>
-                    <Typography mt={2} variant="h6">
-                      0
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Button
-                      onClick={() => {
-                        window.location.href = '/payments/payout';
-                      }}
-                    >
-                      Manage
-                    </Button>
-                  </Box>
-                </Stack> */}
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12}>
             <Card variant="outlined">
