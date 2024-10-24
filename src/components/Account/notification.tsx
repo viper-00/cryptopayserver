@@ -18,16 +18,16 @@ const Notification = () => {
   const [notification, setNotification] = useState<Notification[]>([]);
 
   const getNotifications = async () => {
-    const resposne: any = await axios.get(Http.find_notification, {
+    const response: any = await axios.get(Http.find_notification, {
       params: {
         user_id: getUserId(),
       },
     });
 
-    if (resposne.result && resposne.data.length > 0) {
+    if (response.result && response.data.length > 0) {
       let notification_list: Array<Notification> = [];
 
-      resposne.data.map((item: any) => {
+      response.data.map((item: any) => {
         notification_list.push({
           notify_id: item.notify_id,
           status: item.status,
@@ -53,13 +53,13 @@ const Notification = () => {
     const item = notification.find((item) => item.notify_id === itemId);
     const status = item?.status === 1 ? 2 : 1;
 
-    const resposne: any = await axios.put(Http.update_notification, {
+    const response: any = await axios.put(Http.update_notification, {
       user_id: getUserId(),
       notify_id: itemId,
       status: status,
     });
 
-    if (resposne.result) {
+    if (response.result) {
       setSnackSeverity('success');
       setSnackMessage('Successful update!');
       setSnackOpen(true);

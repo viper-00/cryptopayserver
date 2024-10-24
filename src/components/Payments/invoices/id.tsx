@@ -121,12 +121,12 @@ const PaymentInvoiceDetails = () => {
 
   const onClickArchive = async () => {
     try {
-      const resposne: any = await axios.put(Http.update_invoice_order_status_by_order_id, {
+      const response: any = await axios.put(Http.update_invoice_order_status_by_order_id, {
         order_id: order.orderId,
         order_status: ORDER_STATUS.Invalid,
       });
 
-      if (resposne.result) {
+      if (response.result) {
         setSnackSeverity('success');
         setSnackMessage('Successful update!');
         setSnackOpen(true);
@@ -383,11 +383,11 @@ const PaymentInvoiceDetails = () => {
                     <Grid item xs={9}>
                       <Link
                         target="_blank"
-                        href={
-                          GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
-                          '/' +
-                          order.fromAddress
-                        }
+                        href={GetBlockchainAddressUrlByChainIds(
+                          order.network === 1 ? true : false,
+                          order.chainId,
+                          order.fromAddress,
+                        )}
                       >
                         {order.fromAddress}
                       </Link>
@@ -403,11 +403,11 @@ const PaymentInvoiceDetails = () => {
                     <Grid item xs={9}>
                       <Link
                         target="_blank"
-                        href={
-                          GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
-                          '/' +
-                          order.toAddress
-                        }
+                        href={GetBlockchainAddressUrlByChainIds(
+                          order.network === 1 ? true : false,
+                          order.chainId,
+                          order.toAddress,
+                        )}
                       >
                         {order.toAddress}
                       </Link>
@@ -423,11 +423,11 @@ const PaymentInvoiceDetails = () => {
                     <Grid item xs={9}>
                       <Link
                         target="_blank"
-                        href={
-                          GetBlockchainTxUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
-                          '/' +
-                          order.hash
-                        }
+                        href={GetBlockchainTxUrlByChainIds(
+                          order.network === 1 ? true : false,
+                          order.chainId,
+                          order.hash,
+                        )}
                       >
                         {order.hash}
                       </Link>

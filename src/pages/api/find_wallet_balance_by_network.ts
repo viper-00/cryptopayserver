@@ -13,31 +13,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const connection = await connectDatabase();
         const userId = req.query.user_id;
         const walletId = req.query.wallet_id;
-        const chainId = req.query.chain_id;
         const network = req.query.network;
 
         const query =
-          'SELECT id, address, note FROM addresses where user_id = ? and wallet_id = ? and chain_id = ? and network = ? and status = ?';
-        const values = [userId, walletId, chainId, network, 1];
+          'SELECT id, address, chain_id, note FROM addresses where user_id = ? and wallet_id = ? and network = ? and status = ?';
+        const values = [userId, walletId, network, 1];
         const [rows] = await connection.query(query, values);
 
         let newRows: any[] = [];
         if (Array.isArray(rows) && rows.length > 0) {
           const promises = rows.map(async (item: any) => {
+            console.log(123, item.chain_id)
             return {
               id: item.id,
               address: item.address,
               note: item.note,
+              chain_id: item.chain_id,
               balance: await WEB3.getAssetBalance(
                 parseInt(network as string) === 1 ? true : false,
-                parseInt(chainId as string),
+                item.chain_id,
                 item.address,
-              ),
-              transactions: await WEB3.getTransactions(
-                parseInt(network as string) === 1 ? true : false,
-                parseInt(chainId as string),
-                item.address,
-              ),
+              )
             };
           });
           newRows = await Promise.all(promises);

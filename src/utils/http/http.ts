@@ -25,6 +25,7 @@ export class Http {
   static update_pwd_by_wallet_id = this.httpPath + '/update_pwd_by_wallet_id';
   static update_backup_by_wallet_id = this.httpPath + '/update_backup_by_wallet_id';
   static save_wallet = this.httpPath + '/save_wallet';
+  static find_wallet_balance_by_network = this.httpPath + '/find_wallet_balance_by_network';
 
   // address of wallet
   static find_wallet_address_by_chain_and_network = this.httpPath + '/find_wallet_address_by_chain_and_network';

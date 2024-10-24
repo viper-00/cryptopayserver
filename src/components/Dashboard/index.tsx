@@ -15,14 +15,17 @@ import {
 } from '@mui/material';
 import BalanceBars from './Balance';
 import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
-import { useStorePresistStore } from 'lib/store';
-import { useState } from 'react';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
+import { useEffect, useState } from 'react';
 import TransactionDataGrid from 'components/Payments/Transaction/TransactionDataGrid';
 import InvoiceDataGrid from 'components/Payments/Invoice/InvoiceDataGrid';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const Dashboard = () => {
   const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');
   const [walletBalanceDayAlignment, setWalletBalanceDayAlignment] = useState<'WEEK' | 'MONTH' | 'YEAR'>('WEEK');
+  const [walletBalance, setWalletBalance] = useState<number>(0.0);
 
   const onChangeCurrency = (e: any) => {
     setWalletBalanceAlignment(e.target.value);
@@ -33,6 +36,51 @@ const Dashboard = () => {
   };
 
   const { getStoreName } = useStorePresistStore((state) => state);
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
+  const { getWalletId } = useWalletPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+
+  const getWalletBalance = async () => {
+    const response: any = await axios.get(Http.find_wallet_balance_by_network, {
+      params: {
+        user_id: getUserId(),
+        wallet_id: getWalletId(),
+        network: getNetwork() === 'mainnet' ? 1 : 2,
+      },
+    });
+
+    if (response.result && response.data.length > 0) {
+      let totalBalance = 0;
+      response.data.reduce((total: number, item: any) => {
+        const balanceValues = Object.values(item.balance);
+
+        if (balanceValues && balanceValues.length > 0) {
+          balanceValues.forEach((balanceItem: any) => {
+            totalBalance += parseFloat(balanceItem);
+          });
+        }
+        console.log('balanceValues', balanceValues);
+        // const sum = balanceValues.reduce((acc: number, value: string) => {
+        //   return acc + parseFloat(value);
+        // }, 0);
+        // return total + sum;
+      }, 0);
+      // setNotification(notification_list);
+      setWalletBalance(totalBalance);
+    } else {
+      setSnackSeverity('error');
+      setSnackMessage('Something wrong, please try it again');
+      setSnackOpen(true);
+    }
+  };
+
+  const init = async () => {
+    await getWalletBalance();
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Box>
@@ -60,7 +108,7 @@ const Dashboard = () => {
                 </Stack>
                 <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} mt={2}>
                   <Stack direction={'row'} alignItems={'baseline'}>
-                    <Typography variant="h4">0.00</Typography>
+                    <Typography variant="h4">{walletBalance}</Typography>
                     <Typography ml={1}>{walletBalanceAlignment}</Typography>
                   </Stack>
                   <RadioGroup row value={walletBalanceDayAlignment} onChange={onChangeDay}>
