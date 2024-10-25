@@ -21,11 +21,15 @@ import TransactionDataGrid from 'components/Payments/Transaction/TransactionData
 import InvoiceDataGrid from 'components/Payments/Invoice/InvoiceDataGrid';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { COINGECKO_IDS } from 'packages/constants';
+import { COINS } from 'packages/constants/blockchain';
+import { BigDiv, BigMul } from 'utils/number';
 
 const Dashboard = () => {
   const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');
   const [walletBalanceDayAlignment, setWalletBalanceDayAlignment] = useState<'WEEK' | 'MONTH' | 'YEAR'>('WEEK');
   const [walletBalance, setWalletBalance] = useState<number>(0.0);
+  const [walletCoinMaps, setWalletCoinMaps] = useState<{ [key in string]: { number: number; price: number } }>();
 
   const onChangeCurrency = (e: any) => {
     setWalletBalanceAlignment(e.target.value);
@@ -41,36 +45,68 @@ const Dashboard = () => {
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
   const getWalletBalance = async () => {
-    const response: any = await axios.get(Http.find_wallet_balance_by_network, {
-      params: {
-        user_id: getUserId(),
-        wallet_id: getWalletId(),
-        network: getNetwork() === 'mainnet' ? 1 : 2,
-      },
-    });
+    try {
+      const response: any = await axios.get(Http.find_wallet_balance_by_network, {
+        params: {
+          user_id: getUserId(),
+          wallet_id: getWalletId(),
+          network: getNetwork() === 'mainnet' ? 1 : 2,
+        },
+      });
 
-    if (response.result && response.data.length > 0) {
-      let totalBalance = 0;
-      response.data.reduce((total: number, item: any) => {
-        const balanceValues = Object.values(item.balance);
+      if (response.result && response.data.length > 0) {
+        let coinMaps: {
+          [key in string]: {
+            number: number;
+            price: number;
+          };
+        } = {};
+        let ids: string[] = [];
 
-        if (balanceValues && balanceValues.length > 0) {
-          balanceValues.forEach((balanceItem: any) => {
-            totalBalance += parseFloat(balanceItem);
+        response.data.forEach((item: any) => {
+          if (item.balance) {
+            Object.entries(item.balance).forEach(([coin, amount]) => {
+              const value = parseFloat(amount as string);
+
+              if (value !== 0) {
+                if (coinMaps[coin]) {
+                  coinMaps[coin].number += value;
+                } else {
+                  coinMaps[coin] = { number: value, price: 0 };
+
+                  ids.push(COINGECKO_IDS[coin as COINS]);
+                }
+              }
+            });
+          }
+        });
+
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids.length > 1 ? ids.join(',') : ids[0],
+            currency: 'USD',
+          },
+        });
+
+        let totalPrice: number = 0;
+        if (rate_response && rate_response.result) {
+          Object.entries(coinMaps).map((item) => {
+            const price = rate_response.data[COINGECKO_IDS[item[0] as COINS]]['usd'];
+            item[1].price = price;
+
+            totalPrice += parseFloat(BigMul(item[1].number.toString(), price));
           });
         }
-        console.log('balanceValues', balanceValues);
-        // const sum = balanceValues.reduce((acc: number, value: string) => {
-        //   return acc + parseFloat(value);
-        // }, 0);
-        // return total + sum;
-      }, 0);
-      // setNotification(notification_list);
-      setWalletBalance(totalBalance);
-    } else {
-      setSnackSeverity('error');
-      setSnackMessage('Something wrong, please try it again');
-      setSnackOpen(true);
+
+        setWalletCoinMaps(coinMaps);
+        setWalletBalance(totalPrice);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Something wrong, please try it again');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -107,16 +143,28 @@ const Dashboard = () => {
                   </ToggleButtonGroup>
                 </Stack>
                 <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} mt={2}>
-                  <Stack direction={'row'} alignItems={'baseline'}>
-                    <Typography variant="h4">{walletBalance}</Typography>
-                    <Typography ml={1}>{walletBalanceAlignment}</Typography>
-                  </Stack>
+                  <Box>
+                    <Stack direction={'row'} alignItems={'baseline'}>
+                      <Typography variant="h4">{walletBalance.toFixed(2)}</Typography>
+                      <Typography ml={1}>{walletBalanceAlignment}</Typography>
+                    </Stack>
+                  </Box>
                   <RadioGroup row value={walletBalanceDayAlignment} onChange={onChangeDay}>
                     <FormControlLabel value="WEEK" control={<Radio />} label="1W" />
                     <FormControlLabel value="MONTH" control={<Radio />} label="1M" />
                     <FormControlLabel value="YEAR" control={<Radio />} label="1Y" />
                   </RadioGroup>
                 </Stack>
+
+                <Box>
+                  {walletCoinMaps &&
+                    Object.entries(walletCoinMaps).map((item, index) => (
+                      <Stack direction={'row'} alignItems={'baseline'} key={index}>
+                        <Typography variant="h6">{item[1].number}</Typography>
+                        <Typography ml={1}>{item[0]}</Typography>
+                      </Stack>
+                    ))}
+                </Box>
 
                 <Box mt={2}>
                   <BalanceBars />

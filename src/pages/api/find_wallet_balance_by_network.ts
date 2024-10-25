@@ -23,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         let newRows: any[] = [];
         if (Array.isArray(rows) && rows.length > 0) {
           const promises = rows.map(async (item: any) => {
-            console.log(123, item.chain_id)
             return {
               id: item.id,
               address: item.address,

@@ -112,4 +112,5 @@ export const COINGECKO_IDS: { [key in COINS]: string } = {
   [COINS.BUSD]: 'binance-usd',
   [COINS.WBTC]: 'wrapped-bitcoin',
   [COINS.WETH]: 'wrapped-ether',
+  [COINS.WSOL]: 'wrapped-solana',
 };
