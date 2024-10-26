@@ -23,7 +23,7 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { COINGECKO_IDS } from 'packages/constants';
 import { COINS } from 'packages/constants/blockchain';
-import { BigDiv, BigMul } from 'utils/number';
+import { BigMul } from 'utils/number';
 
 const Dashboard = () => {
   const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');
@@ -156,7 +156,7 @@ const Dashboard = () => {
                   </RadioGroup>
                 </Stack>
 
-                <Box>
+                <Box mt={2}>
                   {walletCoinMaps &&
                     Object.entries(walletCoinMaps).map((item, index) => (
                       <Stack direction={'row'} alignItems={'baseline'} key={index}>

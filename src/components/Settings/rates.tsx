@@ -27,7 +27,7 @@ const Rates = () => {
         <Typography variant="h6">Rates</Typography>
         <Box mt={4}>
           <Typography>Preferred Price Source</Typography>
-          <Box mt={2}>
+          <Box mt={1}>
             <FormControl fullWidth>
               <Select
                 size={'small'}
@@ -51,7 +51,7 @@ const Rates = () => {
             <Switch />
             <Box ml={2}>
               <Typography>Advanced rate rule scripting</Typography>
-              <Typography>
+              <Typography mt={1} fontSize={14}>
                 Enabling will modify your current rate sources. This is a feature for advanced users.
               </Typography>
             </Box>
@@ -59,7 +59,7 @@ const Rates = () => {
 
           <Box mt={4}>
             <Typography>Add Exchange Rate Spread</Typography>
-            <Box mt={2}>
+            <Box mt={1}>
               <FormControl fullWidth variant="outlined">
                 <OutlinedInput
                   size={'small'}
@@ -81,7 +81,7 @@ const Rates = () => {
           <Typography>Currency pairs to test against your rule (e.g. DOGE_USD,DOGE_CAD,BTC_CAD,BTC_USD)</Typography>
           <Stack direction={'row'} alignItems={'center'} gap={2} mt={1}>
             <TextField fullWidth hiddenLabel defaultValue="" size="small" />
-            <Button>Test</Button>
+            <Button variant='contained' size='large'>Test</Button>
           </Stack>
         </Box>
       </Box>
@@ -94,7 +94,7 @@ const Rates = () => {
       </Box>
 
       <Box mt={5}>
-        <Button variant={'contained'}>Save</Button>
+        <Button variant={'contained'} size='large'>Save</Button>
       </Box>
     </Box>
   );
