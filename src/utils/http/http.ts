@@ -21,6 +21,11 @@ export class Http {
   static archive_store_by_id = this.httpPath + '/archive_store_by_id';
   static delete_store_by_id = this.httpPath + '/delete_store_by_id';
 
+  // setting of store
+  static find_store_checkout_setting_by_id = this.httpPath + '/find_store_checkout_setting_by_id';
+  static save_store_checkout_setting_by_id = this.httpPath + '/save_store_checkout_setting_by_id';
+
+
   // wallet
   static find_wallet = this.httpPath + '/find_wallet';
   static find_wallet_by_id = this.httpPath + '/find_wallet_by_id';

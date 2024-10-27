@@ -42,7 +42,6 @@ const Emails = () => {
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Typography>SMTP Server</Typography>
             <Button
-              id="demo-positioned-button"
               aria-controls={open ? 'demo-positioned-menu' : undefined}
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
@@ -52,7 +51,6 @@ const Emails = () => {
               Quick Fill
             </Button>
             <Menu
-              id="demo-positioned-menu"
               aria-labelledby="demo-positioned-button"
               anchorEl={anchorEl}
               open={open}

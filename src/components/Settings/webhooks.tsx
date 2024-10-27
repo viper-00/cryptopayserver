@@ -111,7 +111,6 @@ const Webhooks = () => {
               <Select
                 size={'small'}
                 inputProps={{ 'aria-label': 'Without label' }}
-                id="demo-simple-select-helper"
                 defaultValue={1}
                 //   value={age}
                 //   onChange={handleChange}

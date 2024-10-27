@@ -271,7 +271,7 @@ const General = () => {
           <Stack direction={'row'} alignItems={'center'} mt={4}>
             <Switch
               checked={allowAnyoneCreateInvoice}
-              onChange={(e: any) => {
+              onChange={() => {
                 setAllowAnyoneCreateInvoice(!allowAnyoneCreateInvoice);
               }}
             />

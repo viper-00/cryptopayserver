@@ -105,7 +105,6 @@ const ImportMnemonicPhrase = () => {
           <Stack direction={'row'} alignItems={'center'}>
             <TextField
               hiddenLabel
-              id="outlined-start-adornment"
               size="small"
               InputProps={{
                 startAdornment: <InputAdornment position="start">1</InputAdornment>,
@@ -119,7 +118,6 @@ const ImportMnemonicPhrase = () => {
             <Box ml={2}>
               <TextField
                 hiddenLabel
-                id="outlined-start-adornment"
                 size="small"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">2</InputAdornment>,
@@ -137,7 +135,6 @@ const ImportMnemonicPhrase = () => {
           <Stack direction={'row'} alignItems={'center'}>
             <TextField
               hiddenLabel
-              id="outlined-start-adornment"
               size="small"
               InputProps={{
                 startAdornment: <InputAdornment position="start">3</InputAdornment>,
@@ -151,7 +148,6 @@ const ImportMnemonicPhrase = () => {
             <Box ml={2}>
               <TextField
                 hiddenLabel
-                id="outlined-start-adornment"
                 size="small"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">4</InputAdornment>,
@@ -169,7 +165,6 @@ const ImportMnemonicPhrase = () => {
           <Stack direction={'row'} alignItems={'center'}>
             <TextField
               hiddenLabel
-              id="outlined-start-adornment"
               size="small"
               InputProps={{
                 startAdornment: <InputAdornment position="start">5</InputAdornment>,
@@ -183,7 +178,6 @@ const ImportMnemonicPhrase = () => {
             <Box ml={2}>
               <TextField
                 hiddenLabel
-                id="outlined-start-adornment"
                 size="small"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">6</InputAdornment>,
@@ -201,7 +195,6 @@ const ImportMnemonicPhrase = () => {
           <Stack direction={'row'} alignItems={'center'}>
             <TextField
               hiddenLabel
-              id="outlined-start-adornment"
               size="small"
               InputProps={{
                 startAdornment: <InputAdornment position="start">7</InputAdornment>,
@@ -215,7 +208,6 @@ const ImportMnemonicPhrase = () => {
             <Box ml={2}>
               <TextField
                 hiddenLabel
-                id="outlined-start-adornment"
                 size="small"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">8</InputAdornment>,
@@ -233,7 +225,6 @@ const ImportMnemonicPhrase = () => {
           <Stack direction={'row'} alignItems={'center'}>
             <TextField
               hiddenLabel
-              id="outlined-start-adornment"
               size="small"
               InputProps={{
                 startAdornment: <InputAdornment position="start">9</InputAdornment>,
@@ -247,7 +238,6 @@ const ImportMnemonicPhrase = () => {
             <Box ml={2}>
               <TextField
                 hiddenLabel
-                id="outlined-start-adornment"
                 size="small"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">10</InputAdornment>,
@@ -265,7 +255,6 @@ const ImportMnemonicPhrase = () => {
           <Stack direction={'row'} alignItems={'center'}>
             <TextField
               hiddenLabel
-              id="outlined-start-adornment"
               size="small"
               InputProps={{
                 startAdornment: <InputAdornment position="start">11</InputAdornment>,
@@ -279,7 +268,6 @@ const ImportMnemonicPhrase = () => {
             <Box ml={2}>
               <TextField
                 hiddenLabel
-                id="outlined-start-adornment"
                 size="small"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">12</InputAdornment>,

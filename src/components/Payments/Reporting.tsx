@@ -39,7 +39,6 @@ const Reporting = () => {
           <FormControl sx={{ minWidth: 120 }}>
             <Select
               inputProps={{ 'aria-label': 'Without label' }}
-              id="demo-simple-select-helper"
               defaultValue={0}
               //   value={age}
               //   onChange={handleChange}

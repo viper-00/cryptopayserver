@@ -270,7 +270,6 @@ const Bitcoin = () => {
                     <Select
                       size={'small'}
                       inputProps={{ 'aria-label': 'Without label' }}
-                      id="demo-simple-select-helper"
                       defaultValue={0}
                       //   value={age}
 
@@ -526,7 +525,7 @@ const Bitcoin = () => {
                       </Box>
                       <Box>
                         <Button
-                          href={GetBlockchainAddressUrl(getNetwork() === 'mainnet' ? true : false) + '/' + item.address}
+                          href={GetBlockchainAddressUrl(getNetwork() === 'mainnet' ? true : false, item.address)}
                           target={'_blank'}
                         >
                           Check onChain

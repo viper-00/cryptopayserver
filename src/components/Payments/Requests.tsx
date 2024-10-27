@@ -72,7 +72,6 @@ const Requests = () => {
                       <Select
                         size={'small'}
                         inputProps={{ 'aria-label': 'Without label' }}
-                        id="demo-simple-select-helper"
                         defaultValue={0}
                         //   value={age}
                         //   onChange={handleChange}
@@ -131,7 +130,6 @@ const Requests = () => {
                     <Select
                       size={'small'}
                       inputProps={{ 'aria-label': 'Without label' }}
-                      id="demo-simple-select-helper"
                       defaultValue={1}
                       //   value={age}
                       //   onChange={handleChange}
@@ -147,7 +145,7 @@ const Requests = () => {
               <Box mt={4}>
                 <Typography>Memo</Typography>
                 <Box mt={1}>
-                  <TextField id="outlined-multiline-static" multiline rows={8} fullWidth />
+                  <TextField multiline rows={8} fullWidth />
                 </Box>
               </Box>
             </Box>
@@ -194,7 +192,6 @@ const Requests = () => {
                   <Select
                     size={'small'}
                     inputProps={{ 'aria-label': 'Without label' }}
-                    id="demo-simple-select-helper"
                     defaultValue={0}
                     //   value={age}
                     //   onChange={handleChange}

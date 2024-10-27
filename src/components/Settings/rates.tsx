@@ -19,8 +19,63 @@ import {
   Typography,
 } from '@mui/material';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import { PRICE_RESOURCE } from 'packages/constants';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 
 const Rates = () => {
+  const [priceSource, setPriceSource] = useState<string>('');
+
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+
+  const init = async () => {
+    try {
+      const find_store_resp: any = await axios.get(Http.find_store_by_id, {
+        params: {
+          id: getStoreId(),
+        },
+      });
+
+      if (find_store_resp.result && find_store_resp.data.length === 1) {
+        setPriceSource(find_store_resp.data[0].price_source);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const onClickSave = async () => {
+    try {
+      const save_store_resp: any = await axios.put(Http.save_store_by_id, {
+        user_id: getUserId(),
+        store_id: getStoreId(),
+        price_source: priceSource ? priceSource : '',
+      });
+
+      if (save_store_resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Save successful!');
+        setSnackOpen(true);
+
+        await init();
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('The update failed, please try again later.');
+        setSnackOpen(false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <Box>
       <Box>
@@ -32,22 +87,24 @@ const Rates = () => {
               <Select
                 size={'small'}
                 inputProps={{ 'aria-label': 'Without label' }}
-                id="demo-simple-select-helper"
-                defaultValue={1}
-
-                //   value={age}
-
-                //   onChange={handleChange}
+                value={priceSource}
+                onChange={(e: any) => {
+                  setPriceSource(e.target.value);
+                }}
               >
-                <MenuItem value={1}>USD</MenuItem>
-                <MenuItem value={2}>AAA</MenuItem>
-                <MenuItem value={3}>BBB</MenuItem>
+                {PRICE_RESOURCE &&
+                  PRICE_RESOURCE.length > 0 &&
+                  PRICE_RESOURCE.map((item, index) => (
+                    <MenuItem value={item} key={index}>
+                      {item}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
             <Typography mt={1}>Current Rates source is coingecko.</Typography>
           </Box>
 
-          <Stack direction={'row'} alignItems={'center'} mt={4}>
+          {/* <Stack direction={'row'} alignItems={'center'} mt={4}>
             <Switch />
             <Box ml={2}>
               <Typography>Advanced rate rule scripting</Typography>
@@ -71,17 +128,19 @@ const Rates = () => {
                 />
               </FormControl>
             </Box>
-          </Box>
+          </Box> */}
         </Box>
       </Box>
 
-      <Box mt={5}>
+      {/* <Box mt={5}>
         <Typography variant="h6">Testing</Typography>
         <Box mt={4}>
           <Typography>Currency pairs to test against your rule (e.g. DOGE_USD,DOGE_CAD,BTC_CAD,BTC_USD)</Typography>
           <Stack direction={'row'} alignItems={'center'} gap={2} mt={1}>
             <TextField fullWidth hiddenLabel defaultValue="" size="small" />
-            <Button variant='contained' size='large'>Test</Button>
+            <Button variant="contained" size="large">
+              Test
+            </Button>
           </Stack>
         </Box>
       </Box>
@@ -91,10 +150,12 @@ const Rates = () => {
         <Box mt={1}>
           <TextField fullWidth hiddenLabel defaultValue="" size="small" />
         </Box>
-      </Box>
+      </Box> */}
 
       <Box mt={5}>
-        <Button variant={'contained'} size='large'>Save</Button>
+        <Button variant={'contained'} size="large" onClick={onClickSave}>
+          Save
+        </Button>
       </Box>
     </Box>
   );

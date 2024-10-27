@@ -42,37 +42,37 @@ const Lightning = () => {
 
           <Box mt={3}>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
+              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content">
                 c-lightning via TCP or unix domain socket connection
               </AccordionSummary>
               <AccordionDetails>EXAMPLE</AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel2-content" id="panel2-header">
+              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel2-content">
                 Lightning Charge via HTTPS
               </AccordionSummary>
               <AccordionDetails>EXAMPLE</AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content" id="panel3-header">
+              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content">
                 Lightning Charge via HTTPS
               </AccordionSummary>
               <AccordionDetails>EXAMPLE</AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content" id="panel3-header">
+              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content">
                 Eclair via HTTPS
               </AccordionSummary>
               <AccordionDetails>EXAMPLE</AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content" id="panel3-header">
+              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content">
                 LND via the REST proxy
               </AccordionSummary>
               <AccordionDetails>EXAMPLE</AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content" id="panel3-header">
+              <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel3-content">
                 LNDhub via the REST API
               </AccordionSummary>
               <AccordionDetails>EXAMPLE</AccordionDetails>

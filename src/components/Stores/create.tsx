@@ -119,7 +119,6 @@ const CreateStore = () => {
                   <Select
                     size={'small'}
                     inputProps={{ 'aria-label': 'Without label' }}
-                    id="demo-simple-select-helper"
                     defaultValue={PRICE_RESOURCE[0]}
                     onChange={(e) => {
                       setPriceSource(e.target.value);

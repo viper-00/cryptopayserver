@@ -88,7 +88,6 @@ const Pullpayments = () => {
                     <Select
                       size={'small'}
                       inputProps={{ 'aria-label': 'Without label' }}
-                      id="demo-simple-select-helper"
                       defaultValue={0}
                       //   value={age}
                       //   onChange={handleChange}
@@ -114,7 +113,7 @@ const Pullpayments = () => {
             <Box mt={4}>
               <Typography>Description</Typography>
               <Box mt={1}>
-                <TextField id="outlined-multiline-static" multiline rows={8} fullWidth />
+                <TextField multiline rows={8} fullWidth />
               </Box>
             </Box>
 
@@ -122,7 +121,7 @@ const Pullpayments = () => {
               <Typography variant={'h6'}>Additional Options</Typography>
               <Box mt={4}>
                 <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content" id="panel1-header">
+                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content">
                     Lightning network settings
                   </AccordionSummary>
                   <AccordionDetails>

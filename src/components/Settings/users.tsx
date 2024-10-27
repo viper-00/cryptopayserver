@@ -28,7 +28,6 @@ const Users = () => {
           <Select
             size={'small'}
             inputProps={{ 'aria-label': 'Without label' }}
-            id="demo-simple-select-helper"
             defaultValue={3}
             //   value={age}
             //   onChange={handleChange}

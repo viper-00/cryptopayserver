@@ -142,7 +142,6 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
           <Select
             size={'small'}
             inputProps={{ 'aria-label': 'Without label' }}
-            id="demo-simple-select-helper"
             defaultValue={getStoreId()}
           >
             {stores &&
