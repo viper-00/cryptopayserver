@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import Link from 'next/link';
 
 const Users = () => {
   return (
@@ -21,9 +22,9 @@ const Users = () => {
       <Box>
         <Typography variant="h6">Store Users</Typography>
         <Typography mt={2}>
-          Give other registered CryptoPay Server users access to your store. See the roles for granted permissions.
+          Give other registered CryptoPay Server users access to your store. See the <Link href={"/settings"}>roles</Link> for granted permissions.
         </Typography>
-        <Stack direction={'row'} alignItems={'center'} gap={3} mt={1}>
+        <Stack direction={'row'} alignItems={'center'} gap={3} mt={4}>
           <TextField fullWidth hiddenLabel defaultValue="" size="small" />
           <Select
             size={'small'}

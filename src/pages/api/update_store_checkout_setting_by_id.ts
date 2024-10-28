@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
-import { WEB3 } from 'packages/web3';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
@@ -99,6 +98,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'no support the wallet', result: false, data: e });
+    return res.status(500).json({ message: 'no support the checkout', result: false, data: e });
   }
 }

@@ -59,7 +59,7 @@ const Checkout = () => {
 
   const onClickSave = async () => {
     try {
-      const save_store_resp: any = await axios.put(Http.save_store_checkout_setting_by_id, {
+      const update_store_resp: any = await axios.put(Http.update_store_checkout_setting_by_id, {
         user_id: getUserId(),
         store_id: getStoreId(),
         show_payment_confetti: showPaymentConfetti ? 1 : 2,
@@ -77,7 +77,7 @@ const Checkout = () => {
         show_header: showHeader ? 1 : 2,
       });
 
-      if (save_store_resp.result) {
+      if (update_store_resp.result) {
         setSnackSeverity('success');
         setSnackMessage('Save successful!');
         setSnackOpen(true);

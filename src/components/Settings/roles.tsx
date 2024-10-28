@@ -18,7 +18,9 @@ const Roles = () => {
       <Box>
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Typography variant="h6">Roles</Typography>
-          <Button variant={'contained'}>Add Roles</Button>
+          <Button variant={'contained'} size="large">
+            Add Roles
+          </Button>
         </Stack>
       </Box>
 
@@ -35,7 +37,12 @@ function createData(id: number, role: string, scope: string, permissions: string
   return { id, role, scope, permissions, inUse };
 }
 
-const rows = [createData(1, 'Owner', 'Server-wide', ['A', 'B', 'C'], true)];
+const rows = [
+  createData(1, 'Owner[Default]', 'Server-wide', ['A', 'B', 'C'], true),
+  createData(2, 'Manager', 'Server-wide', ['A', 'B', 'C'], true),
+  createData(3, 'Employee', 'Server-wide', ['A', 'B', 'C'], true),
+  createData(4, 'Guest', 'Server-wide', ['A', 'B', 'C'], true),
+];
 
 function StoreRoles() {
   return (
