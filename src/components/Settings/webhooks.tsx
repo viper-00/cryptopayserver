@@ -24,9 +24,21 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+
+type WebhookType = {
+  id: number;
+  automaticRedelivery: number;
+  enabled: number;
+  eventType: number;
+  payloadUrl: string;
+  secret: string;
+  status: number;
+};
 
 const Webhooks = () => {
   const [IsWebhook, setIsWebhook] = useState<boolean>(false);
+  const [pageStatus, setPageStatus] = useState<'CREATE' | 'UPDATE'>('CREATE');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -34,11 +46,13 @@ const Webhooks = () => {
     event.preventDefault();
   };
 
+  const [modifyId, setModifyId] = useState<number>();
   const [payloadUrl, setPayloadUrl] = useState<string>();
   const [secret, setSecret] = useState<string>();
   const [showAutomaticRedelivery, setShowAutomaticRedelivery] = useState<boolean>();
   const [showEnabled, setShowEnabled] = useState<boolean>();
   const [eventType, setEventType] = useState<number>();
+  const [webhooks, setWebhooks] = useState<WebhookType[]>([]);
 
   const { getStoreId } = useStorePresistStore((state) => state);
   const { getUserId } = useUserPresistStore((state) => state);
@@ -54,7 +68,19 @@ const Webhooks = () => {
       });
 
       if (find_webhook_resp.result && find_webhook_resp.data.length > 0) {
-        console.log('list', find_webhook_resp.data);
+        let ws: Array<WebhookType> = [];
+        find_webhook_resp.data.forEach((item: any) => {
+          ws.push({
+            id: item.id,
+            automaticRedelivery: item.automatic_redelivery,
+            enabled: item.enabled,
+            eventType: item.event_type,
+            payloadUrl: item.payload_url,
+            secret: item.secret,
+            status: item.status,
+          });
+        });
+        setWebhooks(ws);
       }
     } catch (e) {
       console.error(e);
@@ -65,32 +91,61 @@ const Webhooks = () => {
     init();
   }, []);
 
-  const onClickAdd = async () => {
+  const onClickButton = async () => {
     try {
-      const save_webhook_resp: any = await axios.post(Http.save_store_webhook_setting, {
-        store_id: getStoreId(),
-        user_id: getUserId(),
-        payload_url: payloadUrl ? payloadUrl : '',
-        secret: secret ? secret : '',
-        automatic_redelivery: showAutomaticRedelivery ? 1 : 2,
-        enabled: showEnabled ? 1 : 2,
-        event_type: eventType ? eventType : '',
-      });
+      if (pageStatus === 'CREATE') {
+        const save_webhook_resp: any = await axios.post(Http.save_store_webhook_setting, {
+          store_id: getStoreId(),
+          user_id: getUserId(),
+          payload_url: payloadUrl ? payloadUrl : '',
+          secret: secret ? secret : '',
+          automatic_redelivery: showAutomaticRedelivery ? 1 : 2,
+          enabled: showEnabled ? 1 : 2,
+          event_type: eventType ? eventType : '',
+        });
 
-      if (save_webhook_resp.result) {
-        setSnackSeverity('success');
-        setSnackMessage('Save successful!');
-        setSnackOpen(true);
+        if (save_webhook_resp.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Save successful!');
+          setSnackOpen(true);
 
-        clearInput()
+          clearInput();
 
-        await init();
+          await init();
 
-        setIsWebhook(false);
-      } else {
-        setSnackSeverity('error');
-        setSnackMessage('Save failed!');
-        setSnackOpen(true);
+          setIsWebhook(false);
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Save failed!');
+          setSnackOpen(true);
+        }
+      } else if (pageStatus === 'UPDATE') {
+        const save_webhook_resp: any = await axios.put(Http.update_store_webhook_setting_by_id, {
+          id: modifyId,
+          store_id: getStoreId(),
+          user_id: getUserId(),
+          payload_url: payloadUrl ? payloadUrl : '',
+          secret: secret ? secret : '',
+          automatic_redelivery: showAutomaticRedelivery ? 1 : 2,
+          enabled: showEnabled ? 1 : 2,
+          event_type: eventType ? eventType : '',
+        });
+
+        if (save_webhook_resp.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Update successful!');
+          setSnackOpen(true);
+
+          clearInput();
+
+          await init();
+
+          setIsWebhook(false);
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Update failed!');
+          setSnackOpen(true);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -115,6 +170,7 @@ const Webhooks = () => {
               variant={'contained'}
               onClick={() => {
                 setIsWebhook(true);
+                setPageStatus('CREATE');
               }}
             >
               Create Webhook
@@ -124,9 +180,23 @@ const Webhooks = () => {
           <Typography mt={2}>
             Webhooks allow CryptoPay Server to send HTTP events related to your store to another server.
           </Typography>
-          <Typography mt={2} fontSize={14}>
-            There are no webhooks yet.
-          </Typography>
+          <Box mt={2}>
+            {webhooks && webhooks.length > 0 ? (
+              <WebhookDataGrid
+                webhooks={webhooks}
+                setPageStatus={setPageStatus}
+                setIsWebhook={setIsWebhook}
+                setEventType={setEventType}
+                setPayloadUrl={setPayloadUrl}
+                setSecret={setSecret}
+                setShowAutomaticRedelivery={setShowAutomaticRedelivery}
+                setShowEnabled={setShowEnabled}
+                setModifyId={setModifyId}
+              />
+            ) : (
+              <Typography fontSize={14}>There are no webhooks yet.</Typography>
+            )}
+          </Box>
         </Box>
       ) : (
         <Box>
@@ -220,8 +290,9 @@ const Webhooks = () => {
               </Select>
             </Box>
             <Box mt={4}>
-              <Button variant={'contained'} size="large" onClick={onClickAdd}>
-                Add webhook
+              <Button variant={'contained'} size="large" onClick={onClickButton}>
+                {pageStatus === 'CREATE' && 'Add webhook'}
+                {pageStatus === 'UPDATE' && 'Update webhook'}
               </Button>
             </Box>
           </Box>
@@ -232,3 +303,119 @@ const Webhooks = () => {
 };
 
 export default Webhooks;
+
+type GridType = {
+  webhooks: WebhookType[];
+  setIsWebhook: (value: boolean) => void;
+  setPageStatus: (vakue: 'CREATE' | 'UPDATE') => void;
+  setPayloadUrl: (value: string) => void;
+  setSecret: (value: string) => void;
+  setShowAutomaticRedelivery: (value: boolean) => void;
+  setShowEnabled: (value: boolean) => void;
+  setEventType: (value: number) => void;
+  setModifyId: (value: number) => void;
+};
+
+function WebhookDataGrid(props: GridType) {
+  const [rows, setRows] = useState<WebhookType[]>(props.webhooks);
+
+  const [open, setOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<WebhookType>();
+
+  const onClickRow = async (e: WebhookType) => {
+    setSelectedValue(e);
+    setOpen(true);
+  };
+
+  const onClickTest = async (params: any) => {
+    console.log('row', params.row);
+  };
+
+  const onClickModify = async (params: any) => {
+    if (params.row) {
+      props.setModifyId(params.row.id);
+      props.setEventType(params.row.eventType);
+      props.setPayloadUrl(params.row.payloadUrl);
+      props.setSecret(params.row.secret);
+      props.setShowAutomaticRedelivery(params.row.automaticRedelivery === 1 ? true : false);
+      props.setShowEnabled(params.row.enabled === 1 ? true : false);
+      props.setPageStatus('UPDATE');
+      props.setIsWebhook(true);
+    }
+  };
+
+  const onClickDelete = async (params: any) => {
+    console.log('row', params.row);
+  };
+
+  const columns: GridColDef<(typeof rows)[number]>[] = [
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 200,
+      valueGetter: (value, row) => (value === 1 ? 'TRUE' : 'FALSE'),
+    },
+    {
+      field: 'payloadUrl',
+      headerName: 'Url',
+      width: 200,
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      type: 'actions',
+      width: 600,
+      align: 'right',
+      headerAlign: 'right',
+      getActions: (params) => [
+        <Stack direction={'row'} alignItems={'center'}>
+          <Button
+            onClick={() => {
+              onClickTest(params);
+            }}
+          >
+            Test
+          </Button>
+          <Button
+            onClick={() => {
+              onClickModify(params);
+            }}
+          >
+            Modify
+          </Button>
+          <Button
+            onClick={() => {
+              onClickDelete(params);
+            }}
+          >
+            Delete
+          </Button>
+        </Stack>,
+      ],
+    },
+  ];
+
+  return (
+    <Box>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
+            },
+          },
+        }}
+        pageSizeOptions={[10]}
+        onRowClick={(e: any) => {
+          onClickRow(e.row);
+        }}
+        // checkboxSelection
+        // disableRowSelectionOnClick
+        hideFooter={false}
+        disableColumnMenu
+      />
+    </Box>
+  );
+}
