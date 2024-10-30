@@ -15,13 +15,51 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { CHAINS } from 'packages/constants/blockchain';
 import { useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const Payout = () => {
-  const [isConfigure, setIsConfigure] = useState<boolean>(true);
+  const [isConfigure, setIsConfigure] = useState<boolean>(false);
+  const [configureChain, setConfigureChain] = useState<CHAINS>();
+  const [showApprovePayoutProcess, setShowApprovePayoutProcess] = useState<boolean>();
+  const [interval, setInterval] = useState<number>();
+  const [feeBlockTarget, setFeeBlockTarget] = useState<number>();
+  const [threshold, setThreshold] = useState<number>();
 
-  const setTrueConfigure = () => {
-    setIsConfigure(true);
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+
+  const onClickSave = async () => {
+    try {
+      const response: any = await axios.put(Http.update_store_payout_setting_by_network, {
+        store_id: getStoreId(),
+        user_id: getUserId(),
+        network: getNetwork() === 'mainnnet' ? 1 : 2,
+        chain_id: configureChain,
+        show_approve_payout_process: showApprovePayoutProcess ? 1 : 2,
+        interval: interval,
+        fee_block_target: feeBlockTarget,
+        threshold: threshold,
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Update successful!');
+        setSnackOpen(true);
+
+        setIsConfigure(false);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Update failed!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -39,7 +77,14 @@ const Payout = () => {
             <Typography variant="h6">Automated Crypto Sender</Typography>
 
             <Box mt={4}>
-              <StorePayoutTable />
+              <StorePayoutTable
+                setIsConfigure={setIsConfigure}
+                setConfigureChain={setConfigureChain}
+                setShowApprovePayoutProcess={setShowApprovePayoutProcess}
+                setInterval={setInterval}
+                setFeeBlockTarget={setFeeBlockTarget}
+                setThreshold={setThreshold}
+              />
             </Box>
           </Box>
         </Box>
@@ -47,27 +92,37 @@ const Payout = () => {
         <Box>
           <Typography variant="h6">Payout Processors</Typography>
           <Typography mt={2}>Set a schedule for automated Payouts.</Typography>
-          <Stack direction={'row'} alignItems={'center'} mt={2}>
-            <Switch />
+          <Stack direction={'row'} alignItems={'center'} mt={1}>
+            <Switch
+              checked={showApprovePayoutProcess}
+              onChange={() => {
+                setShowApprovePayoutProcess(!showApprovePayoutProcess);
+              }}
+            />
             <Typography ml={2}>Process approved payouts instantly</Typography>
           </Stack>
-          <Box mt={2}>
-            <Typography>Interval</Typography>
+          <Box mt={1}>
+            <Typography>Interval*</Typography>
             <Box mt={1}>
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
+                  type="number"
                   endAdornment={<InputAdornment position="end">minutes</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
                     'aria-label': 'weight',
+                  }}
+                  value={interval}
+                  onChange={(e: any) => {
+                    setInterval(e.target.value);
                   }}
                 />
               </FormControl>
             </Box>
           </Box>
           <Box mt={2}>
-            <Typography>Fee block target</Typography>
+            <Typography>Fee block target*</Typography>
             <Box mt={1}>
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
@@ -78,29 +133,42 @@ const Payout = () => {
                   inputProps={{
                     'aria-label': 'weight',
                   }}
+                  value={feeBlockTarget}
+                  onChange={(e: any) => {
+                    setFeeBlockTarget(e.target.value);
+                  }}
                 />
               </FormControl>
             </Box>
           </Box>
           <Box mt={2}>
-            <Typography>Threshold</Typography>
+            <Typography>Threshold*</Typography>
             <Box mt={1}>
               <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <OutlinedInput
                   size={'small'}
-                  endAdornment={<InputAdornment position="end">BTC</InputAdornment>}
+                  type="number"
+                  endAdornment={<InputAdornment position="end">USD</InputAdornment>}
                   aria-describedby="outlined-weight-helper-text"
                   inputProps={{
                     'aria-label': 'weight',
                   }}
+                  value={threshold}
+                  onChange={(e: any) => {
+                    setThreshold(e.target.value);
+                  }}
                 />
               </FormControl>
             </Box>
-            <Typography mt={1}>Only process payouts when this payout sum is reached.</Typography>
+            <Typography mt={1} fontWeight={14}>
+              Only process payouts when this payout sum is reached.
+            </Typography>
           </Box>
 
           <Box mt={5}>
-            <Button variant={'contained'}>Save</Button>
+            <Button size="large" variant={'contained'} onClick={onClickSave}>
+              Save
+            </Button>
           </Box>
         </Box>
       )}
@@ -110,13 +178,56 @@ const Payout = () => {
 
 export default Payout;
 
-function createData(id: number, paymentMethod: string) {
-  return { id, paymentMethod };
+function createData(id: number, paymentMethod: string, chain: CHAINS) {
+  return { id, paymentMethod, chain };
 }
 
-const rows = [createData(1, 'BTC (On-Chain)'), createData(2, 'Ethereum')];
+const rows = [
+  createData(1, 'BTC (On-Chain)', CHAINS.BITCOIN),
+  createData(2, 'Ethereum', CHAINS.ETHEREUM),
+  createData(3, 'Solana', CHAINS.SOLANA),
+];
 
-function StorePayoutTable() {
+type TableType = {
+  setIsConfigure: (value: boolean) => void;
+  setConfigureChain: (value: CHAINS) => void;
+  setShowApprovePayoutProcess: (value: boolean) => void;
+  setInterval: (value: number) => void;
+  setFeeBlockTarget: (value: number) => void;
+  setThreshold: (value: number) => void;
+};
+
+function StorePayoutTable(props: TableType) {
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
+
+  const onClickConfigure = async (rows: any) => {
+    if (rows.chain && rows.chain > 0) {
+      try {
+        const response: any = await axios.get(Http.find_store_payout_setting_by_network, {
+          params: {
+            store_id: getStoreId(),
+            user_id: getUserId(),
+            network: getNetwork() === 'mainnnet' ? 1 : 2,
+            chain_id: rows.chain,
+          },
+        });
+
+        if (response.result && response.data.length === 1) {
+          props.setConfigureChain(response.data[0].chain_id);
+          props.setShowApprovePayoutProcess(response.data[0].show_approve_payout_process === 1 ? true : false);
+          props.setInterval(response.data[0].interval);
+          props.setFeeBlockTarget(response.data[0].fee_block_target);
+          props.setThreshold(response.data[0].threshold);
+
+          props.setIsConfigure(true);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -135,7 +246,7 @@ function StorePayoutTable() {
               <TableCell align="right">
                 <Button
                   onClick={() => {
-                    // setTrueConfigure();
+                    onClickConfigure(row);
                   }}
                 >
                   Configure

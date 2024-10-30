@@ -30,6 +30,17 @@ export class Http {
   static find_store_webhook_setting_by_id = this.httpPath + '/find_store_webhook_setting_by_id';
   static update_store_webhook_setting_by_id = this.httpPath + '/update_store_webhook_setting_by_id';
   static save_store_webhook_setting = this.httpPath + '/save_store_webhook_setting';
+  static delete_store_webhook_setting_by_id = this.httpPath + '/delete_store_webhook_setting_by_id';
+
+  // payout setting of store
+  static find_store_payout_setting_by_network = this.httpPath + '/find_store_payout_setting_by_network';
+  static update_store_payout_setting_by_network = this.httpPath + '/update_store_payout_setting_by_network';
+
+  // email setting of store
+  static find_store_email_setting = this.httpPath + '/find_store_email_setting';
+  static update_store_email_setting = this.httpPath + '/update_store_email_setting';
+  static save_store_email_setting = this.httpPath + '/save_store_email_setting';
+  
 
   // wallet
   static find_wallet = this.httpPath + '/find_wallet';

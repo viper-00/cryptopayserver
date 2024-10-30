@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import Link from 'next/link';
 import { useState } from 'react';
 
 const Emails = () => {
@@ -30,15 +31,16 @@ const Emails = () => {
           <Typography variant="h6">Email Rules</Typography>
           <Button variant={'contained'}>Configure</Button>
         </Stack>
-        <Typography mt={2}>
-          Email rules allow CryptoPay Server to send customized emails from your store based on events.
+        <Typography mt={3}>
+          <Link href={'#'}>Email rules</Link> allow CryptoPay Server to send customized emails from your store based on
+          events.
         </Typography>
       </Box>
 
       <Box mt={5}>
         <Typography variant="h6">Email Server</Typography>
 
-        <Box mt={4}>
+        <Box mt={2}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Typography>SMTP Server</Typography>
             <Button
@@ -69,39 +71,33 @@ const Emails = () => {
               <MenuItem onClick={handleClose}>Outlook.com</MenuItem>
             </Menu>
           </Stack>
-          <Box mt={1}>
-            <TextField fullWidth hiddenLabel defaultValue="" size="small" />
-          </Box>
+          <TextField fullWidth hiddenLabel defaultValue="" size="small" />
         </Box>
 
         <Box mt={2}>
           <Typography>Port</Typography>
-          <Box mt={1}>
-            <FormControl fullWidth variant="outlined">
-              <OutlinedInput
-                size={'small'}
-                type="number"
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                  'aria-label': 'weight',
-                }}
-              />
-            </FormControl>
-          </Box>
+          <FormControl fullWidth variant="outlined">
+            <OutlinedInput
+              size={'small'}
+              type="number"
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+              }}
+            />
+          </FormControl>
         </Box>
         <Box mt={2}>
           <Typography>Sender's Email Address</Typography>
-          <Box mt={1}>
-            <FormControl fullWidth variant="outlined">
-              <OutlinedInput
-                size={'small'}
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                  'aria-label': 'weight',
-                }}
-              />
-            </FormControl>
-          </Box>
+          <FormControl fullWidth variant="outlined">
+            <OutlinedInput
+              size={'small'}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+              }}
+            />
+          </FormControl>
         </Box>
         <Box mt={2}>
           <Typography>Login</Typography>
@@ -116,22 +112,20 @@ const Emails = () => {
               />
             </FormControl>
           </Box>
-          <Typography>For many email providers (like Gmail) your login is your email address.</Typography>
+          <Typography fontSize={14}>For many email providers (like Gmail) your login is your email address.</Typography>
         </Box>
         <Box mt={2}>
           <Typography>Password</Typography>
-          <Box mt={1}>
-            <FormControl fullWidth variant="outlined">
-              <OutlinedInput
-                size={'small'}
-                type={'password'}
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                  'aria-label': 'weight',
-                }}
-              />
-            </FormControl>
-          </Box>
+          <FormControl fullWidth variant="outlined">
+            <OutlinedInput
+              size={'small'}
+              type={'password'}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+              }}
+            />
+          </FormControl>
         </Box>
         <Stack direction={'row'} alignItems={'center'} mt={2}>
           <Switch />
@@ -139,25 +133,25 @@ const Emails = () => {
         </Stack>
 
         <Box mt={4}>
-          <Button variant={'contained'}>Save</Button>
+          <Button variant={'contained'} size="large">
+            Save
+          </Button>
         </Box>
       </Box>
 
-      <Box mt={5}>
+      <Box mt={6}>
         <Typography variant={'h6'}>Testing</Typography>
-        <Box mt={4}>
+        <Box mt={2}>
           <Typography>To test your settings, enter an email address</Typography>
-          <Box mt={1}>
-            <FormControl fullWidth variant="outlined">
-              <OutlinedInput
-                size={'small'}
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                  'aria-label': 'weight',
-                }}
-              />
-            </FormControl>
-          </Box>
+          <FormControl fullWidth variant="outlined">
+            <OutlinedInput
+              size={'small'}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+              }}
+            />
+          </FormControl>
         </Box>
 
         <Box mt={4}>

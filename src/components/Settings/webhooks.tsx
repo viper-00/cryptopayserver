@@ -7,16 +7,9 @@ import {
   InputAdornment,
   MenuItem,
   OutlinedInput,
-  Paper,
   Select,
   Stack,
   Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from '@mui/material';
@@ -25,6 +18,7 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import CryptoJS from 'crypto-js';
 
 type WebhookType = {
   id: number;
@@ -48,10 +42,10 @@ const Webhooks = () => {
 
   const [modifyId, setModifyId] = useState<number>();
   const [payloadUrl, setPayloadUrl] = useState<string>();
-  const [secret, setSecret] = useState<string>();
+  const [secret, setSecret] = useState<string>('');
   const [showAutomaticRedelivery, setShowAutomaticRedelivery] = useState<boolean>();
   const [showEnabled, setShowEnabled] = useState<boolean>();
-  const [eventType, setEventType] = useState<number>();
+  const [eventType, setEventType] = useState<number>(1);
   const [webhooks, setWebhooks] = useState<WebhookType[]>([]);
 
   const { getStoreId } = useStorePresistStore((state) => state);
@@ -81,6 +75,8 @@ const Webhooks = () => {
           });
         });
         setWebhooks(ws);
+
+        return ws;
       }
     } catch (e) {
       console.error(e);
@@ -160,6 +156,12 @@ const Webhooks = () => {
     setEventType(1);
   };
 
+  useEffect(() => {
+    if (payloadUrl && payloadUrl != '') {
+      setSecret(CryptoJS.SHA256(payloadUrl).toString());
+    }
+  }, [payloadUrl]);
+
   return (
     <Box>
       {!IsWebhook ? (
@@ -192,6 +194,7 @@ const Webhooks = () => {
                 setShowAutomaticRedelivery={setShowAutomaticRedelivery}
                 setShowEnabled={setShowEnabled}
                 setModifyId={setModifyId}
+                init={init}
               />
             ) : (
               <Typography fontSize={14}>There are no webhooks yet.</Typography>
@@ -237,9 +240,7 @@ const Webhooks = () => {
                   'aria-label': 'weight',
                 }}
                 value={secret}
-                onChange={(e: any) => {
-                  setSecret(e.target.value);
-                }}
+                disabled
               />
             </FormControl>
             <Typography mt={1} fontSize={14}>
@@ -314,13 +315,17 @@ type GridType = {
   setShowEnabled: (value: boolean) => void;
   setEventType: (value: number) => void;
   setModifyId: (value: number) => void;
+  init: () => Promise<any>;
 };
 
 function WebhookDataGrid(props: GridType) {
   const [rows, setRows] = useState<WebhookType[]>(props.webhooks);
-
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState<WebhookType>();
+
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
   const onClickRow = async (e: WebhookType) => {
     setSelectedValue(e);
@@ -328,7 +333,19 @@ function WebhookDataGrid(props: GridType) {
   };
 
   const onClickTest = async (params: any) => {
-    console.log('row', params.row);
+    try {
+      await axios.get(params.row.payloadUrl);
+
+      setSnackSeverity('success');
+      setSnackMessage('Testing successful!');
+      setSnackOpen(true);
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('Testing failed!');
+      setSnackOpen(true);
+
+      console.error(e);
+    }
   };
 
   const onClickModify = async (params: any) => {
@@ -345,7 +362,33 @@ function WebhookDataGrid(props: GridType) {
   };
 
   const onClickDelete = async (params: any) => {
-    console.log('row', params.row);
+    try {
+      const response: any = await axios.put(Http.delete_store_webhook_setting_by_id, {
+        id: params.row.id,
+        store_id: getStoreId(),
+        user_id: getUserId(),
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Delete successful!');
+        setSnackOpen(true);
+
+        const ws = await props.init();
+
+        if (ws && ws.length > 0) {
+          setRows(ws);
+        } else {
+          window.location.reload();
+        }
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Delete failed!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const columns: GridColDef<(typeof rows)[number]>[] = [
