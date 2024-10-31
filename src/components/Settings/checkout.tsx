@@ -12,17 +12,17 @@ const Checkout = () => {
 
   const [customHtmlTitle, setCustomHtmlTitle] = useState<string>('');
   const [language, setLanguage] = useState<string>('');
-  const [showDetectLanguage, setShowDetectLanguage] = useState<boolean>();
-  const [showPayInWalletButton, setShowPayInWalletButton] = useState<boolean>();
-  const [showPaymentConfetti, setShowPaymentConfetti] = useState<boolean>();
-  const [showPaymentList, setShowPaymentList] = useState<boolean>();
-  const [showPaymentMethod, setShowPaymentMethod] = useState<boolean>();
-  const [showPublicReceiptPage, setShowPublicReceiptPage] = useState<boolean>();
-  const [showQrcodeReceipt, setShowQrcodeReceipt] = useState<boolean>();
-  const [showRedirectUrl, setShowRedirectUrl] = useState<boolean>();
+  const [showDetectLanguage, setShowDetectLanguage] = useState<boolean>(false);
+  const [showPayInWalletButton, setShowPayInWalletButton] = useState<boolean>(false);
+  const [showPaymentConfetti, setShowPaymentConfetti] = useState<boolean>(false);
+  const [showPaymentList, setShowPaymentList] = useState<boolean>(false);
+  const [showPaymentMethod, setShowPaymentMethod] = useState<boolean>(false);
+  const [showPublicReceiptPage, setShowPublicReceiptPage] = useState<boolean>(false);
+  const [showQrcodeReceipt, setShowQrcodeReceipt] = useState<boolean>(false);
+  const [showRedirectUrl, setShowRedirectUrl] = useState<boolean>(false);
   const [showSound, setShowSound] = useState<boolean>();
   const [supportUrl, setSupportUrl] = useState<string>('');
-  const [showHeader, setShowHeader] = useState<boolean>();
+  const [showHeader, setShowHeader] = useState<boolean>(false);
 
   const init = async () => {
     try {
