@@ -32,10 +32,12 @@ const Emails = () => {
   const [showTls, setShowTls] = useState<boolean>(false);
   const [testEmail, setTestEmail] = useState<string>('');
 
+  const [ruleId, setRuleId] = useState<number>();
   const [tigger, setTigger] = useState<number>(1);
   const [recipients, setRecipients] = useState<string>('');
   const [subject, setSubject] = useState<string>('');
   const [body, setBody] = useState<string>('');
+  const [showSendToBuyer, setShowSendToBuyer] = useState<boolean>(false);
 
   const { getStoreId } = useStorePresistStore((state) => state);
   const { getUserId } = useUserPresistStore((state) => state);
@@ -57,7 +59,58 @@ const Emails = () => {
     setAnchorEl(null);
   };
 
-  const onClickSaveRule = async () => {};
+  const onClickSaveRule = async () => {
+    try {
+      if (ruleId && ruleId > 0) {
+        const response: any = await axios.put(Http.update_store_email_rule_setting, {
+          store_id: getStoreId(),
+          user_id: getUserId(),
+          id: ruleId,
+          tigger: tigger,
+          recipients: recipients,
+          show_send_to_buyer: showSendToBuyer ? 1 : 2,
+          subject: subject,
+          body: body,
+        });
+
+        if (response.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Update successful!');
+          setSnackOpen(true);
+
+          await init();
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Update failed!');
+          setSnackOpen(true);
+        }
+      } else {
+        const response: any = await axios.post(Http.save_store_email_rule_setting, {
+          store_id: getStoreId(),
+          user_id: getUserId(),
+          tigger: tigger,
+          recipients: recipients,
+          show_send_to_buyer: showSendToBuyer ? 1 : 2,
+          subject: subject,
+          body: body,
+        });
+
+        if (response.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Save successful!');
+          setSnackOpen(true);
+
+          await init();
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Save failed!');
+          setSnackOpen(true);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const onClickTestEmail = async () => {};
 
@@ -133,6 +186,26 @@ const Emails = () => {
         setSenderEmailAddress(response.data[0].sender_email);
         setShowTls(response.data[0].show_tls === 1 ? true : false);
         setSmtpServer(response.data[0].smtp_server);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    try {
+      const response: any = await axios.get(Http.find_store_email_rule_setting, {
+        params: {
+          store_id: getStoreId(),
+          user_id: getUserId(),
+        },
+      });
+
+      if (response.result && response.data.length === 1) {
+        setRuleId(response.data[0].id);
+        setTigger(response.data[0].tigger);
+        setRecipients(response.data[0].recipients);
+        setShowSendToBuyer(response.data[0].show_send_to_buyer === 1 ? true : false);
+        setSubject(response.data[0].subject);
+        setBody(response.data[0].body);
       }
     } catch (e) {
       console.error(e);
@@ -217,7 +290,12 @@ const Emails = () => {
           </Box>
 
           <Stack direction={'row'} alignItems={'center'} mt={1}>
-            <Checkbox />
+            <Checkbox
+              checked={showSendToBuyer}
+              onChange={() => {
+                setShowSendToBuyer(!showSendToBuyer);
+              }}
+            />
             <Typography>Send the email to the buyer, if email was provided to the invoice</Typography>
           </Stack>
 

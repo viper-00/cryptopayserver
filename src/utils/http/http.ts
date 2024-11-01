@@ -40,7 +40,11 @@ export class Http {
   static find_store_email_setting = this.httpPath + '/find_store_email_setting';
   static update_store_email_setting = this.httpPath + '/update_store_email_setting';
   static save_store_email_setting = this.httpPath + '/save_store_email_setting';
-  
+
+  // email rule setting of store
+  static find_store_email_rule_setting = this.httpPath + '/find_store_email_rule_setting';
+  static update_store_email_rule_setting = this.httpPath + '/update_store_email_rule_setting';
+  static save_store_email_rule_setting = this.httpPath + '/save_store_email_rule_setting';
 
   // wallet
   static find_wallet = this.httpPath + '/find_wallet';

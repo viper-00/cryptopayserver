@@ -12,38 +12,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
 
-        const smtpServer = req.body.smtp_server;
-        const port = req.body.port;
-        const senderEmail = req.body.sender_email;
-        const login = req.body.login;
-        const password = req.body.password;
-        const showTls = req.body.show_tls;
+        const tigger = req.body.tigger;
+        const recipients = req.body.recipients;
+        const showSendToBuyer = req.body.show_send_to_buyer;
+        const subject = req.body.subject;
+        const body = req.body.body;
 
-        let updateQuery = 'UPDATE email_settings SET ';
+        let updateQuery = 'UPDATE email_rule_settings SET ';
         let updateValues = [];
-        if (smtpServer) {
-          updateQuery += 'smtp_server = ?,';
-          updateValues.push(smtpServer);
+        if (tigger) {
+          updateQuery += 'tigger = ?,';
+          updateValues.push(tigger);
         }
-        if (port) {
-          updateQuery += 'port = ?,';
-          updateValues.push(port);
+        if (recipients) {
+          updateQuery += 'recipients = ?,';
+          updateValues.push(recipients);
         }
-        if (senderEmail) {
-          updateQuery += 'sender_email = ?,';
-          updateValues.push(senderEmail);
+        if (showSendToBuyer) {
+          updateQuery += 'show_send_to_buyer = ?,';
+          updateValues.push(showSendToBuyer);
         }
-        if (login) {
-          updateQuery += 'login = ?,';
-          updateValues.push(login);
+        if (subject) {
+          updateQuery += 'subject = ?,';
+          updateValues.push(subject);
         }
-        if (password) {
-          updateQuery += 'password = ?,';
-          updateValues.push(password);
-        }
-        if (showTls) {
-          updateQuery += 'show_tls = ?,';
-          updateValues.push(showTls);
+        if (body) {
+          updateQuery += 'body = ?,';
+          updateValues.push(body);
         }
 
         updateQuery = updateQuery.slice(0, -1);
@@ -63,6 +58,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'no support the email setting', result: false, data: e });
+    return res.status(500).json({ message: 'no support the email rule setting', result: false, data: e });
   }
 }

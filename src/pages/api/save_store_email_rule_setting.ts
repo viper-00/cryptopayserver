@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
+import { WEB3 } from 'packages/web3';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
+import { BLOCKSCAN, BlockScanWalletType } from 'packages/web3/block_scan';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -12,16 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
 
-        const smtpServer = req.body.smtp_server;
-        const port = req.body.port;
-        const senderEmail = req.body.sender_email;
-        const login = req.body.login;
-        const password = req.body.password;
-        const showTls = req.body.show_tls;
+        const tigger = req.body.tigger;
+        const recipients = req.body.recipients;
+        const showSendToBuyer = req.body.show_send_to_buyer;
+        const subject = req.body.subject;
+        const body = req.body.body;
 
         const createQuery =
-          'INSERT INTO email_settings (user_id, store_id, smtp_server, port, sender_email, login, password, show_tls, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const createValues = [userId, storeId, smtpServer, port, senderEmail, login, password, showTls, 1];
+          'INSERT INTO email_rule_settings (user_id, store_id, tigger, recipients, show_send_to_buyer, subject, body, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const createValues = [userId, storeId, tigger, recipients, showSendToBuyer, subject, body, 1];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
         const walletId = ResultSetHeader.insertId;
         if (walletId === 0) {
@@ -34,6 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'no support the email setting', result: false, data: e });
+    return res.status(500).json({ message: 'no support the email rule setting', result: false, data: e });
   }
 }
