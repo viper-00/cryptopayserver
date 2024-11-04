@@ -1,17 +1,39 @@
 import styled from '@emotion/styled';
 import { CloudUpload } from '@mui/icons-material';
 import { Box, Button, FormControl, OutlinedInput, Stack, Typography } from '@mui/material';
+import { useSnackPresistStore } from 'lib/store';
 import { useUserPresistStore } from 'lib/store/user';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const MainAccount = () => {
-  const { getUserEmail, getUsername } = useUserPresistStore((state) => state);
+  const { getUserEmail } = useUserPresistStore((state) => state);
 
+  const [email, setEmail] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [profileUrl, setProfileUrl] = useState<string>('');
+
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
   const onClickSave = async () => {
     try {
+      const response: any = await axios.put(Http.update_user_by_email, {
+        email: email,
+        username: name,
+        profile_picture_url: profileUrl,
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Update successful!');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Update successful!');
+        setSnackOpen(true);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -19,10 +41,47 @@ const MainAccount = () => {
 
   const onClickDeleteAccount = async () => {
     try {
+      const response: any = await axios.put(Http.delete_user_by_email, {
+        email: email,
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Delete successful!');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Delete successful!');
+        setSnackOpen(true);
+      }
     } catch (e) {
       console.error(e);
     }
   };
+
+  const init = async () => {
+    try {
+      if (!getUserEmail()) return;
+
+      const response: any = await axios.get(Http.find_user_by_email, {
+        params: {
+          email: getUserEmail(),
+        },
+      });
+
+      if (response.result && response.data.length === 1) {
+        setName(response.data[0].username);
+        setEmail(response.data[0].email);
+        setProfileUrl(response.data[0].profile_picture_url);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -55,7 +114,10 @@ const MainAccount = () => {
               inputProps={{
                 'aria-label': 'weight',
               }}
-              value={getUserEmail()}
+              value={email}
+              onChange={(e: any) => {
+                setEmail(e.target.value);
+              }}
             />
           </FormControl>
         </Box>
@@ -72,8 +134,10 @@ const MainAccount = () => {
               inputProps={{
                 'aria-label': 'weight',
               }}
-              value={getUsername()}
-              disabled
+              value={name}
+              onChange={(e: any) => {
+                setName(e.target.value);
+              }}
             />
           </FormControl>
         </Box>

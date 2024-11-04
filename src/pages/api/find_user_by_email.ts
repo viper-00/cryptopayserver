@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const connection = await connectDatabase();
         const email = req.query.email;
 
-        const query = 'SELECT * FROM users where email = ?';
+        const query = 'SELECT username, email, profile_picture_url FROM users where email = ?';
         const values = [email];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });

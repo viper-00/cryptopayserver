@@ -15,7 +15,7 @@ const Register = () => {
   const onRegister = async () => {
     try {
       if (email !== '' && password !== '' && confirmPassword !== '' && password === confirmPassword) {
-        const find_user_resp: any = await axios.get(Http.find_user, {
+        const find_user_resp: any = await axios.get(Http.find_user_by_email, {
           params: {
             email: email,
           },
