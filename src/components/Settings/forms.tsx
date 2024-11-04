@@ -1,16 +1,4 @@
-import {
-  Box,
-  Button,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 
 const Forms = () => {
   return (
@@ -18,8 +6,19 @@ const Forms = () => {
       <Box>
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Typography variant="h6">Roles</Typography>
-          <Button variant={'contained'}>Create Form</Button>
+          <Button
+            variant={'contained'}
+            onClick={() => {
+              alert('no suuport right now!');
+            }}
+          >
+            Create Form
+          </Button>
         </Stack>
+
+        <Typography mt={5}>
+          CryptoPay Server's Forms Builder enables you to request specific information from your customer.
+        </Typography>
 
         <Typography mt={5}>There are no forms yet.</Typography>
       </Box>
