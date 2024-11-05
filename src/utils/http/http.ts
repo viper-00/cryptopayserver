@@ -11,6 +11,7 @@ export class Http {
   // user
   static find_user_by_email = this.httpPath + '/find_user_by_email';
   static update_user_by_email = this.httpPath + '/update_user_by_email';
+  static update_user_password_by_email = this.httpPath + '/update_user_password_by_email';
   static delete_user_by_email = this.httpPath + '/delete_user_by_email';
   static create_user = this.httpPath + '/create_user';
   static login = this.httpPath + '/login';

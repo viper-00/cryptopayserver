@@ -270,11 +270,11 @@ const InvoiceDetails = () => {
                   <Typography>From Address</Typography>
                   <Link
                     target="_blank"
-                    href={
-                      GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
-                      '/' +
-                      order.fromAddress
-                    }
+                    href={GetBlockchainAddressUrlByChainIds(
+                      order.network === 1 ? true : false,
+                      order.chainId,
+                      order.fromAddress,
+                    )}
                   >
                     {order.fromAddress}
                   </Link>
@@ -283,11 +283,11 @@ const InvoiceDetails = () => {
                   <Typography>To Address</Typography>
                   <Link
                     target="_blank"
-                    href={
-                      GetBlockchainAddressUrlByChainIds(order.network === 1 ? true : false, order.chainId) +
-                      '/' +
-                      order.toAddress
-                    }
+                    href={GetBlockchainAddressUrlByChainIds(
+                      order.network === 1 ? true : false,
+                      order.chainId,
+                      order.toAddress,
+                    )}
                   >
                     {order.toAddress}
                   </Link>
@@ -296,9 +296,7 @@ const InvoiceDetails = () => {
                   <Typography>Hash</Typography>
                   <Link
                     target="_blank"
-                    href={
-                      GetBlockchainTxUrlByChainIds(order.network === 1 ? true : false, order.chainId) + '/' + order.hash
-                    }
+                    href={GetBlockchainTxUrlByChainIds(order.network === 1 ? true : false, order.chainId, order.hash)}
                   >
                     {OmitMiddleString(order.hash, 10)}
                   </Link>

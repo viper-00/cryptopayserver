@@ -13,7 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const email = req.body.email;
 
         const username = req.body.username;
-        const password = req.body.password;
         const profilePictureUrl = req.body.profile_picture_url;
 
         let updateQuery = 'UPDATE users SET ';
@@ -21,10 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (username) {
           updateQuery += 'username = ?,';
           updateValues.push(username);
-        }
-        if (password) {
-          updateQuery += 'password = ?,';
-          updateValues.push(password);
         }
         if (profilePictureUrl) {
           updateQuery += 'profile_picture_url = ?,';
@@ -48,6 +43,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'no support the webhook', result: false, data: e });
+    return res.status(500).json({ message: 'no support the email', result: false, data: e });
   }
 }

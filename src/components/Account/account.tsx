@@ -31,7 +31,7 @@ const MainAccount = () => {
         setSnackOpen(true);
       } else {
         setSnackSeverity('error');
-        setSnackMessage('Update successful!');
+        setSnackMessage('Update failed!');
         setSnackOpen(true);
       }
     } catch (e) {
@@ -51,7 +51,7 @@ const MainAccount = () => {
         setSnackOpen(true);
       } else {
         setSnackSeverity('error');
-        setSnackMessage('Delete successful!');
+        setSnackMessage('Delete failed!');
         setSnackOpen(true);
       }
     } catch (e) {
