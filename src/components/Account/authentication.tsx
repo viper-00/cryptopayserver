@@ -13,18 +13,112 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useSnackPresistStore, useUserPresistStore } from 'lib/store';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { GenerateAuthenticatorSecret, VerifyAuthenticator, VerifyTOTP } from 'utils/totp';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const Authentication = () => {
   const [page, setPage] = useState<number>(1);
 
-  const [text, setText] = useState<string>('vqns xybo w6f4 ycgy 7byv ktrf 3rtm idry');
+  const [text, setText] = useState<string>('');
   const [qrCode, setQrCode] = useState<string>('');
   const [code, setCode] = useState<string>('');
 
-  const onClickVerify = async () => {};
+  const { setSnackMessage, setSnackOpen, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { getUserEmail } = useUserPresistStore((state) => state);
+
+  const init = async () => {
+    try {
+      if (!getUserEmail()) return;
+
+      const response: any = await axios.get(Http.find_user_by_email, {
+        params: {
+          email: getUserEmail(),
+        },
+      });
+
+      if (
+        response.result &&
+        response.data.length === 1 &&
+        response.data[0].authenticator &&
+        response.data[0].authenticator !== ''
+      ) {
+        setText(response.data[0].authenticator);
+        const link = `otpauth://totp/CryptoPayServer:${getUserEmail()}?secret=${
+          response.data[0].authenticator
+        }&issuer=CryptoPayServer&digits=6`;
+        setQrCode(link);
+        setPage(2);
+      } else {
+        const token = GenerateAuthenticatorSecret();
+        setText(token);
+        const link = `otpauth://totp/CryptoPayServer:${getUserEmail()}?secret=${token}&issuer=CryptoPayServer&digits=6`;
+        setQrCode(link);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const onClickResetApp = async () => {
+    try {
+      const response: any = await axios.put(Http.update_user_by_email, {
+        email: getUserEmail(),
+        empty_authenticator: 1,
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Update successful!');
+        setSnackOpen(true);
+
+        setPage(1);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Update failed!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onClickVerify = async () => {
+    if (VerifyAuthenticator(code, text)) {
+      try {
+        const response: any = await axios.put(Http.update_user_by_email, {
+          email: getUserEmail(),
+          authenticator: text,
+        });
+
+        if (response.result) {
+          setSnackSeverity('success');
+          setSnackMessage('Update successful!');
+          setSnackOpen(true);
+
+          setPage(1);
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Update failed!');
+          setSnackOpen(true);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      setSnackMessage('Verification failure!');
+      setSnackSeverity('error');
+      setSnackOpen(true);
+    }
+  };
 
   return (
     <Box>
@@ -51,7 +145,7 @@ const Authentication = () => {
                 <Button
                   variant={'contained'}
                   onClick={() => {
-                    setPage(2);
+                    setPage(3);
                   }}
                 >
                   Click
@@ -63,6 +157,79 @@ const Authentication = () => {
       )}
 
       {page === 2 && (
+        <>
+          <Typography variant={'h6'}>Two-Factor Authentication</Typography>
+          <Typography mt={2} fontSize={14}>
+            Two-Factor Authentication (2FA) is an additional measure to protect your account. In addition to your
+            password you will be asked for a second proof on login. This can be provided by an app (such as Google or
+            Microsoft Authenticator) or a security device (like a Yubikey or your hardware wallet supporting FIDO2).
+          </Typography>
+
+          <Typography variant={'h6'} mt={4}>
+            App-based 2FA
+          </Typography>
+
+          <Box mt={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Disable 2FA</Typography>
+                <Typography mt={1} mb={1} fontSize={14}>
+                  Re-enabling will not require you to reconfigure your app.
+                </Typography>
+                <Button
+                  variant={'contained'}
+                  onClick={() => {
+                    onClickResetApp()
+                  }}
+                >
+                  Click
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box mt={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Reset app</Typography>
+                <Typography mt={1} mb={1} fontSize={14}>
+                  Invalidates the current authenticator configuration. Useful if you believe your authenticator settings
+                  were compromised.
+                </Typography>
+                <Button
+                  variant={'contained'}
+                  onClick={() => {
+                    onClickResetApp()
+                  }}
+                >
+                  Click
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box mt={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Configure app</Typography>
+                <Typography mt={1} mb={1} fontSize={14}>
+                  Display the key or QR code to configure an authenticator app with your current setup.
+                </Typography>
+                <Button
+                  variant={'contained'}
+                  onClick={() => {
+                    setPage(3);
+                  }}
+                >
+                  Click
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        </>
+      )}
+
+      {page === 3 && (
         <>
           <Typography variant={'h6'}>Enable Authenticator App</Typography>
           <Box mt={6}>
@@ -124,7 +291,17 @@ const Authentication = () => {
                   size={'small'}
                   endAdornment={
                     <InputAdornment position="end">
-                      <IconButton aria-label="toggle password visibility" onClick={() => {}} edge="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={async () => {
+                          await navigator.clipboard.writeText(text);
+
+                          setSnackMessage('Successfully copy');
+                          setSnackSeverity('success');
+                          setSnackOpen(true);
+                        }}
+                        edge="end"
+                      >
                         <ContentCopy />
                       </IconButton>
                     </InputAdornment>

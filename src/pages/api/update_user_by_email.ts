@@ -14,6 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         const username = req.body.username;
         const profilePictureUrl = req.body.profile_picture_url;
+        const authenticator = req.body.authenticator;
+        const emptyAuthenticator = req.body.empty_authenticator;
 
         let updateQuery = 'UPDATE users SET ';
         let updateValues = [];
@@ -24,6 +26,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (profilePictureUrl) {
           updateQuery += 'profile_picture_url = ?,';
           updateValues.push(profilePictureUrl);
+        }
+
+        if (emptyAuthenticator === 1) {
+          updateQuery += 'authenticator = ?,';
+          updateValues.push('');
+        } else if (authenticator) {
+          updateQuery += 'authenticator = ?,';
+          updateValues.push(authenticator);
         }
 
         updateQuery = updateQuery.slice(0, -1);
