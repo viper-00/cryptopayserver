@@ -1,6 +1,9 @@
 import {
   Box,
   Button,
+  Card,
+  CardContent,
+  Checkbox,
   Paper,
   Stack,
   Table,
@@ -9,27 +12,104 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const ApiKey = () => {
+  const [page, setPage] = useState<number>(1);
+  const [label, setLabel] = useState<string>('');
+
+  const [showViewInvoices, setShowViewInvoices] = useState<boolean>(false);
+
   return (
     <Box>
-      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-        <Typography variant={'h6'}>API Keys</Typography>
-        <Button variant={'contained'}>Generate Key</Button>
-      </Stack>
+      {page === 1 && (
+        <>
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography variant={'h6'}>API Keys</Typography>
+            <Button
+              variant={'contained'}
+              size="large"
+              onClick={() => {
+                setPage(2);
+              }}
+            >
+              Generate Key
+            </Button>
+          </Stack>
 
-      <Typography mt={2}>
-        The CryptoPay Server Greenfield API offers programmatic access to your instance. You can manage your CryptoPay
-        Server (e.g. stores, invoices, users) as well as automate workflows and integrations (see use case examples).
-        For that you need the API keys, which can be generated here. Find more information in the API authentication
-        docs.
-      </Typography>
+          <Typography mt={4}>
+            The <Link href={'#'}>Greenfield API</Link> offers programmatic access to your instance. You can manage your
+            CryptoPay Server (e.g. stores, invoices, users) as well as automate workflows and integrations (see{' '}
+            <Link href={'#'}>use case examples</Link>). For that you need the API keys, which can be generated here.
+            Find more information in the&nbsp;
+            <Link href={'#'}>API authentication docs</Link>.
+          </Typography>
 
-      <Box mt={5}>
-        <AccountApiKeyTable />
-      </Box>
+          <Box mt={5}>
+            <AccountApiKeyTable />
+          </Box>
+        </>
+      )}
+
+      {page === 2 && (
+        <>
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography variant={'h6'}>Generate API Key</Typography>
+            <Button variant={'contained'} size="large" onClick={() => {}}>
+              Generate API Key
+            </Button>
+          </Stack>
+
+          <Typography mt={4}>Generate a new api key to use CryptoPay through its API.</Typography>
+
+          <Box mt={3}>
+            <Typography mb={1} fontSize={14}>
+              Label
+            </Typography>
+            <TextField
+              fullWidth
+              hiddenLabel
+              size="small"
+              value={label}
+              onChange={(e) => {
+                setLabel(e.target.value);
+              }}
+            />
+          </Box>
+
+          <Box mt={3}>
+            <Typography>Permissions</Typography>
+            <Box mt={2}>
+              <Card>
+                <CardContent>
+                  <Stack direction={'row'} alignItems={'flex-start'}>
+                    <Checkbox
+                      style={{ padding: 0 }}
+                      checked={showViewInvoices}
+                      onChange={() => {
+                        setShowViewInvoices(!showViewInvoices);
+                      }}
+                    />
+                    <Box ml={1}>
+                      <Stack direction={'row'} alignItems={'center'}>
+                        <Typography fontWeight={'bold'}>View invoices</Typography>
+                        <Typography ml={1}>cryptopay.store.canviewinvoices</Typography>
+                      </Stack>
+                      <Typography mt={1} fontSize={14}>
+                        Allows viewing invoices on the selected stores.
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Box>
+          </Box>
+        </>
+      )}
     </Box>
   );
 };
