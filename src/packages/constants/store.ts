@@ -315,3 +315,153 @@ export const LANGUAGES: Language[] = [
   { code: 'zh', name: 'Chinese' },
   { code: 'zu', name: 'Zulu' },
 ];
+
+type APIKEYPERMISSION = {
+  id: number;
+  title: string;
+  tag: string;
+  description: string;
+};
+
+export const APIKEYPERMISSIONS: APIKEYPERMISSION[] = [
+  {
+    id: 1,
+    title: 'View invoices',
+    tag: 'cryptopay.store.canviewinvoices',
+    description: 'Allows viewing invoices on the selected stores.',
+  },
+  {
+    id: 2,
+    title: 'Create an invoice',
+    tag: 'cryptopay.store.cancreateinvoice',
+    description: 'Allows creating new invoices.',
+  },
+  {
+    id: 3,
+    title: 'Modify invoices',
+    tag: 'cryptopay.store.canmodifyinvoices',
+    description: 'Allows viewing and modifying invoices.',
+  },
+  {
+    id: 4,
+    title: 'Modify stores webhooks',
+    tag: 'cryptopay.store.webhooks.canmodifywebhooks',
+    description: 'Allows modifying the webhooks of all your stores.',
+  },
+  {
+    id: 5,
+    title: 'Modify your stores',
+    tag: 'cryptopay.store.canmodifystoresettings',
+    description: 'Allows managing invoices on all your stores and modify their settings.',
+  },
+  {
+    id: 6,
+    title: 'View your stores',
+    tag: 'cryptopay.store.canviewstoresettings',
+    description: 'Allows viewing stores settings.',
+  },
+  {
+    id: 7,
+    title: 'View your reports',
+    tag: 'cryptopay.store.canviewreports',
+    description: 'Allows viewing reports.',
+  },
+  {
+    id: 8,
+    title: 'View your payment requests',
+    tag: 'cryptopay.store.canviewpaymentrequests',
+    description: 'Allows viewing payment requests.',
+  },
+
+  {
+    id: 9,
+    title: 'Modify your payment requests',
+    tag: 'cryptopay.store.canmodifypaymentrequests',
+    description: 'Allows viewing, modifying, deleting and creating new payment requests on all your stores.',
+  },
+  {
+    id: 10,
+    title: 'Manage your profile',
+    tag: 'cryptopay.user.canmodifyprofile',
+    description: 'Allows viewing and modifying your user profile.',
+  },
+  {
+    id: 11,
+    title: 'View your profile',
+    tag: 'cryptopay.store.canviewinvoices',
+    description: 'Allows viewing invoices on the selected stores.',
+  },
+  {
+    id: 12,
+    title: 'View invoices',
+    tag: 'cryptopay.user.canviewprofile',
+    description: 'Allows viewing your user profile.',
+  },
+  {
+    id: 13,
+    title: 'Delete user',
+    tag: 'cryptopay.user.candeleteuser',
+    description:
+      'Allows deleting the user to whom it is assigned. Admin users can delete any user without this permission.',
+  },
+  {
+    id: 14,
+    title: 'Manage your notifications',
+    tag: 'cryptopay.user.canmanagenotificationsforuser',
+    description: 'Allows viewing and modifying your user notifications.',
+  },
+  {
+    id: 15,
+    title: 'View your notifications',
+    tag: 'cryptopay.user.canviewnotificationsforuser',
+    description: 'Allows viewing your user notifications.',
+  },
+  {
+    id: 16,
+    title: 'Unrestricted access',
+    tag: 'unrestricted',
+    description: 'Grants unrestricted access to your account.',
+  },
+  {
+    id: 17,
+    title: 'Manage your pull payments',
+    tag: 'cryptopay.store.canmanagepullpayments',
+    description: 'Allows viewing, modifying, deleting and creating pull payments on all your stores.',
+  },
+  {
+    id: 18,
+    title: 'Archive your pull payments',
+    tag: 'cryptopay.store.canarchivepullpayments',
+    description: 'Allows deleting pull payments on all your stores.',
+  },
+  {
+    id: 19,
+    title: 'Create pull payments',
+    tag: 'cryptopay.store.cancreatepullpayments',
+    description: 'Allows creating pull payments on all your stores.',
+  },
+  {
+    id: 20,
+    title: 'View your pull payments',
+    tag: 'cryptopay.store.canviewpullpayments',
+    description: 'Allows viewing pull payments on all your stores.',
+  },
+  {
+    id: 21,
+    title: 'Create non-approved pull payments',
+    tag: 'cryptopay.store.cancreatenonapprovedpullpayments',
+    description: 'Allows creating pull payments without automatic approval on all your stores.',
+  },
+  {
+    id: 22,
+    title: 'Manage payouts',
+    tag: 'cryptopay.store.canmanagepayouts',
+    description: 'Allows managing payouts on all your stores.',
+  },
+  {
+    id: 23,
+    title: 'View payouts',
+    tag: 'cryptopay.store.canviewpayouts',
+    description: 'Allows viewing payouts on all your stores.',
+  },
+];

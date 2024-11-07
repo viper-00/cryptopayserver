@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
+import { APIKEYPERMISSIONS } from 'packages/constants';
 import { useState } from 'react';
 
 const ApiKey = () => {
@@ -84,28 +85,33 @@ const ApiKey = () => {
           <Box mt={3}>
             <Typography>Permissions</Typography>
             <Box mt={2}>
-              <Card>
-                <CardContent>
-                  <Stack direction={'row'} alignItems={'flex-start'}>
-                    <Checkbox
-                      style={{ padding: 0 }}
-                      checked={showViewInvoices}
-                      onChange={() => {
-                        setShowViewInvoices(!showViewInvoices);
-                      }}
-                    />
-                    <Box ml={1}>
-                      <Stack direction={'row'} alignItems={'center'}>
-                        <Typography fontWeight={'bold'}>View invoices</Typography>
-                        <Typography ml={1}>cryptopay.store.canviewinvoices</Typography>
-                      </Stack>
-                      <Typography mt={1} fontSize={14}>
-                        Allows viewing invoices on the selected stores.
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </Card>
+              {APIKEYPERMISSIONS &&
+                APIKEYPERMISSIONS.map((item, index) => (
+                  <Box mb={2} key={index}>
+                    <Card>
+                      <CardContent>
+                        <Stack direction={'row'} alignItems={'flex-start'}>
+                          <Checkbox
+                            style={{ padding: 0 }}
+                            checked={showViewInvoices}
+                            onChange={() => {
+                              setShowViewInvoices(!showViewInvoices);
+                            }}
+                          />
+                          <Box ml={1}>
+                            <Stack direction={'row'} alignItems={'center'}>
+                              <Typography fontWeight={'bold'}>{item.title}</Typography>
+                              <Typography ml={1}>{item.tag}</Typography>
+                            </Stack>
+                            <Typography mt={1} fontSize={14}>
+                              {item.description}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ))}
             </Box>
           </Box>
         </>
