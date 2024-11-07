@@ -93,6 +93,7 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, collapse
 
   const handleChangeNetwork = (e: any) => {
     setNetwork(e.target.checked ? 'mainnet' : 'testnet');
+    window.location.reload();
   };
 
   const AccountDrawer = (

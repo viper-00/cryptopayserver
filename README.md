@@ -1,6 +1,21 @@
 # CryptoPayServer
 
-Receive cryptocurrency payments with ease. Free, open-source, and self-hosted cryptocurrency payment processor.
+Receive cryptocurrency payments with ease, free, open-source, and self-hosted cryptocurrency payment processor.
+
+![images1](./docs/images/dashboard.png)
+![images1](./docs/images/login.png)
+![images1](./docs/images/new_store.png)
+![images1](./docs/images/backup_phrase.png)
+![images1](./docs/images/settings.png)
+![images1](./docs/images/bitcoin.png)
+![images1](./docs/images/bitcoin_send.png)
+![images1](./docs/images/bitcoin_send_detail.png)
+![images1](./docs/images/bitcoin_receive.png)
+![images1](./docs/images/transactions.png)
+![images1](./docs/images/invoice_detail.png)
+![images1](./docs/images/invoice_create.png)
+![images1](./docs/images/account_settings.png)
+
 
 ## Table of Contents
 
@@ -43,13 +58,14 @@ CryptoPayServer is a cryptocurrency payment processor designed to be free, open-
 
 ## Supported Chains
 
-1. Bitcoin
-2. Bitcoin Lightning Network
-3. Litecoin
-4. Ethereum
-5. Solana
-6. Tron
-7. BSC
+1. Bitcoin(Bitcoin Lightning Network)
+2. Ethereum
+3. Solana
+4. Binance Smart Chain
+5. Litecoin
+6. Ton
+7. Tron
+8. etc...
 
 ## Creating a Wallet
 
@@ -129,6 +145,7 @@ CryptoPayServer is a cryptocurrency payment processor designed to be free, open-
 3. Email services.
 4. Automation services.
 5. Testnet and mainnet switching.
+6. Scanner block services.
 
 ## License
 

@@ -206,6 +206,13 @@ const HomeSidebar = () => {
               Ethereum
             </MenuItem>
             <MenuItem
+              icon={<Image src={SolanaSVG} alt="" width={25} height={25} />}
+              active={router.pathname === '/wallets/solana' ? true : false}
+              component={<Link href={'/wallets/solana'} />}
+            >
+              Solana
+            </MenuItem>
+            <MenuItem
               icon={<Image src={BscSVG} alt="" width={25} height={25} />}
               active={router.pathname === '/wallets/bsc' ? true : false}
               component={<Link href={'/wallets/bsc'} />}
@@ -218,13 +225,6 @@ const HomeSidebar = () => {
               component={<Link href={'/wallets/litecoin'} />}
             >
               Litecoin
-            </MenuItem>
-            <MenuItem
-              icon={<Image src={SolanaSVG} alt="" width={25} height={25} />}
-              active={router.pathname === '/wallets/solana' ? true : false}
-              component={<Link href={'/wallets/solana'} />}
-            >
-              Solana
             </MenuItem>
             <MenuItem
               icon={<Image src={TonSVG} alt="" width={25} height={25} />}
