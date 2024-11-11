@@ -316,11 +316,12 @@ export const LANGUAGES: Language[] = [
   { code: 'zu', name: 'Zulu' },
 ];
 
-type APIKEYPERMISSION = {
+export type APIKEYPERMISSION = {
   id: number;
   title: string;
   tag: string;
   description: string;
+  status?: boolean;
 };
 
 export const APIKEYPERMISSIONS: APIKEYPERMISSION[] = [

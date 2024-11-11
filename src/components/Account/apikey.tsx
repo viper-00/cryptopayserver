@@ -16,14 +16,18 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { APIKEYPERMISSIONS } from 'packages/constants';
+import { APIKEYPERMISSIONS, APIKEYPERMISSION } from 'packages/constants';
 import { useState } from 'react';
 
 const ApiKey = () => {
   const [page, setPage] = useState<number>(1);
   const [label, setLabel] = useState<string>('');
 
-  const [showViewInvoices, setShowViewInvoices] = useState<boolean>(false);
+  const [permissions, setPermissions] = useState<APIKEYPERMISSION[]>(APIKEYPERMISSIONS);
+
+  const onClickGenerateAPIKEY = async () => {
+    console.log(permissions);
+  };
 
   return (
     <Box>
@@ -60,7 +64,13 @@ const ApiKey = () => {
         <>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Typography variant={'h6'}>Generate API Key</Typography>
-            <Button variant={'contained'} size="large" onClick={() => {}}>
+            <Button
+              variant={'contained'}
+              size="large"
+              onClick={() => {
+                onClickGenerateAPIKEY();
+              }}
+            >
               Generate API Key
             </Button>
           </Stack>
@@ -85,17 +95,18 @@ const ApiKey = () => {
           <Box mt={3}>
             <Typography>Permissions</Typography>
             <Box mt={2}>
-              {APIKEYPERMISSIONS &&
-                APIKEYPERMISSIONS.map((item, index) => (
+              {permissions &&
+                permissions.map((item, index) => (
                   <Box mb={2} key={index}>
                     <Card>
                       <CardContent>
                         <Stack direction={'row'} alignItems={'flex-start'}>
                           <Checkbox
                             style={{ padding: 0 }}
-                            checked={showViewInvoices}
+                            checked={item.status}
                             onChange={() => {
-                              setShowViewInvoices(!showViewInvoices);
+                              permissions[index].status = !permissions[index].status;
+                              setPermissions(permissions);
                             }}
                           />
                           <Box ml={1}>

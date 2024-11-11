@@ -16,6 +16,15 @@ export class Http {
   static create_user = this.httpPath + '/create_user';
   static login = this.httpPath + '/login';
 
+  // apikeys
+  static find_apikeys_setting = this.httpPath + '/find_apikeys_setting';
+  static save_apikeys_setting = this.httpPath + '/save_apikeys_setting';
+  static delete_apikeys_setting_by_id = this.httpPath + '/delete_apikeys_setting_by_id';
+
+  // notification
+  static find_notification = this.httpPath + '/find_notification';
+  static update_notification = this.httpPath + '/update_notification';
+
   // store
   static find_store = this.httpPath + '/find_store';
   static find_store_by_id = this.httpPath + '/find_store_by_id';
@@ -62,10 +71,6 @@ export class Http {
   static find_wallet_address_by_chain_and_network = this.httpPath + '/find_wallet_address_by_chain_and_network';
   static find_wallet_address_by_network = this.httpPath + '/find_wallet_address_by_network';
   static save_wallet_to_block_scan = this.httpPath + '/save_wallet_to_block_scan';
-
-  // notification
-  static find_notification = this.httpPath + '/find_notification';
-  static update_notification = this.httpPath + '/update_notification';
 
   // payment setting
   static find_payment_setting_by_chain_id = this.httpPath + '/find_payment_setting_by_chain_id';
