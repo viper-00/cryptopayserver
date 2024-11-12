@@ -15,9 +15,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import Link from 'next/link';
 import { APIKEYPERMISSIONS, APIKEYPERMISSION } from 'packages/constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const ApiKey = () => {
   const [page, setPage] = useState<number>(1);
@@ -25,8 +28,51 @@ const ApiKey = () => {
 
   const [permissions, setPermissions] = useState<APIKEYPERMISSION[]>(APIKEYPERMISSIONS);
 
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+
   const onClickGenerateAPIKEY = async () => {
-    console.log(permissions);
+    try {
+      if (!permissions || permissions.length === 0) {
+        return;
+      }
+
+      let ids: number[] = [];
+      permissions.forEach((item) => {
+        if (item.status) {
+          ids.push(item.id);
+        }
+      });
+
+      if (ids.length === 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Please turn on at least one permissions!');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.post(Http.save_apikeys_setting, {
+        user_id: getUserId(),
+        store_id: getStoreId(),
+        label: label,
+        permissions: ids.join(','),
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Save successful!');
+        setSnackOpen(true);
+
+        setPage(1);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Save failed!');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -133,13 +179,68 @@ const ApiKey = () => {
 
 export default ApiKey;
 
-function createData(id: number, label: string, key: string, permissions: string) {
-  return { id, label, key, permissions };
-}
-
-const rows = [createData(1, '123', 'reveal', 'no')];
+type RowType = {
+  id: number;
+  label: string;
+  key: string;
+  permissions: string[];
+};
 
 function AccountApiKeyTable() {
+  const [rows, setRows] = useState<RowType[]>([]);
+
+  const { getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+
+  const init = async () => {
+    try {
+      const response: any = await axios.get(Http.find_apikeys_setting, {
+        params: {
+          user_id: getUserId(),
+          store_id: getStoreId(),
+        },
+      });
+
+      if (response.result && response.data.length > 0) {
+        let rt: RowType[] = [];
+        response.data.forEach(async (item: any) => {
+          let ps: string[] = [];
+          const ids = item.permissions.split(',');
+          ids &&
+            ids.length > 0 &&
+            ids.forEach((i: any) => {
+              ps.push(APIKEYPERMISSIONS[parseInt(i) + 1].tag);
+            });
+
+          console.log('111', ps);
+          rt.push({
+            id: item.id,
+            label: item.label,
+            key: item.api_key,
+            permissions: ps,
+          });
+        });
+        setRows(rt);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const onClickDelete = async (id: number) => {
+    try {
+      
+    } catch(e) {
+      console.error(e)
+    }
+  };
+
+  const onClickShowQR = async (id: number) => {};
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -158,10 +259,24 @@ function AccountApiKeyTable() {
                 {row.label}
               </TableCell>
               <TableCell>{row.key}</TableCell>
-              <TableCell>{row.permissions}</TableCell>
+              <TableCell>
+                {row.permissions && row.permissions.map((item, index) => <Typography key={index}>{item}</Typography>)}
+              </TableCell>
               <TableCell align="right">
-                <Button>Delete</Button>
-                <Button>Show QR</Button>
+                <Button
+                  onClick={() => {
+                    onClickDelete(row.id);
+                  }}
+                >
+                  Delete
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickShowQR(row.id);
+                  }}
+                >
+                  Show QR
+                </Button>
               </TableCell>
             </TableRow>
           ))}
