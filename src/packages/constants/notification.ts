@@ -1,13 +1,52 @@
-export const NOTIFICATIONS = {
-  1: 'New version',
-  2: 'New user requires approval',
-  3: 'User accepted invitation',
-  4: 'Plugin update',
-  5: 'All invoice updates',
-  6: 'Invoice was paid after expiration',
-  7: 'Invoice expired with partial payments',
-  8: 'Invoice has payments that failed to confirm on time',
-  9: 'Invoice is settled',
-  10: 'Payouts',
-  11: 'External payout approval',
+export type NOTIFICATION = {
+  id: number;
+  title: string;
+  status?: boolean;
 };
+
+export const NOTIFICATIONS: NOTIFICATION[] = [
+  {
+    id: 1,
+    title: 'New version',
+  },
+  {
+    id: 2,
+    title: 'New user requires approval',
+  },
+  {
+    id: 3,
+    title: 'User accepted invitation',
+  },
+  {
+    id: 4,
+    title: 'Plugin update',
+  },
+  {
+    id: 5,
+    title: 'All invoice updates',
+  },
+  {
+    id: 6,
+    title: 'Invoice was paid after expiration',
+  },
+  {
+    id: 7,
+    title: 'Invoice expired with partial payments',
+  },
+  {
+    id: 8,
+    title: 'Invoice has payments that failed to confirm on time',
+  },
+  {
+    id: 9,
+    title: 'Invoice is settled',
+  },
+  {
+    id: 10,
+    title: 'Payouts',
+  },
+  {
+    id: 11,
+    title: 'External payout approval',
+  },
+];

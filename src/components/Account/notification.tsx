@@ -1,38 +1,44 @@
-import { Box, Button, FormControl, OutlinedInput, Stack, Switch, Typography } from '@mui/material';
+import { Box, Button, Stack, Switch, Typography } from '@mui/material';
+import { useStorePresistStore } from 'lib/store';
 import { useSnackPresistStore } from 'lib/store/snack';
 import { useUserPresistStore } from 'lib/store/user';
-import { NOTIFICATIONS } from 'packages/constants';
+import { NOTIFICATION, NOTIFICATIONS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
-interface Notification {
-  notify_id: number;
-  status: number;
-}
-
 const Notification = () => {
+  const [notification, setNotification] = useState<NOTIFICATION[]>([]);
+
   const { getUserId } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
 
-  const [notification, setNotification] = useState<Notification[]>([]);
-
   const getNotifications = async () => {
-    const response: any = await axios.get(Http.find_notification, {
+    const response: any = await axios.get(Http.find_notification_setting, {
       params: {
         user_id: getUserId(),
+        store_id: getStoreId(),
       },
     });
 
     if (response.result && response.data.length > 0) {
-      let notification_list: Array<Notification> = [];
+      let notification_list: NOTIFICATION[] = [];
 
-      response.data.map((item: any) => {
+      const notificationIdsArray = response.data[0].notifications.split(',').map((id: any) => Number(id.trim()));
+
+      NOTIFICATIONS.forEach((item: NOTIFICATION) => {
+        let status = false;
+        if (notificationIdsArray.includes(item.id)) {
+          status = true;
+        }
         notification_list.push({
-          notify_id: item.notify_id,
-          status: item.status,
+          id: item.id,
+          title: item.title,
+          status: status,
         });
       });
+
       setNotification(notification_list);
     } else {
       setSnackSeverity('error');
@@ -50,20 +56,33 @@ const Notification = () => {
   }, []);
 
   async function handleChangeNotification(itemId: number) {
-    const item = notification.find((item) => item.notify_id === itemId);
-    const status = item?.status === 1 ? 2 : 1;
+    let ids: number[] = [];
 
-    const response: any = await axios.put(Http.update_notification, {
+    if (itemId === 0) {
+      ids = [];
+    } else {
+      itemId = itemId - 1;
+      if (!notification) {
+        return;
+      }
+      notification[itemId].status = !notification[itemId].status;
+
+      notification.forEach((item) => {
+        if (item.status) {
+          ids.push(item.id);
+        }
+      });
+    }
+
+    const response: any = await axios.put(Http.update_notification_setting, {
       user_id: getUserId(),
-      notify_id: itemId,
-      status: status,
+      store_id: getStoreId(),
+      notifications: ids.join(','),
     });
-
     if (response.result) {
       setSnackSeverity('success');
       setSnackMessage('Successful update!');
       setSnackOpen(true);
-
       await getNotifications();
     } else {
       setSnackSeverity('error');
@@ -78,67 +97,30 @@ const Notification = () => {
       <Typography mt={2}>To disable notification for a feature, kindly toggle off the specified feature.</Typography>
 
       <Box mt={2}>
-        {Object.keys(NOTIFICATIONS).length > 0 &&
-          Object.keys(NOTIFICATIONS).map((objectItem: any, index) => (
+        {notification &&
+          notification.map((item: NOTIFICATION, index) => (
             <Stack direction={'row'} alignItems={'center'} key={index}>
               <Switch
-                checked={
-                  notification.find((item) => item.notify_id === parseInt(objectItem))?.status === 1 ? true : false
-                }
+                checked={item.status}
                 onChange={() => {
-                  handleChangeNotification(parseInt(objectItem));
+                  handleChangeNotification(item.id);
                 }}
               />
-              <Typography ml={2}>{NOTIFICATIONS[objectItem as keyof typeof NOTIFICATIONS]}</Typography>
+              <Typography ml={2}>{item.title}</Typography>
             </Stack>
           ))}
-
-        {/* <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[2]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[3]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[4]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[5]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[6]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[7]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[8]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[9]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[10]}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'}>
-          <Switch defaultChecked />
-          <Typography ml={2}>{NOTIFICATIONS[11]}</Typography>
-        </Stack> */}
       </Box>
 
-      <Stack direction={'row'} alignItems={'center'} mt={4} gap={2}>
-        <Button variant={'contained'}>Save</Button>
-        <Button variant={'contained'}>Disable all notifications</Button>
-      </Stack>
+      <Box mt={4}>
+        <Button
+          variant={'contained'}
+          onClick={() => {
+            handleChangeNotification(0);
+          }}
+        >
+          Disable all notifications
+        </Button>
+      </Box>
     </Box>
   );
 };

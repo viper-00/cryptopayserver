@@ -10,11 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       case 'PUT':
         const connection = await connectDatabase();
         const userId = req.body.user_id;
-        const notifyId = req.body.notify_id;
-        const status = req.body.status;
+        const storeId = req.body.store_id;
+        const notifications = req.body.notifications;
 
-        const query = 'UPDATE notifications set status = ? where notify_id = ? and user_id = ?';
-        const values = [status, notifyId, userId];
+        const query =
+          'UPDATE notification_settings set notifications = ? where user_id = ? and store_id = ? and status = ?';
+        const values = [notifications, userId, storeId, 1];
         await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: null });
       case 'POST':

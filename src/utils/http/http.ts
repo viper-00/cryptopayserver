@@ -22,8 +22,8 @@ export class Http {
   static delete_apikeys_setting_by_id = this.httpPath + '/delete_apikeys_setting_by_id';
 
   // notification
-  static find_notification = this.httpPath + '/find_notification';
-  static update_notification = this.httpPath + '/update_notification';
+  static find_notification_setting = this.httpPath + '/find_notification_setting';
+  static update_notification_setting = this.httpPath + '/update_notification_setting';
 
   // store
   static find_store = this.httpPath + '/find_store';

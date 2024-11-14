@@ -192,6 +192,8 @@ function AccountApiKeyTable() {
   const { getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
 
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+
   const init = async () => {
     try {
       const response: any = await axios.get(Http.find_apikeys_setting, {
@@ -212,7 +214,6 @@ function AccountApiKeyTable() {
               ps.push(APIKEYPERMISSIONS[parseInt(i) + 1].tag);
             });
 
-          console.log('111', ps);
           rt.push({
             id: item.id,
             label: item.label,
@@ -233,9 +234,21 @@ function AccountApiKeyTable() {
 
   const onClickDelete = async (id: number) => {
     try {
-      
-    } catch(e) {
-      console.error(e)
+      const delete_resp: any = await axios.put(Http.delete_apikeys_setting_by_id, {
+        id: id,
+        user_id: getUserId(),
+        store_id: getStoreId(),
+      });
+
+      if (delete_resp.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Delete successful!');
+        setSnackOpen(true);
+
+        await init();
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -270,13 +283,13 @@ function AccountApiKeyTable() {
                 >
                   Delete
                 </Button>
-                <Button
+                {/* <Button
                   onClick={() => {
                     onClickShowQR(row.id);
                   }}
                 >
                   Show QR
-                </Button>
+                </Button> */}
               </TableCell>
             </TableRow>
           ))}

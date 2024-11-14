@@ -10,9 +10,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       case 'GET':
         const connection = await connectDatabase();
         const userId = req.query.user_id;
+        const storeId = req.query.store_id;
 
-        const query = 'SELECT * FROM notifications where user_id = ?';
-        const values = [userId];
+        const query = 'SELECT * FROM notification_settings where user_id = ? and store_id = ? and status = ?';
+        const values = [userId, storeId, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });
       case 'POST':
