@@ -41,10 +41,10 @@ const Webhooks = () => {
   };
 
   const [modifyId, setModifyId] = useState<number>();
-  const [payloadUrl, setPayloadUrl] = useState<string>();
+  const [payloadUrl, setPayloadUrl] = useState<string>('');
   const [secret, setSecret] = useState<string>('');
-  const [showAutomaticRedelivery, setShowAutomaticRedelivery] = useState<boolean>();
-  const [showEnabled, setShowEnabled] = useState<boolean>();
+  const [showAutomaticRedelivery, setShowAutomaticRedelivery] = useState<boolean>(false);
+  const [showEnabled, setShowEnabled] = useState<boolean>(false);
   const [eventType, setEventType] = useState<number>(1);
   const [webhooks, setWebhooks] = useState<WebhookType[]>([]);
 

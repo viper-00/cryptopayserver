@@ -30,11 +30,11 @@ import { CURRENCY } from 'packages/constants';
 const General = () => {
   const { getStoreId } = useStorePresistStore((state) => state);
   const { getUserId } = useUserPresistStore((state) => state);
-  const [storeName, setStoreName] = useState<string>();
-  const [storeWebsite, setStoreWebsite] = useState<string>();
-  const [brandColor, setBrandColor] = useState<string>();
-  const [logoUrl, setLogoUrl] = useState<string>();
-  const [customCssUrl, setCustomCssUrl] = useState<string>();
+  const [storeName, setStoreName] = useState<string>('');
+  const [storeWebsite, setStoreWebsite] = useState<string>('');
+  const [brandColor, setBrandColor] = useState<string>('');
+  const [logoUrl, setLogoUrl] = useState<string>('');
+  const [customCssUrl, setCustomCssUrl] = useState<string>('');
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
   const [allowAnyoneCreateInvoice, setAllowAnyoneCreateInvoice] = useState<boolean>(false);
   const [addAdditionalFeeToInvoice, setAddAdditionalFeeToInvoice] = useState<number>(1 || 2 || 3);

@@ -21,11 +21,11 @@ import { COINGECKO_IDS, CURRENCY, ORDER_TIME } from 'packages/constants';
 import { IsValidEmail, IsValidHTTPUrl, IsValidJSON } from 'utils/verify';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { CHAINNAMES, CHAINS, COINS } from 'packages/constants/blockchain';
+import { CHAINNAMES, COIN, COINS } from 'packages/constants/blockchain';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { ORDER_STATUS } from 'packages/constants';
 import { BigDiv } from 'utils/number';
-import { FindChainIdsByChainNames } from 'utils/web3';
+import { FindChainIdsByChainNames, FindTokensByMainnetAndName } from 'utils/web3';
 
 const PaymentInvoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
@@ -33,9 +33,10 @@ const PaymentInvoices = () => {
 
   const [amount, setAmount] = useState<number>();
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
-  const [network, setNetwork] = useState<CHAINNAMES>();
-  const [crypto, setCrypto] = useState<COINS>();
-  const [cryptoAmount, setCryptoAmount] = useState<string>();
+  const [network, setNetwork] = useState<CHAINNAMES>(CHAINNAMES.BITCOIN);
+  const [cryptoList, setCryptoList] = useState<COIN[]>([]);
+  const [crypto, setCrypto] = useState<COINS>(COINS.BTC);
+  const [cryptoAmount, setCryptoAmount] = useState<string>('');
   const [rate, setRate] = useState<number>();
   const [description, setDescription] = useState<string>('');
   const [buyerEmail, setBuyerEmail] = useState<string>('');
@@ -73,6 +74,13 @@ const PaymentInvoices = () => {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    if (!network) return;
+
+    const coins = FindTokensByMainnetAndName(getNetwork() === 'mainnet', network as CHAINNAMES);
+    setCryptoList(coins);
+  }, [network]);
 
   useEffect(() => {
     if (crypto && amount && currency && amount > 0) {
@@ -286,11 +294,11 @@ const PaymentInvoices = () => {
                         }}
                         value={crypto}
                       >
-                        {CHAINNAMES &&
-                          Object.entries(COINS).length > 0 &&
-                          Object.entries(COINS).map((item, index) => (
-                            <MenuItem value={item[0]} key={index}>
-                              {item[0]}
+                        {cryptoList &&
+                          cryptoList.length > 0 &&
+                          cryptoList.map((item, index) => (
+                            <MenuItem value={item.name} key={index}>
+                              {item.name}
                             </MenuItem>
                           ))}
                       </Select>
@@ -577,7 +585,7 @@ const PaymentInvoices = () => {
             </Stack>
 
             <Box mt={5}>
-              <InvoiceDataGrid source='none'/>
+              <InvoiceDataGrid source="none" />
             </Box>
           </Box>
         )}

@@ -23,7 +23,7 @@ import { Http } from 'utils/http/http';
 
 const Payout = () => {
   const [isConfigure, setIsConfigure] = useState<boolean>(false);
-  const [configureChain, setConfigureChain] = useState<CHAINS>();
+  const [configureChain, setConfigureChain] = useState<CHAINS>(CHAINS.BITCOIN);
   const [showApprovePayoutProcess, setShowApprovePayoutProcess] = useState<boolean>();
   const [interval, setInterval] = useState<number>();
   const [feeBlockTarget, setFeeBlockTarget] = useState<number>();

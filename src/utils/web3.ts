@@ -24,6 +24,14 @@ export function FindTokenByChainIdsAndSymbol(chainIds: CHAINIDS, symbol: COINS):
   return token as COIN;
 }
 
+export function FindTokensByMainnetAndName(isMainnet: boolean, name: CHAINNAMES): COIN[] {
+  return BLOCKCHAINNAMES.find((item) => item.name === name && item.isMainnet == isMainnet)?.coins as COIN[];
+}
+
+export function FindTokensByChainIds(chainIds: CHAINIDS): COIN[] {
+  return BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins as COIN[];
+}
+
 export function FindDecimalsByChainIdsAndContractAddress(chainIds: CHAINIDS, contractAddress: string): number {
   const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
   const token = coins?.find((item) => item.contractAddress?.toLowerCase() === contractAddress.toLowerCase());

@@ -20,7 +20,7 @@ const Checkout = () => {
   const [showPublicReceiptPage, setShowPublicReceiptPage] = useState<boolean>(false);
   const [showQrcodeReceipt, setShowQrcodeReceipt] = useState<boolean>(false);
   const [showRedirectUrl, setShowRedirectUrl] = useState<boolean>(false);
-  const [showSound, setShowSound] = useState<boolean>();
+  const [showSound, setShowSound] = useState<boolean>(false);
   const [supportUrl, setSupportUrl] = useState<string>('');
   const [showHeader, setShowHeader] = useState<boolean>(false);
 

@@ -14,7 +14,6 @@ import {
   Typography,
 } from '@mui/material';
 import BalanceBars from './Balance';
-import { FormatAlignCenter, FormatAlignLeft, FormatAlignRight } from '@mui/icons-material';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { useEffect, useState } from 'react';
 import TransactionDataGrid from 'components/Payments/Transaction/TransactionDataGrid';
@@ -29,7 +28,7 @@ const Dashboard = () => {
   const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');
   const [walletBalanceDayAlignment, setWalletBalanceDayAlignment] = useState<'WEEK' | 'MONTH' | 'YEAR'>('WEEK');
   const [walletBalance, setWalletBalance] = useState<number>(0.0);
-  const [walletCoinMaps, setWalletCoinMaps] = useState<{ [key in string]: { number: number; price: number } }>();
+  const [walletCoinMaps, setWalletCoinMaps] = useState<{ [key in string]: { number: number; price: number } }>({});
 
   const onChangeCurrency = (e: any) => {
     setWalletBalanceAlignment(e.target.value);

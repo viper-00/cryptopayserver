@@ -3,12 +3,7 @@ import { useSnackPresistStore, useUserPresistStore, useWalletPresistStore } from
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import newaxios from 'axios';
-
 import Image from 'next/image';
-import BitcoinSVG from 'assets/chain/bitcoin.svg';
-import EthereumSVG from 'assets/chain/ethereum.svg';
-import SolanaSVG from 'assets/chain/solana.svg';
 import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINS } from 'packages/constants/blockchain';
 
 type walletType = {
