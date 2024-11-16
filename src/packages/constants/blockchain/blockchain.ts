@@ -222,66 +222,76 @@ export const SOLANA_DEVNET_COINS: COIN[] = [
   },
 ];
 
-type BLOCKCHAIN = {
+export type BLOCKCHAIN = {
   name: CHAINNAMES;
   chainId: CHAINIDS;
   explorerUrl?: string;
   websiteUrl?: string;
   isMainnet: boolean;
   rpc?: string[];
+  icon?: any;
 
   coins: COIN[];
+
+  time?: number;
 };
 
 export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   {
     name: CHAINNAMES.BITCOIN,
     chainId: CHAINIDS.BITCOIN,
-    explorerUrl: '',
-    websiteUrl: '',
+    explorerUrl: 'https://mempool.space',
+    websiteUrl: 'https://bitcoin.org',
     isMainnet: true,
     coins: BITCOIN_COINS,
+    rpc: ['https://mempool.space'],
+    icon: '../btc.svg',
   },
   {
     name: CHAINNAMES.BITCOIN,
     chainId: CHAINIDS.BITCOIN_TESTNET,
-    explorerUrl: '',
-    websiteUrl: '',
+    explorerUrl: 'https://mempool.space/testnet',
+    websiteUrl: 'https://bitcoin.org',
     isMainnet: false,
     coins: BITCOIN_COINS,
+    rpc: ['https://mempool.space/testnet'],
+    icon: '../btc.svg',
   },
   {
     name: CHAINNAMES.ETHEREUM,
     chainId: CHAINIDS.ETHEREUM,
-    explorerUrl: '',
-    websiteUrl: '',
+    explorerUrl: 'https://etherscan.io',
+    websiteUrl: 'https://ethereum.org/en',
     isMainnet: true,
     coins: ETHEREUM_COINS,
     rpc: ['https://ethereum.publicnode.com'],
+    icon: '../eth.svg',
   },
   {
     name: CHAINNAMES.ETHEREUM,
     chainId: CHAINIDS.ETHEREUM_SEPOLIA,
-    explorerUrl: '',
-    websiteUrl: '',
+    explorerUrl: 'https://sepolia.etherscan.io',
+    websiteUrl: 'https://ethereum.org/en',
     isMainnet: false,
     coins: ETHEREUM_SEPOLIA_COINS,
     rpc: ['https://ethereum-sepolia.publicnode.com'],
+    icon: '../eth.svg',
   },
   {
     name: CHAINNAMES.SOLANA,
     chainId: CHAINIDS.SOLANA,
-    explorerUrl: '',
-    websiteUrl: '',
+    explorerUrl: 'https://explorer.solana.com',
+    websiteUrl: 'https://solana.com',
     isMainnet: true,
     coins: SOLANA_COINS,
     rpc: ['https://api.mainnet-beta.solana.com', 'https://rpc.ankr.com/solana'],
+    icon: '../solana.svg',
   },
   {
     name: CHAINNAMES.SOLANA,
     chainId: CHAINIDS.SOLANA_DEVNET,
-    explorerUrl: '',
-    websiteUrl: '',
+    explorerUrl: 'https://explorer.solana.com?cluster=devnet',
+    websiteUrl: 'https://solana.com',
     isMainnet: false,
     coins: SOLANA_DEVNET_COINS,
     rpc: [
@@ -289,5 +299,6 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       // 'https://rpc.ankr.com/solana_devnet',
       'https://quiet-evocative-sanctuary.solana-devnet.quiknode.pro/9546a31f74b22b085dc30ae790d10b23014825af',
     ],
+    icon: '../sol.svg',
   },
 ];

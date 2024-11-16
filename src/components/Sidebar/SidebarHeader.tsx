@@ -74,9 +74,9 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
       });
       setStores(store_list);
     } else {
-      setSnackSeverity('error');
-      setSnackMessage("Can't find the store, please to create a new one.");
-      setSnackOpen(true);
+      // setSnackSeverity('error');
+      // setSnackMessage("Can't find the store, please to create a new one.");
+      // setSnackOpen(true);
 
       setTimeout(() => {
         window.location.href = '/stores/create';
@@ -139,11 +139,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
 
       <Box mt={3}>
         <FormControl fullWidth>
-          <Select
-            size={'small'}
-            inputProps={{ 'aria-label': 'Without label' }}
-            defaultValue={getStoreId()}
-          >
+          <Select size={'small'} inputProps={{ 'aria-label': 'Without label' }} defaultValue={getStoreId()}>
             {stores &&
               stores.map((item, index) => (
                 <MenuItem

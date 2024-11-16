@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               id: item.id,
               address: item.address,
               note: item.note,
+              chain_id: item.chain_id,
             };
           });
           newRows = await Promise.all(promises);

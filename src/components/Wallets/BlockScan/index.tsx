@@ -3,10 +3,13 @@ import { useSnackPresistStore, useUserPresistStore, useWalletPresistStore } from
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import newaxios from 'axios';
 
 import Image from 'next/image';
 import BitcoinSVG from 'assets/chain/bitcoin.svg';
 import EthereumSVG from 'assets/chain/ethereum.svg';
+import SolanaSVG from 'assets/chain/solana.svg';
+import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINS } from 'packages/constants/blockchain';
 
 type walletType = {
   id: number;
@@ -22,6 +25,7 @@ const BlockScan = () => {
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
   const [wallet, setWallet] = useState<walletType[]>([]);
+  const [blockchain, setBlcokchain] = useState<BLOCKCHAIN[]>([]);
 
   const checkScanStatus = async () => {
     if (!wallet || wallet.length <= 0) {
@@ -53,6 +57,27 @@ const BlockScan = () => {
     }
   };
 
+  const checkNetworkStatus = async () => {
+    await getNetworkInfo();
+
+    setSnackSeverity('success');
+    setSnackMessage('Successful check!');
+    setSnackOpen(true);
+  };
+
+  const checkRequestTime = async (url: string): Promise<number> => {
+    const start = performance.now();
+
+    try {
+      await axios.get(url);
+    } catch (e) {
+      console.error(e);
+    }
+
+    const end = performance.now();
+    return end - start;
+  };
+
   const getWalletAddress = async () => {
     try {
       const find_address_resp: any = await axios.get(Http.find_wallet_address_by_network, {
@@ -69,7 +94,7 @@ const BlockScan = () => {
           ws.push({
             id: item.id,
             address: item.address,
-            type: item.note,
+            type: item.chain_id === CHAINS.BITCOIN ? 'BITCOIN ' + item.note : item.note,
             network: item.network,
             chainId: item.chain_id,
           });
@@ -81,7 +106,17 @@ const BlockScan = () => {
     }
   };
 
-  const getNetworkInfo = async () => {};
+  const getNetworkInfo = async () => {
+    const value = BLOCKCHAINNAMES.filter((item) => (getNetwork() === 'mainnet' ? item.isMainnet : !item.isMainnet));
+    value.forEach(async (item) => {
+      if (item.rpc) {
+        const time = await checkRequestTime(item.rpc[0]);
+        item.time = parseInt(time.toString());
+      }
+    });
+
+    setBlcokchain(value);
+  };
 
   const init = async () => {
     await getWalletAddress();
@@ -125,99 +160,52 @@ const BlockScan = () => {
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={4}>
           <Typography variant="h6">Network</Typography>
           <Stack direction={'row'} alignItems={'center'}>
-            <Button variant={'contained'}>Check network Status</Button>
+            <Button variant={'contained'} onClick={checkNetworkStatus}>
+              Check network Status
+            </Button>
           </Stack>
         </Stack>
 
-        <Box mt={4}>
-          <Typography fontSize={14} fontWeight={'bold'}>
-            BITCOIN
-          </Typography>
-
-          <Box mt={2}>
-            <Card>
-              <CardContent>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Stack direction={'row'} alignItems={'center'}>
-                    <Image src={BitcoinSVG} alt="" width={50} height={50} />
-                    <Box ml={2}>
-                      <Typography fontSize={16} fontWeight={'bold'}>
-                        Bitcoin
-                      </Typography>
-                      <Typography mt={1}>https://btc-mainnet.bitcoin.com</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Typography color={'green'}>202ms</Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box mt={2}>
-            <Card>
-              <CardContent>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Stack direction={'row'} alignItems={'center'}>
-                    <Image src={BitcoinSVG} alt="" width={50} height={50} />
-                    <Box ml={2}>
-                      <Typography fontSize={16} fontWeight={'bold'}>
-                        Bitcoin Testnet
-                      </Typography>
-                      <Typography mt={1}>https://btc-testnet.bitcoin.com</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Typography color={'green'}>207ms</Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
-
-        <Box mt={4}>
-          <Typography fontSize={14} fontWeight={'bold'}>
-            ETHEREUM
-          </Typography>
-
-          <Box mt={2}>
-            <Card>
-              <CardContent>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Stack direction={'row'} alignItems={'center'}>
-                    <Image src={EthereumSVG} alt="" width={50} height={50} />
-                    <Box ml={2}>
-                      <Typography fontSize={16} fontWeight={'bold'}>
-                        Ethereum
-                      </Typography>
-                      <Typography mt={1}>https://eth-mainnet.ethereum.com</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Typography color={'green'}>263ms</Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box mt={2}>
-            <Card>
-              <CardContent>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Stack direction={'row'} alignItems={'center'}>
-                    <Image src={EthereumSVG} alt="" width={50} height={50} />
-                    <Box ml={2}>
-                      <Typography fontSize={16} fontWeight={'bold'}>
-                        Ethereum Sepolia Testnet
-                      </Typography>
-                      <Typography mt={1}>https://eth-testnet.ethereum.com</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Typography color={'green'}>207ms</Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
+        {blockchain &&
+          blockchain.map((item) => (
+            <Box mt={4}>
+              <Box mt={2}>
+                <Card>
+                  <CardContent>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Stack direction={'row'} alignItems={'center'}>
+                        <Image src={item.icon} alt="image" width={50} height={50} />
+                        <Box ml={2}>
+                          <Typography fontSize={16} fontWeight={'bold'}>
+                            {item.name}
+                          </Typography>
+                          <Typography fontSize={16} fontWeight={'bold'}>
+                            {item.explorerUrl}
+                          </Typography>
+                          <Typography fontSize={16} fontWeight={'bold'}>
+                            {item.websiteUrl}
+                          </Typography>
+                          <Typography fontSize={16} fontWeight={'bold'} mt={2}>
+                            Support Coins:
+                          </Typography>
+                          {item.coins.map((coin) => (
+                            <Typography fontSize={14} fontWeight={'bold'}>
+                              {coin.symbol}
+                            </Typography>
+                          ))}
+                          <Typography fontSize={16} fontWeight={'bold'} mt={2}>
+                            RPC:
+                          </Typography>
+                          <Typography mt={1}>{item.rpc && item.rpc[0]}</Typography>
+                        </Box>
+                      </Stack>
+                      <Typography color={'green'}>{item.time} ms</Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Box>
+            </Box>
+          ))}
       </Container>
     </Box>
   );
