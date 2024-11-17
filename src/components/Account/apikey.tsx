@@ -52,7 +52,7 @@ const ApiKey = () => {
         return;
       }
 
-      const response: any = await axios.post(Http.save_apikeys_setting, {
+      const response: any = await axios.post(Http.create_apikeys_setting, {
         user_id: getUserId(),
         store_id: getStoreId(),
         label: label,

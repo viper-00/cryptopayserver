@@ -62,7 +62,7 @@ const Emails = () => {
   const onClickSaveRule = async () => {
     try {
       if (ruleId && ruleId > 0) {
-        const response: any = await axios.put(Http.update_store_email_rule_setting, {
+        const response: any = await axios.put(Http.update_email_rule_setting, {
           store_id: getStoreId(),
           user_id: getUserId(),
           id: ruleId,
@@ -85,7 +85,7 @@ const Emails = () => {
           setSnackOpen(true);
         }
       } else {
-        const response: any = await axios.post(Http.save_store_email_rule_setting, {
+        const response: any = await axios.post(Http.create_email_rule_setting, {
           store_id: getStoreId(),
           user_id: getUserId(),
           tigger: tigger,
@@ -117,7 +117,7 @@ const Emails = () => {
   const onClickSave = async () => {
     try {
       if (id && id > 0) {
-        const response: any = await axios.put(Http.update_store_email_setting, {
+        const response: any = await axios.put(Http.update_email_setting, {
           store_id: getStoreId(),
           user_id: getUserId(),
           id: id,
@@ -141,7 +141,7 @@ const Emails = () => {
           setSnackOpen(true);
         }
       } else {
-        const response: any = await axios.post(Http.save_store_email_setting, {
+        const response: any = await axios.post(Http.create_email_setting, {
           store_id: getStoreId(),
           user_id: getUserId(),
           smtp_server: smtpServer,
@@ -171,7 +171,7 @@ const Emails = () => {
 
   const init = async () => {
     try {
-      const response: any = await axios.get(Http.find_store_email_setting, {
+      const response: any = await axios.get(Http.find_email_setting, {
         params: {
           store_id: getStoreId(),
           user_id: getUserId(),
@@ -192,7 +192,7 @@ const Emails = () => {
     }
 
     try {
-      const response: any = await axios.get(Http.find_store_email_rule_setting, {
+      const response: any = await axios.get(Http.find_email_rule_setting, {
         params: {
           store_id: getStoreId(),
           user_id: getUserId(),

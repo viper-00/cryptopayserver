@@ -50,3 +50,11 @@ export const NOTIFICATIONS: NOTIFICATION[] = [
     title: 'External payout approval',
   },
 ];
+
+export const NOTIFICATION_TYPE = {
+  Invoice: 'Invoice',
+  Payouts: 'Payouts',
+  NewVersion: 'New Version',
+  PluginUpdates: 'Plugin Updates',
+  UserUpdates: 'User Updates',
+};

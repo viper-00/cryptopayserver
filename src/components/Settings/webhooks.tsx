@@ -54,7 +54,7 @@ const Webhooks = () => {
 
   const init = async () => {
     try {
-      const find_webhook_resp: any = await axios.get(Http.find_store_webhook_setting, {
+      const find_webhook_resp: any = await axios.get(Http.find_webhook_setting, {
         params: {
           store_id: getStoreId(),
           user_id: getUserId(),
@@ -90,7 +90,7 @@ const Webhooks = () => {
   const onClickButton = async () => {
     try {
       if (pageStatus === 'CREATE') {
-        const save_webhook_resp: any = await axios.post(Http.save_store_webhook_setting, {
+        const save_webhook_resp: any = await axios.post(Http.create_webhook_setting, {
           store_id: getStoreId(),
           user_id: getUserId(),
           payload_url: payloadUrl ? payloadUrl : '',
@@ -116,7 +116,7 @@ const Webhooks = () => {
           setSnackOpen(true);
         }
       } else if (pageStatus === 'UPDATE') {
-        const save_webhook_resp: any = await axios.put(Http.update_store_webhook_setting_by_id, {
+        const save_webhook_resp: any = await axios.put(Http.update_webhook_setting_by_id, {
           id: modifyId,
           store_id: getStoreId(),
           user_id: getUserId(),
@@ -363,7 +363,7 @@ function WebhookDataGrid(props: GridType) {
 
   const onClickDelete = async (params: any) => {
     try {
-      const response: any = await axios.put(Http.delete_store_webhook_setting_by_id, {
+      const response: any = await axios.put(Http.delete_webhook_setting_by_id, {
         id: params.row.id,
         store_id: getStoreId(),
         user_id: getUserId(),

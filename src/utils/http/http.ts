@@ -18,7 +18,7 @@ export class Http {
 
   // apikeys
   static find_apikeys_setting = this.httpPath + '/find_apikeys_setting';
-  static save_apikeys_setting = this.httpPath + '/save_apikeys_setting';
+  static create_apikeys_setting = this.httpPath + '/create_apikeys_setting';
   static delete_apikeys_setting_by_id = this.httpPath + '/delete_apikeys_setting_by_id';
 
   // notification
@@ -34,29 +34,29 @@ export class Http {
   static delete_store_by_id = this.httpPath + '/delete_store_by_id';
 
   // checkout setting of store
-  static find_store_checkout_setting_by_id = this.httpPath + '/find_store_checkout_setting_by_id';
-  static update_store_checkout_setting_by_id = this.httpPath + '/update_store_checkout_setting_by_id';
+  static find_checkout_setting_by_id = this.httpPath + '/find_checkout_setting_by_id';
+  static update_checkout_setting_by_id = this.httpPath + '/update_checkout_setting_by_id';
 
   // webhook setting of store
-  static find_store_webhook_setting = this.httpPath + '/find_store_webhook_setting';
-  static find_store_webhook_setting_by_id = this.httpPath + '/find_store_webhook_setting_by_id';
-  static update_store_webhook_setting_by_id = this.httpPath + '/update_store_webhook_setting_by_id';
-  static save_store_webhook_setting = this.httpPath + '/save_store_webhook_setting';
-  static delete_store_webhook_setting_by_id = this.httpPath + '/delete_store_webhook_setting_by_id';
+  static find_webhook_setting = this.httpPath + '/find_webhook_setting';
+  static find_webhook_setting_by_id = this.httpPath + '/find_webhook_setting_by_id';
+  static update_webhook_setting_by_id = this.httpPath + '/update_webhook_setting_by_id';
+  static create_webhook_setting = this.httpPath + '/create_webhook_setting';
+  static delete_webhook_setting_by_id = this.httpPath + '/delete_webhook_setting_by_id';
 
   // payout setting of store
-  static find_store_payout_setting_by_network = this.httpPath + '/find_store_payout_setting_by_network';
-  static update_store_payout_setting_by_network = this.httpPath + '/update_store_payout_setting_by_network';
+  static find_payout_setting_by_network = this.httpPath + '/find_payout_setting_by_network';
+  static update_payout_setting_by_network = this.httpPath + '/update_payout_setting_by_network';
 
   // email setting of store
-  static find_store_email_setting = this.httpPath + '/find_store_email_setting';
-  static update_store_email_setting = this.httpPath + '/update_store_email_setting';
-  static save_store_email_setting = this.httpPath + '/save_store_email_setting';
+  static find_email_setting = this.httpPath + '/find_email_setting';
+  static update_email_setting = this.httpPath + '/update_email_setting';
+  static create_email_setting = this.httpPath + '/create_email_setting';
 
   // email rule setting of store
-  static find_store_email_rule_setting = this.httpPath + '/find_store_email_rule_setting';
-  static update_store_email_rule_setting = this.httpPath + '/update_store_email_rule_setting';
-  static save_store_email_rule_setting = this.httpPath + '/save_store_email_rule_setting';
+  static find_email_rule_setting = this.httpPath + '/find_email_rule_setting';
+  static update_email_rule_setting = this.httpPath + '/update_email_rule_setting';
+  static create_email_rule_setting = this.httpPath + '/create_email_rule_setting';
 
   // wallet
   static find_wallet = this.httpPath + '/find_wallet';
@@ -70,7 +70,7 @@ export class Http {
   // address of wallet
   static find_wallet_address_by_chain_and_network = this.httpPath + '/find_wallet_address_by_chain_and_network';
   static find_wallet_address_by_network = this.httpPath + '/find_wallet_address_by_network';
-  static save_wallet_to_block_scan = this.httpPath + '/save_wallet_to_block_scan';
+  static create_wallet_to_block_scan = this.httpPath + '/create_wallet_to_block_scan';
 
   // payment setting
   static find_payment_setting_by_chain_id = this.httpPath + '/find_payment_setting_by_chain_id';
@@ -102,4 +102,9 @@ export class Http {
 
   // tool
   static find_crypto_price = this.httpPath + '/find_crypto_price';
+
+  // notification
+  static find_notification = this.httpPath + '/find_notification';
+  static create_notification = this.httpPath + '/create_notification';
+  static update_notification = this.httpPath + '/update_notification';
 }

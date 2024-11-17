@@ -35,7 +35,7 @@ const Payout = () => {
 
   const onClickSave = async () => {
     try {
-      const response: any = await axios.put(Http.update_store_payout_setting_by_network, {
+      const response: any = await axios.put(Http.update_payout_setting_by_network, {
         store_id: getStoreId(),
         user_id: getUserId(),
         network: getNetwork() === 'mainnnet' ? 1 : 2,
@@ -204,7 +204,7 @@ function StorePayoutTable(props: TableType) {
   const onClickConfigure = async (rows: any) => {
     if (rows.chain && rows.chain > 0) {
       try {
-        const response: any = await axios.get(Http.find_store_payout_setting_by_network, {
+        const response: any = await axios.get(Http.find_payout_setting_by_network, {
           params: {
             store_id: getStoreId(),
             user_id: getUserId(),

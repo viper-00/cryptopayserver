@@ -84,6 +84,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'no support the store', result: false, data: e });
+    return res.status(500).json({ message: 'no support the api', result: false, data: e });
   }
 }

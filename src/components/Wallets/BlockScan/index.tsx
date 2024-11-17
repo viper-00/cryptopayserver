@@ -28,7 +28,7 @@ const BlockScan = () => {
     }
 
     try {
-      const save_wallet_resp: any = await axios.post(Http.save_wallet_to_block_scan, {
+      const save_wallet_resp: any = await axios.post(Http.create_wallet_to_block_scan, {
         user_id: getUserId(),
         wallet_id: getWalletId(),
         network: getNetwork() === 'mainnet' ? 1 : 2,

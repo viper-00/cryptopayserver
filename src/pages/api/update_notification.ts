@@ -11,40 +11,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const connection = await connectDatabase();
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
+        const id = req.body.id;
 
-        const tigger = req.body.tigger;
-        const recipients = req.body.recipients;
-        const showSendToBuyer = req.body.show_send_to_buyer;
-        const subject = req.body.subject;
-        const body = req.body.body;
+        const label = req.body.label;
+        const message = req.body.message;
+        const isSeen = req.body.is_seen;
 
-        let updateQuery = 'UPDATE email_rule_settings SET ';
+        let updateQuery = 'UPDATE notifications SET ';
         let updateValues = [];
-        if (tigger) {
-          updateQuery += 'tigger = ?,';
-          updateValues.push(tigger);
+        if (label) {
+          updateQuery += 'label = ?,';
+          updateValues.push(label);
         }
-        if (recipients) {
-          updateQuery += 'recipients = ?,';
-          updateValues.push(recipients);
+        if (message) {
+          updateQuery += 'message = ?,';
+          updateValues.push(message);
         }
-        if (showSendToBuyer) {
-          updateQuery += 'show_send_to_buyer = ?,';
-          updateValues.push(showSendToBuyer);
-        }
-        if (subject) {
-          updateQuery += 'subject = ?,';
-          updateValues.push(subject);
-        }
-        if (body) {
-          updateQuery += 'body = ?,';
-          updateValues.push(body);
+        if (isSeen) {
+          updateQuery += 'is_seen = ?,';
+          updateValues.push(isSeen);
         }
 
         updateQuery = updateQuery.slice(0, -1);
 
-        updateQuery += ' WHERE store_id = ? and user_id = ? and status = ?';
-        updateValues.push(storeId, userId, 1);
+        updateQuery += ' WHERE id = ? and store_id = ? and user_id = ? and status = ?';
+        updateValues.push(id, storeId, userId, 1);
 
         await connection.query(updateQuery, updateValues);
 
