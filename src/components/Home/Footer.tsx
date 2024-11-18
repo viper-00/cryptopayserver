@@ -4,7 +4,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 const Footer = () => {
   return (
     <>
-      <Box py={10}>
+      <Box pt={20} pb={5}>
         <Container maxWidth={'md'}>
           <Grid container spacing={1} justifyContent={'center'} color={'#8f979e'}>
             <Grid item>
@@ -56,7 +56,7 @@ const Footer = () => {
               </Stack>
             </Grid>
           </Grid>
-          <Box color={'#8f979e'} mt={5}>
+          <Box color={'#8f979e'} mt={2}>
             <Typography textAlign={'center'}>© CryptoPay Server v1.0.0</Typography>
           </Box>
         </Container>

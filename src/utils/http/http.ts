@@ -107,4 +107,9 @@ export class Http {
   static find_notification = this.httpPath + '/find_notification';
   static create_notification = this.httpPath + '/create_notification';
   static update_notification = this.httpPath + '/update_notification';
+
+  //plugin shopify
+  static find_shopify_setting = this.httpPath + '/find_shopify_setting';
+  static update_shopify_setting = this.httpPath + '/update_shopify_setting';
+  static create_shopify_setting = this.httpPath + '/create_shopify_setting';
 }

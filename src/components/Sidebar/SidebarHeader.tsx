@@ -137,11 +137,11 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
         </IconButton>
       </Stack>
 
-      <Box mt={3}>
-        <FormControl fullWidth>
-          <Select size={'small'} inputProps={{ 'aria-label': 'Without label' }} defaultValue={getStoreId()}>
-            {stores &&
-              stores.map((item, index) => (
+      {stores && stores.length > 0 && (
+        <Box mt={3}>
+          <FormControl fullWidth>
+            <Select size={'small'} inputProps={{ 'aria-label': 'Without label' }} value={getStoreId()}>
+              {stores.map((item, index) => (
                 <MenuItem
                   value={item.id}
                   key={index}
@@ -152,9 +152,10 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, ...rest 
                   {item.name}
                 </MenuItem>
               ))}
-          </Select>
-        </FormControl>
-      </Box>
+            </Select>
+          </FormControl>
+        </Box>
+      )}
     </StyledSidebarHeader>
   );
 };
