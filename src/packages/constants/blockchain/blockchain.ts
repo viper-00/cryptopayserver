@@ -222,6 +222,90 @@ export const SOLANA_DEVNET_COINS: COIN[] = [
   },
 ];
 
+export const BSC_COINS: COIN[] = [
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.BNB,
+    isMainCoin: true,
+    symbol: COINS.BNB,
+    decimals: 18,
+    displayDecimals: 8,
+    icon: '',
+  },
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.BUSD,
+    isMainCoin: false,
+    symbol: COINS.BUSD,
+    decimals: 18,
+    displayDecimals: 8,
+    contractAddress: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    icon: '',
+  },
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.USDT,
+    isMainCoin: false,
+    symbol: COINS.USDT,
+    decimals: 18,
+    displayDecimals: 8,
+    contractAddress: '0x55d398326f99059ff775485246999027b3197955',
+    icon: '',
+  },
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.USDC,
+    isMainCoin: false,
+    symbol: COINS.USDC,
+    decimals: 18,
+    displayDecimals: 8,
+    contractAddress: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+    icon: '',
+  },
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.ETH,
+    isMainCoin: false,
+    symbol: COINS.ETH,
+    decimals: 18,
+    displayDecimals: 8,
+    contractAddress: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+    icon: '',
+  },
+];
+
+export const BSC_TESTNET_COINS: COIN[] = [
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.BNB,
+    isMainCoin: true,
+    symbol: COINS.BNB,
+    decimals: 18,
+    displayDecimals: 8,
+    icon: '',
+  },
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.BUSD,
+    isMainCoin: false,
+    symbol: COINS.BUSD,
+    decimals: 18,
+    displayDecimals: 8,
+    contractAddress: '0xf93D3ae82636bD3d2f62C3EcE339F2171f022Fc0',
+    icon: '',
+  },
+  {
+    chainId: CHAINS.BSC,
+    name: COINS.USDT,
+    isMainCoin: false,
+    symbol: COINS.USDT,
+    decimals: 18,
+    displayDecimals: 8,
+    contractAddress: '0x8a10400271f38acea7d22e4968d37e32276ebac5',
+    icon: '',
+  },
+];
+
 export type BLOCKCHAIN = {
   name: CHAINNAMES;
   chainId: CHAINIDS;
@@ -300,5 +384,25 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       'https://quiet-evocative-sanctuary.solana-devnet.quiknode.pro/9546a31f74b22b085dc30ae790d10b23014825af',
     ],
     icon: '../sol.svg',
+  },
+  {
+    name: CHAINNAMES.BSC,
+    chainId: CHAINIDS.BSC,
+    explorerUrl: 'https://bscscan.com',
+    websiteUrl: 'https://binance.com',
+    isMainnet: true,
+    coins: BSC_COINS,
+    rpc: ['https://bsc-rpc.publicnode.com'],
+    icon: '../bsc.svg',
+  },
+  {
+    name: CHAINNAMES.BSC,
+    chainId: CHAINIDS.BSC_TESTNET,
+    explorerUrl: 'https://testnet.bscscan.com',
+    websiteUrl: 'https://binance.com',
+    isMainnet: false,
+    coins: BSC_TESTNET_COINS,
+    rpc: ['https://bsc-testnet-rpc.publicnode.com'],
+    icon: '../bsc.svg',
   },
 ];

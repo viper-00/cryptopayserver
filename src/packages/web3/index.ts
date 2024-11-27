@@ -4,6 +4,7 @@ import { BTC } from './chain/btc';
 import { ETH } from './chain/eth';
 import { CHAINIDS, CHAINS, COIN } from 'packages/constants/blockchain';
 import { SOLANA } from './chain/solana';
+import { BSC } from './chain/bsc';
 
 export class WEB3 {
   // support: Import and generate wallet
@@ -44,7 +45,7 @@ export class WEB3 {
     switch (chain) {
       case CHAINS.BITCOIN:
         return BTC.createAccountByPrivateKey(isMainnet, privateKey);
-      case CHAINS.ETHEREUM:
+      case (CHAINS.ETHEREUM, CHAINS.BSC):
         return Array<ChainAccountType>(ETH.createAccountByPrivateKey(isMainnet, privateKey));
       case CHAINS.SOLANA:
         return Array<ChainAccountType>(SOLANA.createAccountByPrivateKey(isMainnet, privateKey));
@@ -57,7 +58,7 @@ export class WEB3 {
     switch (chain) {
       case CHAINS.BITCOIN:
         return BTC.checkAddress(isMainnet, address);
-      case CHAINS.ETHEREUM:
+      case (CHAINS.ETHEREUM, CHAINS.BSC):
         return ETH.checkAddress(address);
       case CHAINS.SOLANA:
         return SOLANA.checkAddress(address);
@@ -74,6 +75,8 @@ export class WEB3 {
         return ETH.getGasPrice(isMainnet);
       case CHAINS.SOLANA:
         return null;
+      case CHAINS.BSC:
+        return BSC.getGasPrice(isMainnet);
       default:
         return null;
     }
@@ -87,6 +90,8 @@ export class WEB3 {
         return ETH.getChainIds(isMainnet);
       case CHAINS.SOLANA:
         return SOLANA.getChainIds(isMainnet);
+      case CHAINS.BSC:
+        return BSC.getChainIds(isMainnet);
       default:
         return CHAINIDS.NONE;
     }
@@ -100,6 +105,8 @@ export class WEB3 {
         return await ETH.getAssetBalance(isMainnet, address);
       case CHAINS.SOLANA:
         return await SOLANA.getAssetBalance(isMainnet, address);
+      case CHAINS.BSC:
+        return await BSC.getAssetBalance(isMainnet, address);
       default:
         return {} as AssetBalance;
     }
@@ -109,6 +116,8 @@ export class WEB3 {
     switch (chain) {
       case CHAINS.ETHEREUM:
         return await ETH.getNonce(isMainnet, address);
+      case CHAINS.BSC:
+        return await BSC.getNonce(isMainnet, address);
       default:
         return 0;
     }
@@ -125,6 +134,8 @@ export class WEB3 {
     switch (chain) {
       case CHAINS.ETHEREUM:
         return await ETH.getGasLimit(isMainnet, contractAddress, from, to, value);
+      case CHAINS.BSC:
+        return await BSC.getGasLimit(isMainnet, contractAddress, from, to, value);
       default:
         return 0;
     }
@@ -147,6 +158,8 @@ export class WEB3 {
         return await ETH.getTransactionDetail(isMainnet, hash);
       case CHAINS.SOLANA:
         return await SOLANA.getTransactionDetail(isMainnet, hash);
+      case CHAINS.BSC:
+        return await BSC.getTransactionDetail(isMainnet, hash);
       default:
         return {} as TransactionDetail;
     }
@@ -160,6 +173,8 @@ export class WEB3 {
         return await ETH.getTransactions(isMainnet, address, token?.symbol);
       case CHAINS.SOLANA:
         return await SOLANA.getTransactions(isMainnet, address);
+      case CHAINS.BSC:
+        return await BSC.getTransactions(isMainnet, address, token?.symbol);
       default:
         return [];
     }
@@ -173,6 +188,8 @@ export class WEB3 {
         return await ETH.sendTransaction(isMainnet, req);
       case CHAINS.SOLANA:
         return await SOLANA.sendTransaction(isMainnet, req);
+      case CHAINS.BSC:
+        return await BSC.sendTransaction(isMainnet, req);
       default:
         return '';
     }

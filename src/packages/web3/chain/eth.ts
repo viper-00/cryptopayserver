@@ -579,7 +579,11 @@ export class ETH {
 
   static async getFee(isMainnet: boolean, request: CreateEthereumTransaction): Promise<string> {
     const tx = await this.createTransaction(isMainnet, request);
-    return ethers.formatEther(BigMul(tx.maxFeePerGas, tx.gasLimit.toString()));
+    if (tx.maxFeePerGas) {
+      return ethers.formatEther(BigMul(tx.maxFeePerGas, tx.gasLimit.toString()));
+    }
+
+    throw new Error('can not get the gas fee of eth');
   }
 
   static async sendAccelerateTransaction(isMainnet: boolean, request: CreateEthereumTransaction): Promise<string> {
@@ -629,6 +633,7 @@ export class ETH {
       value: request.value,
       contractAddress: request.coin.contractAddress,
       gasLimit: request.gasLimit as number,
+
       maxFeePerGas: request.gasPrice as string,
       maxPriorityFeePerGas: request.maxPriorityFeePerGas,
       nonce: request.nonce,

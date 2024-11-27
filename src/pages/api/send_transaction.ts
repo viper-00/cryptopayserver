@@ -29,9 +29,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const maxPriortyFee = req.body.max_priorty_fee;
         const gasLimit = req.body.gas_limit;
 
+        let dbChainId = chainId || 0;
+
+        if (
+          dbChainId == CHAINS.ETHEREUM ||
+          dbChainId == CHAINS.BSC ||
+          dbChainId == CHAINS.ARBITRUM ||
+          dbChainId == CHAINS.AVALANCHE ||
+          dbChainId == CHAINS.POLYGON ||
+          dbChainId == CHAINS.BASE ||
+          dbChainId == CHAINS.OPTIMISM
+        ) {
+          dbChainId = CHAINS.ETHEREUM;
+        }
+
         const addressQuery =
           'SELECT private_key, note, network, address FROM addresses where chain_id = ? and network = ? and address = ? and wallet_id = ? and user_id = ? and status = 1';
-        const addressValues = [chainId, network, fromAddress, walletId, userId];
+        const addressValues = [dbChainId, network, fromAddress, walletId, userId];
         const [addressRows] = await connection.query(addressQuery, addressValues);
         if (Array.isArray(addressRows) && addressRows.length === 1) {
           const addressRow = addressRows[0] as mysql.RowDataPacket;

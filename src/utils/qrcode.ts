@@ -15,6 +15,8 @@ export function GetImgSrcByCrypto(crypto: string): string {
       return baseUrl + '/eth.svg';
     case COINS.SOL:
       return baseUrl + '/sol.svg';
+    case COINS.BNB:
+      return baseUrl + '/bnb.svg';
     default:
       return '';
   }

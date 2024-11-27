@@ -48,6 +48,8 @@ import EthereumSend from 'components/Wallets/Ethereum/Send';
 import EthereumReceive from 'components/Wallets/Ethereum/Receive';
 import SolanaSend from 'components/Wallets/Solana/Send';
 import SolanaReceive from 'components/Wallets/Solana/Receive';
+import BscSend from 'components/Wallets/Bsc/Send';
+import BscReceive from 'components/Wallets/Bsc/Receive';
 import PaymentTransactions from 'components/Payments/Transactions';
 
 const Home = () => {
@@ -89,6 +91,8 @@ const Home = () => {
     '/wallets/ethereum/receive': <EthereumReceive />,
     '/wallets/solana/send': <SolanaSend />,
     '/wallets/solana/receive': <SolanaReceive />,
+    '/wallets/bsc/send': <BscSend />,
+    '/wallets/bsc/receive': <BscReceive />,
     '/invoices/[id]': <InvoicesDetails />,
   };
 
@@ -107,6 +111,8 @@ const Home = () => {
     '/wallets/solana': <Solana />,
     '/wallets/solana/send': <SolanaSend />,
     '/wallets/solana/receive': <SolanaReceive />,
+    '/wallets/bsc/send': <BscSend />,
+    '/wallets/bsc/receive': <BscReceive />,
     '/wallets/ton': <Ton />,
     '/wallets/tron': <Tron />,
     '/wallets/bsc': <Bsc />,

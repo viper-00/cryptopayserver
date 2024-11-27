@@ -169,8 +169,8 @@ export type CreateEthereumTransaction = {
   chainId: CHAINIDS;
   data?: string;
   nonce?: number;
-
-  maxFeePerGas: string;
+  gasPrice?: string;
+  maxFeePerGas?: string;
   gasLimit: number;
   maxPriorityFeePerGas?: string;
 };

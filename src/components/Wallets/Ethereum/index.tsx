@@ -51,6 +51,7 @@ const Ethereum = () => {
   const { getWalletId } = useWalletPresistStore((state) => state);
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const [isSettings, setIsSettings] = useState<boolean>(false);
   const [wallet, setWallet] = useState<walletType[]>([]);
@@ -61,8 +62,6 @@ const Ethereum = () => {
   const [confirmBlock, setConfirmBlock] = useState<number>(0);
   const [showRecommendedFee, setShowRecommendedFee] = useState<boolean>(false);
   const [currentUsedAddressId, setCurrentUsedAddressId] = useState<number>(0);
-
-  const { setSnackMessage, setSnackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const onClickRescanAddress = async () => {
     await getEthereumWalletAddress();
