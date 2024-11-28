@@ -410,10 +410,8 @@ export class LTC {
       const ECPair = ECPairFactory(ecc);
       const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, req.privateKey), this.getNetwork(isMainnet));
 
-      let script, redeemScript: Buffer;
       const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
-      script = p2wpkh.output as Buffer;
-      redeemScript = p2wpkh.redeem?.output as Buffer;
+      let script = p2wpkh.output as Buffer;
 
       const txb = new bitcoin.Psbt({ network: this.getNetwork(isMainnet) });
       txb.setVersion(2);
@@ -432,7 +430,6 @@ export class LTC {
               script: script,
               value: item.value,
             },
-            redeemScript: redeemScript,
           });
         });
 

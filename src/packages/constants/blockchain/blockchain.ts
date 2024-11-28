@@ -24,6 +24,18 @@ export const BITCOIN_COINS: COIN[] = [
   },
 ];
 
+export const LITECOIN_COINS: COIN[] = [
+  {
+    chainId: CHAINS.LITECOIN,
+    name: COINS.LTC,
+    isMainCoin: true,
+    symbol: COINS.LTC,
+    decimals: 8,
+    displayDecimals: 8,
+    icon: '',
+  },
+];
+
 export const ETHEREUM_COINS: COIN[] = [
   {
     chainId: CHAINS.ETHEREUM,
@@ -404,5 +416,25 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     coins: BSC_TESTNET_COINS,
     rpc: ['https://bsc-testnet-rpc.publicnode.com'],
     icon: '../bsc.svg',
+  },
+  {
+    name: CHAINNAMES.LITECOIN,
+    chainId: CHAINIDS.LITECOIN,
+    explorerUrl: 'https://litecoinspace.org',
+    websiteUrl: 'https://litecoin.org',
+    isMainnet: true,
+    coins: LITECOIN_COINS,
+    rpc: ['https://litecoinspace.org'],
+    icon: '../ltc.svg',
+  },
+  {
+    name: CHAINNAMES.LITECOIN,
+    chainId: CHAINIDS.LITECOIN_TESTNET,
+    explorerUrl: 'https://litecoinspace.org/testnet',
+    websiteUrl: 'https://litecoin.org',
+    isMainnet: false,
+    coins: LITECOIN_COINS,
+    rpc: ['https://litecoinspace.org/testnet'],
+    icon: '../ltc.svg',
   },
 ];
