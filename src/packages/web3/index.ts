@@ -5,6 +5,7 @@ import { ETH } from './chain/eth';
 import { CHAINIDS, CHAINS, COIN } from 'packages/constants/blockchain';
 import { SOLANA } from './chain/solana';
 import { BSC } from './chain/bsc';
+import { LTC } from './chain/ltc';
 
 export class WEB3 {
   // support: Import and generate wallet
@@ -34,6 +35,7 @@ export class WEB3 {
       ...BTC.createAccountBySeed(isMainnet, seed),
       ETH.createAccountBySeed(isMainnet, seed),
       SOLANA.createAccountBySeed(isMainnet, seed),
+      LTC.createAccountBySeed(isMainnet, seed),
     ]);
   }
 
@@ -49,6 +51,8 @@ export class WEB3 {
         return Array<ChainAccountType>(ETH.createAccountByPrivateKey(isMainnet, privateKey));
       case CHAINS.SOLANA:
         return Array<ChainAccountType>(SOLANA.createAccountByPrivateKey(isMainnet, privateKey));
+      case CHAINS.LITECOIN:
+        return Array<ChainAccountType>(LTC.createAccountByPrivateKey(isMainnet, privateKey));
       default:
         return [];
     }
@@ -62,6 +66,8 @@ export class WEB3 {
         return ETH.checkAddress(address);
       case CHAINS.SOLANA:
         return SOLANA.checkAddress(address);
+      case CHAINS.LITECOIN:
+        return LTC.checkAddress(isMainnet, address);
       default:
         return false;
     }
@@ -77,6 +83,8 @@ export class WEB3 {
         return null;
       case CHAINS.BSC:
         return BSC.getGasPrice(isMainnet);
+      case CHAINS.LITECOIN:
+        return LTC.getCurrentFeeRate(isMainnet);
       default:
         return null;
     }
@@ -92,6 +100,8 @@ export class WEB3 {
         return SOLANA.getChainIds(isMainnet);
       case CHAINS.BSC:
         return BSC.getChainIds(isMainnet);
+      case CHAINS.LITECOIN:
+        return LTC.getChainIds(isMainnet);
       default:
         return CHAINIDS.NONE;
     }
@@ -107,6 +117,8 @@ export class WEB3 {
         return await SOLANA.getAssetBalance(isMainnet, address);
       case CHAINS.BSC:
         return await BSC.getAssetBalance(isMainnet, address);
+      case CHAINS.LITECOIN:
+        return await LTC.getAssetBalance(isMainnet, address);
       default:
         return {} as AssetBalance;
     }
@@ -160,6 +172,8 @@ export class WEB3 {
         return await SOLANA.getTransactionDetail(isMainnet, hash);
       case CHAINS.BSC:
         return await BSC.getTransactionDetail(isMainnet, hash);
+      case CHAINS.LITECOIN:
+        return await LTC.getTransactionDetail(isMainnet, hash);
       default:
         return {} as TransactionDetail;
     }
@@ -175,6 +189,8 @@ export class WEB3 {
         return await SOLANA.getTransactions(isMainnet, address);
       case CHAINS.BSC:
         return await BSC.getTransactions(isMainnet, address, token?.symbol);
+      case CHAINS.LITECOIN:
+        return await LTC.getTransactions(isMainnet, address);
       default:
         return [];
     }
@@ -190,6 +206,8 @@ export class WEB3 {
         return await SOLANA.sendTransaction(isMainnet, req);
       case CHAINS.BSC:
         return await BSC.sendTransaction(isMainnet, req);
+      case CHAINS.LITECOIN:
+        return await LTC.sendTransaction(isMainnet, req);
       default:
         return '';
     }

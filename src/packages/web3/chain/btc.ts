@@ -63,10 +63,10 @@ export class BTC {
     const legacyPath = isMainnet ? `m/44'/0'/0'/0/0` : `m/44'/1'/0'/0/0`;
 
     try {
-      // nativeSegwit
       const bip32 = BIP32Factory(ecc);
       const node = bip32.fromSeed(seed, this.getNetwork(isMainnet));
 
+      // nativeSegwit
       const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
       const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(isMainnet, nativeSegwitPrivateKey as string);
 
@@ -408,7 +408,7 @@ export class BTC {
             blockNumber = item.status.block_height;
           }
 
-          const url = GetBlockchainTxUrl(isMainnet, item.txid)
+          const url = GetBlockchainTxUrl(isMainnet, item.txid);
 
           txs.push({
             hash: item.txid,
@@ -478,7 +478,7 @@ export class BTC {
           blockNumber = response.data.status.block_height;
         }
 
-        const explorerUrl = GetBlockchainTxUrl(isMainnet, response.data.txid)
+        const explorerUrl = GetBlockchainTxUrl(isMainnet, response.data.txid);
 
         if (address) {
           return {
@@ -514,8 +514,6 @@ export class BTC {
 
   static async sendTransaction(isMainnet: boolean, req: SendTransaction): Promise<string> {
     try {
-      // bitcoin.initEccLib(ecc);
-
       const ECPair = ECPairFactory(ecc);
       const keyPair = ECPair.fromWIF(this.toWifStaring(isMainnet, req.privateKey), this.getNetwork(isMainnet));
 
@@ -524,7 +522,7 @@ export class BTC {
         case BTCTYPE.NATIVESEGWIT:
           const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
           script = p2wpkh.output as Buffer;
-          redeemScript = p2wpkh.redeem?.output as Buffer
+          redeemScript = p2wpkh.redeem?.output as Buffer;
         case BTCTYPE.NESTEDSEGWIT:
           const p2 = bitcoin.payments.p2sh({
             redeem: bitcoin.payments.p2wpkh({ m: 2, pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) }),
@@ -539,12 +537,12 @@ export class BTC {
             network: this.getNetwork(isMainnet),
           });
           script = p2tr.output as Buffer;
-          redeemScript = p2tr.redeem?.output as Buffer
+          redeemScript = p2tr.redeem?.output as Buffer;
           break;
         case BTCTYPE.LEGACY:
           const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.getNetwork(isMainnet) });
           script = p2pkh.output as Buffer;
-          redeemScript = p2pkh.redeem?.output as Buffer
+          redeemScript = p2pkh.redeem?.output as Buffer;
           break;
         default:
           throw new Error('can not create the transactions of btc');
@@ -571,7 +569,7 @@ export class BTC {
             // tapScriptSig: undefined,
             // finalScriptSig: undefined
             // witnessScript: undefined,
-          })
+          });
         });
 
       const sendBalance = new Big(ethers.parseUnits(req.value, 8).toString()).toNumber();

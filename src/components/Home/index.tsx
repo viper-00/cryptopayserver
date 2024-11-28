@@ -50,6 +50,8 @@ import SolanaSend from 'components/Wallets/Solana/Send';
 import SolanaReceive from 'components/Wallets/Solana/Receive';
 import BscSend from 'components/Wallets/Bsc/Send';
 import BscReceive from 'components/Wallets/Bsc/Receive';
+import LitecoinSend from 'components/Wallets/Litecoin/Send';
+import LitecoinReceive from 'components/Wallets/Litecoin/Receive';
 import PaymentTransactions from 'components/Payments/Transactions';
 
 const Home = () => {
@@ -93,6 +95,8 @@ const Home = () => {
     '/wallets/solana/receive': <SolanaReceive />,
     '/wallets/bsc/send': <BscSend />,
     '/wallets/bsc/receive': <BscReceive />,
+    '/wallets/litecoin/send': <LitecoinSend />,
+    '/wallets/litecoin/receive': <LitecoinReceive />,
     '/invoices/[id]': <InvoicesDetails />,
   };
 
@@ -113,6 +117,8 @@ const Home = () => {
     '/wallets/solana/receive': <SolanaReceive />,
     '/wallets/bsc/send': <BscSend />,
     '/wallets/bsc/receive': <BscReceive />,
+    '/wallets/litecoin/send': <LitecoinSend />,
+    '/wallets/litecoin/receive': <LitecoinReceive />,
     '/wallets/ton': <Ton />,
     '/wallets/tron': <Tron />,
     '/wallets/bsc': <Bsc />,
