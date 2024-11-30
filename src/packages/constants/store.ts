@@ -466,3 +466,9 @@ export const APIKEYPERMISSIONS: APIKEYPERMISSION[] = [
     description: 'Allows viewing payouts on all your stores.',
   },
 ];
+
+export const REQUEST_CUSTOMER_DATA = [
+  'Do not request any information',
+  'Request email address only',
+  'Request shipping address',
+];

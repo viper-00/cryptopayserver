@@ -112,4 +112,10 @@ export class Http {
   static find_shopify_setting = this.httpPath + '/find_shopify_setting';
   static update_shopify_setting = this.httpPath + '/update_shopify_setting';
   static create_shopify_setting = this.httpPath + '/create_shopify_setting';
+
+  // payment request
+  static create_payment_request = this.httpPath + '/create_payment_request';
+  static find_payment_request = this.httpPath + '/find_payment_request';
+  static find_payment_request_by_id = this.httpPath + '/find_payment_request_by_id';
+  static update_payment_request_by_id = this.httpPath + '/update_payment_request_by_id';
 }

@@ -11,6 +11,14 @@ import {
   GetBlockchainAddressUrl as GetSolanaBlockchainAddressUrl,
   GetBlockchainTxUrl as GetSolanaBlockchainTxUrl,
 } from './chain/solana';
+import {
+  GetBlockchainAddressUrl as GetBscBlockchainAddressUrl,
+  GetBlockchainTxUrl as GetBscBlockchainTxUrl,
+} from './chain/bsc';
+import {
+  GetBlockchainAddressUrl as GetLtcBlockchainAddressUrl,
+  GetBlockchainTxUrl as GetLtcBlockchainTxUrl,
+} from './chain/ltc';
 
 export function FindTokenByChainIdsAndContractAddress(chainIds: CHAINIDS, contractAddress: string): COIN {
   const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
@@ -112,6 +120,10 @@ export function GetBlockchainTxUrlByChainIds(isMainnet: boolean, chain: CHAINS, 
       return GetETHBlockchainTxUrl(isMainnet, hash);
     case CHAINS.SOLANA:
       return GetSolanaBlockchainTxUrl(isMainnet, hash);
+    case CHAINS.BSC:
+      return GetBscBlockchainTxUrl(isMainnet, hash);
+    case CHAINS.LITECOIN:
+      return GetLtcBlockchainTxUrl(isMainnet, hash);
     default:
       return '';
   }
@@ -125,6 +137,10 @@ export function GetBlockchainAddressUrlByChainIds(isMainnet: boolean, chain: CHA
       return GetETHBlockchainAddressUrl(isMainnet, address);
     case CHAINS.SOLANA:
       return GetSolanaBlockchainAddressUrl(isMainnet, address);
+    case CHAINS.BSC:
+      return GetBscBlockchainAddressUrl(isMainnet, address);
+    case CHAINS.LITECOIN:
+      return GetLtcBlockchainAddressUrl(isMainnet, address);
     default:
       return '';
   }

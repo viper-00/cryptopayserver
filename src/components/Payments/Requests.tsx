@@ -5,6 +5,7 @@ import {
   Container,
   Divider,
   FormControl,
+  Grid,
   Icon,
   IconButton,
   MenuItem,
@@ -18,11 +19,35 @@ import {
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import { CURRENCY, REQUEST_CUSTOMER_DATA } from 'packages/constants';
 import { useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
 
 const Requests = () => {
   const [openRequest, setOpenRequest] = useState<boolean>(false);
   const [openCreateRequest, setOpenCreateRequest] = useState<boolean>(false);
+
+  const [title, setTitle] = useState<string>('');
+  const [amount, setAmount] = useState<number>();
+  const [currency, setCurrency] = useState<string>(CURRENCY[0]);
+  const [allowCustomAmount, setAllowCustomAmount] = useState<boolean>(false);
+  const [expirationDate, setExpirationDate] = useState<Dayjs>();
+  const [email, setEmail] = useState<string>('');
+  const [requestCustomerData, setRequestCustomerData] = useState<string>(REQUEST_CUSTOMER_DATA[0]);
+  const [memo, setMemo] = useState<string>('');
+
+  const { getNetwork } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+
+  const onClickCreate = async () => {
+    console.log('expirationDate', expirationDate);
+  };
+
+  const handleDateChange = (newValue: Dayjs) => {
+    setExpirationDate(newValue);
+  };
 
   return (
     <Box>
@@ -31,28 +56,34 @@ const Requests = () => {
           <Box>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
               <Typography variant="h6">Create Payment Requests</Typography>
-              <Button variant={'contained'}>Create</Button>
+              <Button variant={'contained'} onClick={onClickCreate}>
+                Create
+              </Button>
             </Stack>
 
-            <Box mt={5}>
+            <Box mt={3}>
               <Typography>Title</Typography>
               <Box mt={1}>
-                <FormControl sx={{ width: 700 }} variant="outlined">
+                <FormControl variant="outlined" fullWidth>
                   <OutlinedInput
                     size={'small'}
                     aria-describedby="outlined-weight-helper-text"
                     inputProps={{
                       'aria-label': 'weight',
                     }}
+                    value={title}
+                    onChange={(e: any) => {
+                      setTitle(e.target.value);
+                    }}
                   />
                 </FormControl>
               </Box>
 
-              <Stack mt={4} alignItems={'baseline'} direction={'row'} gap={3}>
-                <Box>
+              <Grid container justifyContent={'space-between'} mt={4}>
+                <Grid item xs={8}>
                   <Typography>Amount</Typography>
                   <Box mt={1}>
-                    <FormControl sx={{ width: 500 }} variant="outlined">
+                    <FormControl variant="outlined" fullWidth>
                       <OutlinedInput
                         size={'small'}
                         type="number"
@@ -60,31 +91,50 @@ const Requests = () => {
                         inputProps={{
                           'aria-label': 'weight',
                         }}
+                        value={amount}
+                        onChange={(e: any) => {
+                          setAmount(e.target.value);
+                        }}
                       />
                     </FormControl>
                   </Box>
-                  <Typography mt={1}>Please provide an amount greater than 0</Typography>
-                </Box>
-                <Box>
+                  <Typography mt={1} color={'red'}>
+                    Please provide an amount greater than 0
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={3}>
                   <Typography>Currency</Typography>
                   <Box mt={1}>
-                    <FormControl sx={{ width: 200 }}>
+                    <FormControl variant="outlined" fullWidth>
                       <Select
                         size={'small'}
                         inputProps={{ 'aria-label': 'Without label' }}
-                        defaultValue={0}
-                        //   value={age}
-                        //   onChange={handleChange}
+                        value={currency}
+                        onChange={(e: any) => {
+                          setCurrency(e.target.value);
+                        }}
                       >
-                        <MenuItem value={0}>USD</MenuItem>
+                        {CURRENCY &&
+                          CURRENCY.length > 0 &&
+                          CURRENCY.map((item, index) => (
+                            <MenuItem value={item} key={index}>
+                              {item}
+                            </MenuItem>
+                          ))}
                       </Select>
                     </FormControl>
                   </Box>
-                </Box>
-              </Stack>
+                </Grid>
+              </Grid>
 
               <Stack mt={4} direction={'row'} alignItems={'center'}>
-                <Switch />
+                <Switch
+                  checked={allowCustomAmount}
+                  onChange={() => {
+                    setAllowCustomAmount(!allowCustomAmount);
+                  }}
+                />
                 <Typography>Allow payee to create invoices with custom amounts</Typography>
               </Stack>
 
@@ -93,7 +143,12 @@ const Requests = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['DateRangePicker']}>
                     <DemoItem>
-                      <DateTimePicker />
+                      <DateTimePicker
+                        value={expirationDate}
+                        onSelectedSectionsChange={(e: any) => {
+                          setExpirationDate(e.target.value);
+                        }}
+                      />
                     </DemoItem>
                   </DemoContainer>
                 </LocalizationProvider>
@@ -102,24 +157,19 @@ const Requests = () => {
               <Box mt={4}>
                 <Typography>Email</Typography>
                 <Box mt={1}>
-                  <FormControl sx={{ width: 700 }} variant="outlined">
+                  <FormControl variant="outlined" fullWidth>
                     <OutlinedInput
                       size={'small'}
                       aria-describedby="outlined-weight-helper-text"
                       inputProps={{
                         'aria-label': 'weight',
                       }}
+                      value={email}
+                      onChange={(e: any) => {
+                        setEmail(e.target.value);
+                      }}
                     />
                   </FormControl>
-                  <Typography mt={1}>
-                    This will send notification mails to the recipient, as configured by the email rules.
-                  </Typography>
-                  <Stack direction={'row'} alignItems={'center'} mt={1}>
-                    <Icon component={WarningAmber} />
-                    <Typography ml={1}>
-                      No payment request related email rules have been configured for this store.
-                    </Typography>
-                  </Stack>
                 </Box>
               </Box>
 
@@ -130,13 +180,18 @@ const Requests = () => {
                     <Select
                       size={'small'}
                       inputProps={{ 'aria-label': 'Without label' }}
-                      defaultValue={1}
-                      //   value={age}
-                      //   onChange={handleChange}
+                      value={requestCustomerData}
+                      onChange={(e: any) => {
+                        setRequestCustomerData(e.target.value);
+                      }}
                     >
-                      <MenuItem value={1}>Do not request any information</MenuItem>
-                      <MenuItem value={2}>Request email address only</MenuItem>
-                      <MenuItem value={3}>Request shipping address</MenuItem>
+                      {REQUEST_CUSTOMER_DATA &&
+                        REQUEST_CUSTOMER_DATA.length > 0 &&
+                        REQUEST_CUSTOMER_DATA.map((item, index) => (
+                          <MenuItem value={item} key={index}>
+                            {item}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Box>
@@ -145,7 +200,15 @@ const Requests = () => {
               <Box mt={4}>
                 <Typography>Memo</Typography>
                 <Box mt={1}>
-                  <TextField multiline rows={8} fullWidth />
+                  <TextField
+                    multiline
+                    rows={8}
+                    fullWidth
+                    value={memo}
+                    onChange={(e: any) => {
+                      setMemo(e.target.value);
+                    }}
+                  />
                 </Box>
               </Box>
             </Box>

@@ -4,9 +4,9 @@ import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import { WEB3 } from 'packages/web3';
 import mysql from 'mysql2/promise';
-import { FindTokenByChainIdsAndContractAddress, FindTokenByChainIdsAndSymbol } from 'utils/web3';
+import { FindTokenByChainIdsAndSymbol } from 'utils/web3';
 import { BTC } from 'packages/web3/chain/btc';
-import { GweiToEther, GweiToWei } from 'utils/number';
+import { GweiToWei } from 'utils/number';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {

@@ -7,26 +7,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     await CorsMiddleware(req, res, CorsMethod);
 
     switch (req.method) {
-      case 'PUT':
+      case 'GET':
         const connection = await connectDatabase();
-        const email = req.body.email;
+        const userId = req.query.user_id;
+        const storeId = req.query.store_id;
 
-        const status = 2; // delete
-
-        const updateQuery = 'UPDATE users SET status = ? WHERE email = ?';
-        const updateValues = [status, email];
-        await connection.query(updateQuery, updateValues);
-
-        return res.status(200).json({
-          message: '',
-          result: true,
-          data: null,
-        });
+        const query = 'SELECT * FROM payment_requests where user_id = ? and store_id = ? and status = ?';
+        const values = [userId, storeId, 1];
+        const [rows] = await connection.query(query, values);
+        return res.status(200).json({ message: '', result: true, data: rows });
+      case 'POST':
+        break;
       default:
         throw 'no support the method of api';
     }
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: 'no support the api', result: false, data: e });
+    return res.status(500).json({ message: '', result: false, data: e });
   }
 }

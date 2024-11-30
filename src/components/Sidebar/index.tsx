@@ -14,10 +14,11 @@ import {
   Extension,
   Groups,
   Payment,
-  Payments,
   PointOfSale,
   RadioButtonChecked,
   Receipt,
+  CallReceived,
+  CallMade,
   Settings,
   ShoppingBag,
 } from '@mui/icons-material';
@@ -291,14 +292,14 @@ const HomeSidebar = () => {
                 Reporting
               </MenuItem>
               <MenuItem
-                icon={<Receipt />}
+                icon={<CallReceived />}
                 active={router.pathname === '/payments/requests' ? true : false}
                 component={<Link href={'/payments/requests'} />}
               >
                 Requests
               </MenuItem>
               <MenuItem
-                icon={<Payments />}
+                icon={<CallMade />}
                 active={router.pathname === '/payments/pullpayments' ? true : false}
                 component={<Link href={'/payments/pullpayments'} />}
               >

@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
-import mysql from 'mysql2/promise';
 import { WEB3 } from 'packages/web3';
 import { CHAINS } from 'packages/constants/blockchain';
 
@@ -39,8 +38,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           'SELECT id, address, note FROM addresses where user_id = ? and wallet_id = ? and chain_id = ? and network = ? and status = ?';
         const values = [userId, walletId, dbChainId, network, 1];
         const [rows] = await connection.query(query, values);
-
-        console.log('rows', rows, userId, walletId, dbChainId, network);
 
         let newRows: any[] = [];
         if (Array.isArray(rows) && rows.length > 0) {
