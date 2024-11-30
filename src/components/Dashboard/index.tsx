@@ -16,13 +16,13 @@ import {
 import BalanceBars from './Balance';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
 import { useEffect, useState } from 'react';
-import TransactionDataGrid from 'components/Payments/Transaction/TransactionDataGrid';
-import InvoiceDataGrid from 'components/Payments/Invoice/InvoiceDataGrid';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { COINGECKO_IDS } from 'packages/constants';
 import { COINS } from 'packages/constants/blockchain';
 import { BigMul } from 'utils/number';
+import TransactionDataGrid from 'components/DataList/TransactionDataGrid';
+import InvoiceDataGrid from 'components/DataList/InvoiceDataGrid';
 
 const Dashboard = () => {
   const [walletBalanceAlignment, setWalletBalanceAlignment] = useState<'USD' | 'USDT' | 'USDC'>('USD');

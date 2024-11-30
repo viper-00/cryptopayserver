@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import InvoiceDataGrid from '../Invoice/InvoiceDataGrid';
+import InvoiceDataGrid from '../../DataList/InvoiceDataGrid';
 import { COINGECKO_IDS, CURRENCY, ORDER_TIME } from 'packages/constants';
 import { IsValidEmail, IsValidHTTPUrl, IsValidJSON } from 'utils/verify';
 import axios from 'utils/http/axios';
@@ -31,7 +31,7 @@ const PaymentInvoices = () => {
   const [openInvoiceReport, setOpenInvoiceReport] = useState<boolean>(false);
   const [openCreateInvoice, setOpenCreateInvoice] = useState<boolean>(false);
 
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(0);
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
   const [network, setNetwork] = useState<CHAINNAMES>(CHAINNAMES.BITCOIN);
   const [cryptoList, setCryptoList] = useState<COIN[]>([]);
@@ -540,15 +540,7 @@ const PaymentInvoices = () => {
                       <MenuItem value={item[1]} key={index}>
                         {item[1]}
                       </MenuItem>
-                      // {index === 0 && <Divider />}
                     ))}
-
-                  {/* index === 0 && <Divider />
-
-                  <MenuItem value={1}>Settled</MenuItem>
-                  <MenuItem value={2}>Processing</MenuItem>
-                  <MenuItem value={3}>Expired</MenuItem>
-                  <MenuItem value={4}>Invalid</MenuItem> */}
                 </Select>
               </FormControl>
               {/* <FormControl sx={{ minWidth: 120 }}>

@@ -9,14 +9,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     switch (req.method) {
       case 'PUT':
         const connection = await connectDatabase();
-        const id = req.body.id;
+        const paymentRequestId = req.body.id;
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
 
         const title = req.body.title;
         const amount = req.body.amount;
         const currency = req.body.currency;
-        const allowCustomAmount = req.body.allow_custom_amount;
+        const showAllowCustomAmount = req.body.show_allow_custom_amount;
         const expirationDate = req.body.expiration_date;
         const email = req.body.email;
         const requestCustomerData = req.body.request_customer_data;
@@ -36,9 +36,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           updateQuery += 'currency = ?,';
           updateValues.push(currency);
         }
-        if (allowCustomAmount) {
-          updateQuery += 'allow_custom_amount = ?,';
-          updateValues.push(allowCustomAmount);
+        if (showAllowCustomAmount) {
+          updateQuery += 'show_allow_custom_amount = ?,';
+          updateValues.push(showAllowCustomAmount);
         }
         if (expirationDate) {
           updateQuery += 'expiration_date = ?,';
@@ -59,8 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         updateQuery = updateQuery.slice(0, -1);
 
-        updateQuery += ' WHERE id = ? and user_id = ? and store_id = ? and status = ?';
-        updateValues.push(id, userId, storeId, 1);
+        updateQuery += ' WHERE payment_request_id = ? and user_id = ? and store_id = ? and status = ?';
+        updateValues.push(paymentRequestId, userId, storeId, 1);
 
         await connection.query(updateQuery, updateValues);
 

@@ -60,6 +60,14 @@ export const ORDER_STATUS = {
   Invalid: 'Invalid',
 };
 
+export const PAYMENT_REQUEST_STATUS = {
+  AllStatus: 'All Status',
+  Pending: 'Pending',
+  Settled: 'Settled',
+  Expired: 'Expired',
+  Archived: 'Archived',
+};
+
 export const ORDER_TIME = {
   AllTime: 'All Time',
   Last24Hours: 'Last 24 hours',

@@ -5,12 +5,6 @@ import Dashboard from 'components/Dashboard';
 import Settings from 'components/Settings';
 import Bitcoin from 'components/Wallets/Bitcoin';
 import Lightning from 'components/Wallets/Bitcoin/Lightning';
-import PaymentInvoices from 'components/Payments/Invoices/index';
-import PaymentInvoiceDetails from 'components/Payments/Invoices/id';
-import Reporting from 'components/Payments/Reporting';
-import Requests from 'components/Payments/Requests';
-import Pullpayments from 'components/Payments/Pullpayments';
-import Payouts from 'components/Payments/Payouts';
 import Shopify from 'components/Plugins/Shopify';
 import Pointofsale from 'components/Plugins/Pointofsale';
 import Paybutton from 'components/Plugins/Paybutton';
@@ -53,6 +47,12 @@ import BscReceive from 'components/Wallets/Bsc/Receive';
 import LitecoinSend from 'components/Wallets/Litecoin/Send';
 import LitecoinReceive from 'components/Wallets/Litecoin/Receive';
 import PaymentTransactions from 'components/Payments/Transactions';
+import PaymentInvoices from 'components/Payments/Invoices';
+import PaymentInvoiceDetails from 'components/Payments/Invoices/id';
+import Reporting from 'components/Payments/Reporting';
+import Requests from 'components/Payments/Requests';
+import Pullpayments from 'components/Payments/Pullpayments';
+import Payouts from 'components/Payments/Payouts';
 
 const Home = () => {
   const router = useRouter();

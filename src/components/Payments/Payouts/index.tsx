@@ -1,7 +1,7 @@
 import { ReportGmailerrorred } from '@mui/icons-material';
 import { Box, Container, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
-import PayoutAwaitingApprovalDataGrid from './Payout/AwaitingApproval';
+import PayoutAwaitingApprovalDataGrid from './AwaitingApproval';
 
 const Payouts = () => {
   const [openPayout, setOpenPayout] = useState<boolean>(false);

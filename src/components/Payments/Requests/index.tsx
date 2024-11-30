@@ -20,33 +20,128 @@ import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
-import { CURRENCY, REQUEST_CUSTOMER_DATA } from 'packages/constants';
-import { useState } from 'react';
+import { CURRENCY, PAYMENT_REQUEST_STATUS, REQUEST_CUSTOMER_DATA } from 'packages/constants';
+import { useEffect, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import PaymentRequestDataGrid from 'components/DataList/PaymentRequestDataGrid';
 
 const Requests = () => {
   const [openRequest, setOpenRequest] = useState<boolean>(false);
   const [openCreateRequest, setOpenCreateRequest] = useState<boolean>(false);
 
   const [title, setTitle] = useState<string>('');
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(0);
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
-  const [allowCustomAmount, setAllowCustomAmount] = useState<boolean>(false);
+  const [showAllowCustomAmount, setShowAllowCustomAmount] = useState<boolean>(false);
   const [expirationDate, setExpirationDate] = useState<Dayjs>();
   const [email, setEmail] = useState<string>('');
   const [requestCustomerData, setRequestCustomerData] = useState<string>(REQUEST_CUSTOMER_DATA[0]);
   const [memo, setMemo] = useState<string>('');
+  const [paymentRequestStatus, setPaymentRequestStatus] = useState<string>(PAYMENT_REQUEST_STATUS.AllStatus);
 
-  const { getNetwork } = useUserPresistStore((state) => state);
+  const [showTitleAlert, setShowTitleAlert] = useState<boolean>(false);
+  const [showAmountAlert, setShowAmountAlert] = useState<boolean>(false);
+  const [showExpiredAlert, setShowExpiredAlert] = useState<boolean>(false);
+
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
   const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
-  const onClickCreate = async () => {
-    console.log('expirationDate', expirationDate);
+  const clearData = () => {
+    setTitle('');
+    setAmount(0);
+    setCurrency(CURRENCY[0]);
+    setShowAllowCustomAmount(false);
+    setExpirationDate(dayjs());
+    setEmail('');
+    setRequestCustomerData(REQUEST_CUSTOMER_DATA[0]);
+    setMemo('');
   };
 
-  const handleDateChange = (newValue: Dayjs) => {
-    setExpirationDate(newValue);
+  const checkTitle = (): boolean => {
+    if (title && title != '') {
+      setShowTitleAlert(false);
+      return true;
+    }
+
+    setShowTitleAlert(true);
+    return false;
+  };
+
+  const checkAmount = (): boolean => {
+    if (amount && amount > 0) {
+      setShowAmountAlert(false);
+      return true;
+    }
+
+    setShowAmountAlert(true);
+    return false;
+  };
+
+  const checkExpirationDate = (): boolean => {
+    if (expirationDate) {
+      let exipre = new Date(expirationDate.toString()).getTime();
+      if (exipre <= new Date().getTime()) {
+        setShowExpiredAlert(true);
+        return false;
+      }
+    }
+
+    setShowExpiredAlert(false);
+    return true;
+  };
+
+  const onClickCreate = async () => {
+    try {
+      if (!checkTitle()) {
+        return;
+      }
+
+      if (!checkAmount()) {
+        return;
+      }
+
+      if (!checkExpirationDate()) {
+        return;
+      }
+
+      let exipre = 0;
+
+      if (expirationDate) {
+        exipre = new Date(expirationDate.toString()).getTime();
+      }
+
+      const response: any = await axios.post(Http.create_payment_request, {
+        user_id: getUserId(),
+        store_id: getStoreId(),
+        network: getNetwork() === 'mainnet' ? 1 : 2,
+        title: title,
+        amount: amount,
+        currency: currency,
+        show_allow_custom_amount: showAllowCustomAmount ? 1 : 2,
+        expiration_date: exipre,
+        email: email,
+        request_customer_data: requestCustomerData,
+        memo: memo,
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful create!');
+        setSnackOpen(true);
+
+        clearData();
+        setOpenCreateRequest(false);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Something wrong, please try it again');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -78,6 +173,11 @@ const Requests = () => {
                   />
                 </FormControl>
               </Box>
+              {showTitleAlert && (
+                <Typography mt={1} color={'red'}>
+                  The Title field is required.
+                </Typography>
+              )}
 
               <Grid container justifyContent={'space-between'} mt={4}>
                 <Grid item xs={8}>
@@ -98,9 +198,11 @@ const Requests = () => {
                       />
                     </FormControl>
                   </Box>
-                  <Typography mt={1} color={'red'}>
-                    Please provide an amount greater than 0
-                  </Typography>
+                  {showAmountAlert && (
+                    <Typography mt={1} color={'red'}>
+                      Please provide an amount greater than 0
+                    </Typography>
+                  )}
                 </Grid>
 
                 <Grid item xs={3}>
@@ -130,9 +232,9 @@ const Requests = () => {
 
               <Stack mt={4} direction={'row'} alignItems={'center'}>
                 <Switch
-                  checked={allowCustomAmount}
+                  checked={showAllowCustomAmount}
                   onChange={() => {
-                    setAllowCustomAmount(!allowCustomAmount);
+                    setShowAllowCustomAmount(!showAllowCustomAmount);
                   }}
                 />
                 <Typography>Allow payee to create invoices with custom amounts</Typography>
@@ -145,14 +247,20 @@ const Requests = () => {
                     <DemoItem>
                       <DateTimePicker
                         value={expirationDate}
-                        onSelectedSectionsChange={(e: any) => {
-                          setExpirationDate(e.target.value);
+                        onAccept={(value: any) => {
+                          setExpirationDate(value);
                         }}
                       />
                     </DemoItem>
                   </DemoContainer>
                 </LocalizationProvider>
               </Box>
+
+              {showExpiredAlert && (
+                <Typography mt={1} color={'red'}>
+                  Expired time is incorrect
+                </Typography>
+              )}
 
               <Box mt={4}>
                 <Typography>Email</Typography>
@@ -255,24 +363,24 @@ const Requests = () => {
                   <Select
                     size={'small'}
                     inputProps={{ 'aria-label': 'Without label' }}
-                    defaultValue={0}
-                    //   value={age}
-                    //   onChange={handleChange}
+                    value={paymentRequestStatus}
+                    onChange={(e) => {
+                      setPaymentRequestStatus(e.target.value);
+                    }}
                   >
-                    <MenuItem value={0}>All Status</MenuItem>
-                    <Divider />
-                    <MenuItem value={1}>Pending</MenuItem>
-                    <MenuItem value={2}>Settled</MenuItem>
-                    <MenuItem value={3}>Expired</MenuItem>
-                    <Divider />
-                    <MenuItem value={4}>Archived</MenuItem>
+                    {PAYMENT_REQUEST_STATUS &&
+                      Object.entries(PAYMENT_REQUEST_STATUS).map((item, index) => (
+                        <MenuItem value={item[1]} key={index}>
+                          {item[1]}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Box>
             </Stack>
 
-            <Box mt={2}>
-              <Typography>There are no payment requests matching your criteria.</Typography>
+            <Box mt={5}>
+              <PaymentRequestDataGrid source="none" />
             </Box>
           </Box>
         )}

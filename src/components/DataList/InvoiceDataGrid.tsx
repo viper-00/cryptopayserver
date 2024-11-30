@@ -112,7 +112,7 @@ export default function InvoiceDataGrid(props: GridType) {
         }
       } else {
         setSnackSeverity('error');
-        setSnackMessage('Can not find the invoice on site!');
+        setSnackMessage('Can not find the data on site!');
         setSnackOpen(true);
       }
     } catch (e) {
