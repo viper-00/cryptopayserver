@@ -20,7 +20,7 @@ export const BITCOIN_COINS: COIN[] = [
     symbol: COINS.BTC,
     decimals: 8,
     displayDecimals: 8,
-    icon: '',
+    icon: require('assets/coin/btc.svg'),
   },
 ];
 
@@ -32,7 +32,7 @@ export const LITECOIN_COINS: COIN[] = [
     symbol: COINS.LTC,
     decimals: 8,
     displayDecimals: 8,
-    icon: '',
+    icon: require('assets/coin/ltc.svg'),
   },
 ];
 
@@ -44,7 +44,7 @@ export const ETHEREUM_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: '',
+    icon: require('assets/coin/eth.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -54,7 +54,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    icon: '',
+    icon: require('assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -64,7 +64,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    icon: '',
+    icon: require('assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -74,7 +74,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 2,
     contractAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    icon: '',
+    icon: require('assets/coin/dai.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -84,7 +84,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
-    icon: '',
+    icon: require('assets/coin/shiba.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -94,7 +94,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
-    icon: '',
+    icon: require('assets/coin/link.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -104,7 +104,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-    icon: '',
+    icon: require('assets/coin/uni.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -114,7 +114,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 8,
     displayDecimals: 8,
     contractAddress: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-    icon: '',
+    icon: require('assets/coin/wbtc.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -124,7 +124,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    icon: '',
+    icon: require('assets/coin/weth.svg'),
   },
 ];
 
@@ -136,7 +136,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: '',
+    icon: require('assets/coin/eth.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -146,7 +146,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xf93D3ae82636bD3d2f62C3EcE339F2171f022Fc0',
-    icon: '',
+    icon: require('assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -156,7 +156,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0x9b9064B41D71fba74833f921a7ab1E248095648C',
-    icon: '',
+    icon: require('assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -166,7 +166,7 @@ export const ETHEREUM_SEPOLIA_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 2,
     contractAddress: '0x65f0A9f3506B7248e568d1C6EFFbCFC93f82A02C',
-    icon: '',
+    icon: require('assets/coin/dai.svg'),
   },
 ];
 
@@ -178,7 +178,7 @@ export const SOLANA_COINS: COIN[] = [
     symbol: COINS.SOL,
     decimals: 9,
     displayDecimals: 6,
-    icon: '',
+    icon: require('assets/coin/sol.svg'),
   },
   {
     chainId: CHAINS.SOLANA,
@@ -188,7 +188,7 @@ export const SOLANA_COINS: COIN[] = [
     decimals: 9,
     displayDecimals: 6,
     contractAddress: 'So11111111111111111111111111111111111111112',
-    icon: '',
+    icon: require('assets/coin/sol.svg'),
   },
   {
     chainId: CHAINS.SOLANA,
@@ -198,7 +198,7 @@ export const SOLANA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-    icon: '',
+    icon: require('assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINS.SOLANA,
@@ -208,7 +208,7 @@ export const SOLANA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-    icon: '',
+    icon: require('assets/coin/usdc.svg'),
   },
 ];
 
@@ -220,7 +220,7 @@ export const SOLANA_DEVNET_COINS: COIN[] = [
     symbol: COINS.SOL,
     decimals: 9,
     displayDecimals: 6,
-    icon: '',
+    icon: require('assets/coin/sol.svg'),
   },
   {
     chainId: CHAINS.SOLANA,
@@ -230,7 +230,7 @@ export const SOLANA_DEVNET_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr',
-    icon: '',
+    icon: require('assets/coin/usdc.svg'),
   },
 ];
 
@@ -242,7 +242,7 @@ export const BSC_COINS: COIN[] = [
     symbol: COINS.BNB,
     decimals: 18,
     displayDecimals: 8,
-    icon: '',
+    icon: require('assets/coin/bnb.svg'),
   },
   {
     chainId: CHAINS.BSC,
@@ -252,7 +252,7 @@ export const BSC_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    icon: '',
+    icon: require('assets/coin/busd.svg'),
   },
   {
     chainId: CHAINS.BSC,
@@ -262,7 +262,7 @@ export const BSC_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x55d398326f99059ff775485246999027b3197955',
-    icon: '',
+    icon: require('assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINS.BSC,
@@ -272,7 +272,7 @@ export const BSC_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-    icon: '',
+    icon: require('assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINS.BSC,
@@ -282,7 +282,7 @@ export const BSC_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
-    icon: '',
+    icon: require('assets/coin/eth.svg'),
   },
 ];
 
@@ -294,7 +294,7 @@ export const BSC_TESTNET_COINS: COIN[] = [
     symbol: COINS.BNB,
     decimals: 18,
     displayDecimals: 8,
-    icon: '',
+    icon: require('assets/coin/bnb.svg'),
   },
   {
     chainId: CHAINS.BSC,
@@ -304,7 +304,7 @@ export const BSC_TESTNET_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0xf93D3ae82636bD3d2f62C3EcE339F2171f022Fc0',
-    icon: '',
+    icon: require('assets/coin/busd.svg'),
   },
   {
     chainId: CHAINS.BSC,
@@ -314,12 +314,13 @@ export const BSC_TESTNET_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x8a10400271f38acea7d22e4968d37e32276ebac5',
-    icon: '',
+    icon: require('assets/coin/usdt.svg'),
   },
 ];
 
 export type BLOCKCHAIN = {
   name: CHAINNAMES;
+  desc: string;
   chainId: CHAINIDS;
   explorerUrl?: string;
   websiteUrl?: string;
@@ -335,6 +336,7 @@ export type BLOCKCHAIN = {
 export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   {
     name: CHAINNAMES.BITCOIN,
+    desc: 'Bitcoin is a decentralized digital currency that operates on a peer-to-peer network, enabling secure, anonymous transactions worldwide.',
     chainId: CHAINIDS.BITCOIN,
     explorerUrl: 'https://mempool.space',
     websiteUrl: 'https://bitcoin.org',
@@ -345,6 +347,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.BITCOIN,
+    desc: 'Bitcoin is a decentralized digital currency that operates on a peer-to-peer network, enabling secure, anonymous transactions worldwide.',
     chainId: CHAINIDS.BITCOIN_TESTNET,
     explorerUrl: 'https://mempool.space/testnet',
     websiteUrl: 'https://bitcoin.org',
@@ -355,6 +358,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.ETHEREUM,
+    desc: 'Ethereum is a decentralized blockchain platform that supports smart contracts and decentralized applications (dApps), enabling programmable transactions.',
     chainId: CHAINIDS.ETHEREUM,
     explorerUrl: 'https://etherscan.io',
     websiteUrl: 'https://ethereum.org/en',
@@ -365,6 +369,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.ETHEREUM,
+    desc: 'Ethereum is a decentralized blockchain platform that supports smart contracts and decentralized applications (dApps), enabling programmable transactions.',
     chainId: CHAINIDS.ETHEREUM_SEPOLIA,
     explorerUrl: 'https://sepolia.etherscan.io',
     websiteUrl: 'https://ethereum.org/en',
@@ -375,6 +380,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.SOLANA,
+    desc: 'Solana is a high-performance blockchain platform designed for fast, secure, and scalable decentralized applications and cryptocurrency transactions.',
     chainId: CHAINIDS.SOLANA,
     explorerUrl: 'https://explorer.solana.com',
     websiteUrl: 'https://solana.com',
@@ -385,6 +391,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.SOLANA,
+    desc: 'Solana is a high-performance blockchain platform designed for fast, secure, and scalable decentralized applications and cryptocurrency transactions.',
     chainId: CHAINIDS.SOLANA_DEVNET,
     explorerUrl: 'https://explorer.solana.com?cluster=devnet',
     websiteUrl: 'https://solana.com',
@@ -399,6 +406,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.BSC,
+    desc: 'Binance Smart Chain (BSC) is a high-speed, low-cost blockchain platform for building decentralized applications and executing smart contracts.',
     chainId: CHAINIDS.BSC,
     explorerUrl: 'https://bscscan.com',
     websiteUrl: 'https://binance.com',
@@ -409,6 +417,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.BSC,
+    desc: 'Binance Smart Chain (BSC) is a high-speed, low-cost blockchain platform for building decentralized applications and executing smart contracts.',
     chainId: CHAINIDS.BSC_TESTNET,
     explorerUrl: 'https://testnet.bscscan.com',
     websiteUrl: 'https://binance.com',
@@ -419,6 +428,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.LITECOIN,
+    desc: 'Litecoin is a peer-to-peer cryptocurrency created as a faster, more scalable alternative to Bitcoin, with lower transaction fees.',
     chainId: CHAINIDS.LITECOIN,
     explorerUrl: 'https://litecoinspace.org',
     websiteUrl: 'https://litecoin.org',
@@ -429,6 +439,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   },
   {
     name: CHAINNAMES.LITECOIN,
+    desc: 'Litecoin is a peer-to-peer cryptocurrency created as a faster, more scalable alternative to Bitcoin, with lower transaction fees.',
     chainId: CHAINIDS.LITECOIN_TESTNET,
     explorerUrl: 'https://litecoinspace.org/testnet',
     websiteUrl: 'https://litecoin.org',

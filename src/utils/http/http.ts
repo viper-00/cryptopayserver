@@ -90,6 +90,7 @@ export class Http {
   static find_transaction_by_store_id = this.httpPath + '/find_transaction_by_store_id';
 
   // invoice
+  static create_invoice_from_external = this.httpPath + '/create_invoice_from_external';
   static create_invoice = this.httpPath + '/create_invoice';
   static find_invoice = this.httpPath + '/find_invoice';
   static find_invoice_by_id = this.httpPath + '/find_invoice_by_id';

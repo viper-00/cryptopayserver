@@ -53,6 +53,7 @@ import Reporting from 'components/Payments/Reporting';
 import Requests from 'components/Payments/Requests';
 import Pullpayments from 'components/Payments/Pullpayments';
 import Payouts from 'components/Payments/Payouts';
+import PaymentRequestsDetails from 'components/PaymentRequests/id';
 
 const Home = () => {
   const router = useRouter();
@@ -98,6 +99,7 @@ const Home = () => {
     '/wallets/litecoin/send': <LitecoinSend />,
     '/wallets/litecoin/receive': <LitecoinReceive />,
     '/invoices/[id]': <InvoicesDetails />,
+    '/payment-requests/[id]': <PaymentRequestsDetails />,
   };
 
   const dashboardWhiteList: any = {
@@ -149,6 +151,7 @@ const Home = () => {
     '/wallet/phrase/backup/confirm': <PhraseBackupConfirm />,
 
     '/invoices/[id]': <InvoicesDetails />,
+    '/payment-requests/[id]': <PaymentRequestsDetails />,
   };
 
   useEffect(() => {
