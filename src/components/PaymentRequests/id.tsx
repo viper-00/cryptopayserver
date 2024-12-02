@@ -21,13 +21,14 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { QRCodeSVG } from 'qrcode.react';
 import { OmitMiddleString } from 'utils/strings';
-import { ORDER_STATUS } from 'packages/constants';
+import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
 import { GetImgSrcByCrypto } from 'utils/qrcode';
 import Link from 'next/link';
 import { FindChainNamesByChains, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN } from 'packages/constants/blockchain';
 import Image from 'next/image';
+import { BigDiv } from 'utils/number';
 
 type paymentRequestType = {
   userId: number;
@@ -54,7 +55,7 @@ const PaymentRequestsDetails = () => {
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
-  const init = async () => {
+  const init = async (id: any) => {
     try {
       if (!id) return;
 
@@ -86,14 +87,14 @@ const PaymentRequestsDetails = () => {
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    id && init(id);
+  }, [id]);
 
   const onClickPayInvoice = () => {
     setPage(2);
   };
 
-  const onClickCoin = async (item: COIN) => {
+  const onClickCoin = async (item: COIN, cryptoAmount: string, rate: number) => {
     try {
       const create_invoice_resp: any = await axios.post(Http.create_invoice_from_external, {
         user_id: paymentRequestData?.userId,
@@ -103,7 +104,9 @@ const PaymentRequestsDetails = () => {
         amount: paymentRequestData?.amount,
         currency: paymentRequestData?.currency,
         crypto: item.name,
-        notification_email: paymentRequestData?.email,
+        crypto_amount: cryptoAmount,
+        rate: rate,
+        email: paymentRequestData?.email,
       });
 
       if (create_invoice_resp.result && create_invoice_resp.data.order_id) {
@@ -120,7 +123,7 @@ const PaymentRequestsDetails = () => {
     <Box mt={4}>
       <Container maxWidth="sm">
         <Typography textAlign={'center'} variant="h4">
-          test
+          {paymentRequestData?.title}
         </Typography>
         <Typography textAlign={'center'} mt={2}>
           Invoice from store
@@ -194,7 +197,12 @@ const PaymentRequestsDetails = () => {
 
         {page === 2 && (
           <Box mt={2}>
-            <SelectChainAndCrypto network={paymentRequestData?.network as number} onClickCoin={onClickCoin} />
+            <SelectChainAndCrypto
+              network={paymentRequestData?.network as number}
+              amount={paymentRequestData?.amount as number}
+              currency={paymentRequestData?.currency as string}
+              onClickCoin={onClickCoin}
+            />
           </Box>
         )}
       </Container>
@@ -206,12 +214,18 @@ export default PaymentRequestsDetails;
 
 type SelectType = {
   network: number;
-  onClickCoin: (item: COIN) => Promise<void>;
+  amount: number;
+  currency: string;
+  onClickCoin: (item: COIN, cryptoAmount: string, rate: number) => Promise<void>;
 };
 
 const SelectChainAndCrypto = (props: SelectType) => {
   const [expanded, setExpanded] = useState<string | false>(false);
   const [blockchain, setBlcokchain] = useState<BLOCKCHAIN[]>([]);
+  const [selectCoinItem, setSelectCoinItem] = useState<COIN>();
+
+  const [rate, setRate] = useState<number>(0);
+  const [cryptoAmount, setCryptoAmount] = useState<string>('');
 
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
@@ -222,11 +236,40 @@ const SelectChainAndCrypto = (props: SelectType) => {
     setBlcokchain(value);
   }, [props.network]);
 
+  const updateRate = async () => {
+    try {
+      if (!selectCoinItem?.name) {
+        return;
+      }
+
+      const ids = COINGECKO_IDS[selectCoinItem?.name];
+      const rate_response: any = await axios.get(Http.find_crypto_price, {
+        params: {
+          ids: ids,
+          currency: props.currency,
+        },
+      });
+
+      const rate = rate_response.data[ids][props.currency.toLowerCase()];
+      setRate(rate);
+      const totalPrice = parseFloat(BigDiv((props.amount as number).toString(), rate)).toFixed(8);
+      setCryptoAmount(totalPrice);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (selectCoinItem?.name && props.amount && props.currency && props.amount > 0) {
+      updateRate();
+    }
+  }, [selectCoinItem?.name, props.amount, props.currency]);
+
   return (
     <Box>
       <Card>
         <CardContent>
-          <Typography variant={'h5'} textAlign={'center'}>
+          <Typography variant={'h5'} textAlign={'center'} mt={1}>
             Select Chain and Crypto
           </Typography>
         </CardContent>
@@ -245,10 +288,10 @@ const SelectChainAndCrypto = (props: SelectType) => {
                 item.coins.map((coinItem, coinIndex) => (
                   <AccordionDetails key={coinIndex}>
                     <Button
-                      onClick={async () => {
-                        await props.onClickCoin(coinItem);
-                      }}
                       fullWidth
+                      onClick={async () => {
+                        setSelectCoinItem(coinItem);
+                      }}
                     >
                       <Image src={coinItem.icon} alt="icon" width={50} height={50} />
                       <Typography ml={2}>{coinItem.name}</Typography>
@@ -258,6 +301,32 @@ const SelectChainAndCrypto = (props: SelectType) => {
             </Accordion>
           ))}
       </Box>
+
+      {selectCoinItem && cryptoAmount && parseFloat(cryptoAmount) > 0 && (
+        <Box mt={2}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">
+                Crypto Rate: 1 {selectCoinItem.name} = {rate} {props.currency}
+              </Typography>
+              <Typography variant="h6">
+                You will pay: {cryptoAmount} {selectCoinItem.name}
+              </Typography>
+              <Box mt={2}>
+                <Button
+                  variant={'contained'}
+                  fullWidth
+                  onClick={async () => {
+                    await props.onClickCoin(selectCoinItem, cryptoAmount, rate);
+                  }}
+                >
+                  Create Invoice
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      )}
     </Box>
   );
 };

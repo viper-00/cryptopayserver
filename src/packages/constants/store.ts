@@ -60,6 +60,13 @@ export const ORDER_STATUS = {
   Invalid: 'Invalid',
 };
 
+export const INVOICE_SOURCE_TYPE = {
+  Invoice: 'Invoice',
+  PaymentRequest: 'PaymentRequest',
+  PullPayment: 'PullPayment',
+  Payout: 'Payout',
+};
+
 export const PAYMENT_REQUEST_STATUS = {
   AllStatus: 'All Status',
   Pending: 'Pending',

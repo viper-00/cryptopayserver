@@ -3,7 +3,7 @@ import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
 import { GenerateOrderIDByTime } from 'utils/number';
 import mysql from 'mysql2/promise';
-import { ORDER_STATUS } from 'packages/constants';
+import { INVOICE_SOURCE_TYPE, ORDER_STATUS } from 'packages/constants';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -21,11 +21,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const crypto = req.body.crypto;
         const crypto_amount = req.body.crypto_amount;
         const rate = req.body.rate;
-        const description = ""
-        const buyerEmail = ""
-        const metadata = ""
-        const notificationUrl = ""
-        const notificationEmail = req.body.notification_email;
+
+        const description = '';
+        const buyerEmail = '';
+        const metadata = '';
+        const notificationUrl = '';
+        const notificationEmail = req.body.email;
 
         const orderId = GenerateOrderIDByTime();
 
@@ -51,15 +52,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const createDate = now.getTime();
             const expirationDate = now.getTime() + parseInt(paymentExpire) * 60 * 1000;
 
+            const sourceType = INVOICE_SOURCE_TYPE.PaymentRequest;
+
             const createQuery = `INSERT INTO invoices 
-        (store_id, chain_id, network, order_id, amount, crypto, crypto_amount, currency, rate, description, buyer_email, destination_address, paid, metadata, notification_url, notification_email, order_status, created_date, expiration_date, status) 
+        (store_id, chain_id, network, order_id, source_type, amount, crypto, crypto_amount, currency, rate, description, buyer_email, destination_address, paid, metadata, notification_url, notification_email, order_status, created_date, expiration_date, status) 
         VALUES 
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const createValues = [
               storeId,
               chainId,
               network,
               orderId,
+              sourceType,
               amount,
               crypto,
               crypto_amount,
