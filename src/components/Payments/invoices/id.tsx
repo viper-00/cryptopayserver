@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { InvoiceEventDataTab } from '../../DataList/InvoiceEventDataTab';
-import { GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
+import { FindChainNamesByChains, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 import Link from 'next/link';
 
 type OrderType = {
   orderId: number;
+  sourceType: string;
   amount: number;
   buyerEmail: string;
   crypto: string;
@@ -45,6 +46,7 @@ const PaymentInvoiceDetails = () => {
 
   const [order, setOrder] = useState<OrderType>({
     orderId: 0,
+    sourceType: '',
     amount: 0,
     buyerEmail: '',
     crypto: '',
@@ -81,6 +83,7 @@ const PaymentInvoiceDetails = () => {
       if (invoice_resp.result && invoice_resp.data.length === 1) {
         setOrder({
           orderId: invoice_resp.data[0].order_id,
+          sourceType: invoice_resp.data[0].source_type,
           amount: invoice_resp.data[0].amount,
           buyerEmail: invoice_resp.data[0].buyer_email,
           crypto: invoice_resp.data[0].crypto,
@@ -193,6 +196,17 @@ const PaymentInvoiceDetails = () => {
                 </Grid>
                 <Grid item xs={9}>
                   <Typography>{order.orderId}</Typography>
+                </Grid>
+              </Grid>
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <Grid container>
+                <Grid item xs={3}>
+                  <Typography>Source Type</Typography>
+                </Grid>
+                <Grid item xs={9}>
+                  <Typography>{order.sourceType}</Typography>
                 </Grid>
               </Grid>
             </ListItem>
@@ -332,6 +346,17 @@ const PaymentInvoiceDetails = () => {
                 </Grid>
                 <Grid item xs={9}>
                   <Typography>{order.destinationAddress}</Typography>
+                </Grid>
+              </Grid>
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <Grid container>
+                <Grid item xs={3}>
+                  <Typography>Chain</Typography>
+                </Grid>
+                <Grid item xs={9}>
+                  <Typography>{FindChainNamesByChains(order.chainId)?.toUpperCase()}</Typography>
                 </Grid>
               </Grid>
             </ListItem>

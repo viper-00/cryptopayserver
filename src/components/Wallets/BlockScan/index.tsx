@@ -168,33 +168,41 @@ const BlockScan = () => {
                 <Card>
                   <CardContent>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                      <Stack direction={'row'} alignItems={'center'}>
+                      <Stack direction={'row'}>
                         <Image src={item.icon} alt="image" width={50} height={50} />
                         <Box ml={2}>
                           <Typography fontSize={16} fontWeight={'bold'}>
                             {item.name}
                           </Typography>
                           <Typography fontSize={16} fontWeight={'bold'}>
+                            {item.desc}
+                          </Typography>
+                          <Typography fontSize={16} fontWeight={'bold'} mt={2}>
                             {item.explorerUrl}
                           </Typography>
                           <Typography fontSize={16} fontWeight={'bold'}>
                             {item.websiteUrl}
                           </Typography>
-                          <Typography fontSize={16} fontWeight={'bold'} mt={2}>
+                          <Typography fontSize={16} fontWeight={'bold'} mt={4}>
                             Support Coins:
                           </Typography>
                           {item.coins.map((coin) => (
-                            <Typography fontSize={14} fontWeight={'bold'}>
-                              {coin.symbol}
-                            </Typography>
+                            <Stack direction={'row'} alignItems={'center'} pt={2}>
+                              <Image src={coin.icon} alt="coinImage" width={40} height={40} />
+                              <Typography fontSize={14} fontWeight={'bold'} ml={1}>
+                                {coin.name}
+                              </Typography>
+                            </Stack>
                           ))}
-                          <Typography fontSize={16} fontWeight={'bold'} mt={2}>
+                          <Typography fontSize={16} fontWeight={'bold'} mt={4}>
                             RPC:
                           </Typography>
                           <Typography mt={1}>{item.rpc && item.rpc[0]}</Typography>
                         </Box>
                       </Stack>
-                      <Typography color={'green'}>{item.time} ms</Typography>
+                      <Typography color={'green'} width={70}>
+                        {item.time} ms
+                      </Typography>
                     </Stack>
                   </CardContent>
                 </Card>

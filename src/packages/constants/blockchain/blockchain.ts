@@ -84,7 +84,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
-    icon: require('assets/coin/shiba.svg'),
+    icon: require('assets/coin/shib.svg'),
   },
   {
     chainId: CHAINS.ETHEREUM,
@@ -343,7 +343,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: true,
     coins: BITCOIN_COINS,
     rpc: ['https://mempool.space'],
-    icon: '../btc.svg',
+    icon: require('assets/chain/bitcoin.svg'),
   },
   {
     name: CHAINNAMES.BITCOIN,
@@ -354,7 +354,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: false,
     coins: BITCOIN_COINS,
     rpc: ['https://mempool.space/testnet'],
-    icon: '../btc.svg',
+    icon: require('assets/chain/bitcoin.svg'),
   },
   {
     name: CHAINNAMES.ETHEREUM,
@@ -365,7 +365,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: true,
     coins: ETHEREUM_COINS,
     rpc: ['https://ethereum.publicnode.com'],
-    icon: '../eth.svg',
+    icon: require('assets/chain/ethereum.svg'),
   },
   {
     name: CHAINNAMES.ETHEREUM,
@@ -376,7 +376,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: false,
     coins: ETHEREUM_SEPOLIA_COINS,
     rpc: ['https://ethereum-sepolia.publicnode.com'],
-    icon: '../eth.svg',
+    icon: require('assets/chain/ethereum.svg'),
   },
   {
     name: CHAINNAMES.SOLANA,
@@ -387,7 +387,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: true,
     coins: SOLANA_COINS,
     rpc: ['https://api.mainnet-beta.solana.com', 'https://rpc.ankr.com/solana'],
-    icon: '../solana.svg',
+    icon: require('assets/chain/solana.svg'),
   },
   {
     name: CHAINNAMES.SOLANA,
@@ -402,7 +402,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       // 'https://rpc.ankr.com/solana_devnet',
       'https://quiet-evocative-sanctuary.solana-devnet.quiknode.pro/9546a31f74b22b085dc30ae790d10b23014825af',
     ],
-    icon: '../sol.svg',
+    icon: require('assets/chain/solana.svg'),
   },
   {
     name: CHAINNAMES.BSC,
@@ -413,7 +413,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: true,
     coins: BSC_COINS,
     rpc: ['https://bsc-rpc.publicnode.com'],
-    icon: '../bsc.svg',
+    icon: require('assets/chain/bsc.svg'),
   },
   {
     name: CHAINNAMES.BSC,
@@ -424,7 +424,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: false,
     coins: BSC_TESTNET_COINS,
     rpc: ['https://bsc-testnet-rpc.publicnode.com'],
-    icon: '../bsc.svg',
+    icon: require('assets/chain/bsc.svg'),
   },
   {
     name: CHAINNAMES.LITECOIN,
@@ -435,7 +435,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: true,
     coins: LITECOIN_COINS,
     rpc: ['https://litecoinspace.org'],
-    icon: '../ltc.svg',
+    icon: require('assets/chain/litecoin.svg'),
   },
   {
     name: CHAINNAMES.LITECOIN,
@@ -446,6 +446,6 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     isMainnet: false,
     coins: LITECOIN_COINS,
     rpc: ['https://litecoinspace.org/testnet'],
-    icon: '../ltc.svg',
+    icon: require('assets/chain/litecoin.svg'),
   },
 ];

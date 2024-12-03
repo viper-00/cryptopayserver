@@ -14,6 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const connection = await connectDatabase();
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
+        const paymentRequestId = req.body.payment_request_id;
         const chainId = req.body.chain_id;
         const network = req.body.network;
         const amount = req.body.amount;
@@ -55,14 +56,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const sourceType = INVOICE_SOURCE_TYPE.PaymentRequest;
 
             const createQuery = `INSERT INTO invoices 
-        (store_id, chain_id, network, order_id, source_type, amount, crypto, crypto_amount, currency, rate, description, buyer_email, destination_address, paid, metadata, notification_url, notification_email, order_status, created_date, expiration_date, status) 
+        (store_id, chain_id, network, order_id, payment_request_id, source_type, amount, crypto, crypto_amount, currency, rate, description, buyer_email, destination_address, paid, metadata, notification_url, notification_email, order_status, created_date, expiration_date, status) 
         VALUES 
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const createValues = [
               storeId,
               chainId,
               network,
               orderId,
+              paymentRequestId,
               sourceType,
               amount,
               crypto,

@@ -229,6 +229,16 @@ const InvoiceDetails = () => {
         </Box>
 
         <Box mt={2}>
+          <Card>
+            <CardContent>
+              <Typography textAlign={'center'} pt={1}>
+                Send only <b>{FindChainNamesByChains(order.chainId)?.toUpperCase()}</b> assets to this address
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+
+        <Box mt={2}>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content">
               View Details

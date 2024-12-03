@@ -63,9 +63,11 @@ CryptoPayServer is a cryptocurrency payment processor designed to be free, open-
 3. Solana
 4. Binance Smart Chain
 5. Litecoin
-6. Ton
-7. Tron
-8. etc...
+6. Base
+7. XRP
+8. Ton
+9. Tron
+10. etc...
 
 ## Creating a Wallet
 

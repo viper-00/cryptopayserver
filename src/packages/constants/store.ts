@@ -62,7 +62,7 @@ export const ORDER_STATUS = {
 
 export const INVOICE_SOURCE_TYPE = {
   Invoice: 'Invoice',
-  PaymentRequest: 'PaymentRequest',
+  PaymentRequest: 'Payment Request',
   PullPayment: 'PullPayment',
   Payout: 'Payout',
 };
@@ -102,7 +102,7 @@ export const COINGECKO_IDS: { [key in COINS]: string } = {
   [COINS.BCH]: 'bitcoin-cash',
   [COINS.DAI]: 'dai',
   [COINS.LTC]: 'litecoin',
-  [COINS.MATIC]: 'matic-network',
+  [COINS.POL]: 'matic-network',
   [COINS.UNI]: 'uniswap',
   [COINS.PEPE]: 'pepe',
   [COINS.FIL]: 'filecoin',
@@ -119,10 +119,8 @@ export const COINGECKO_IDS: { [key in COINS]: string } = {
   [COINS.CORE]: 'core',
   [COINS.ENS]: 'ethereum-name-service',
   [COINS.W]: 'wrapped-eth',
-  [COINS.SATS]: 'sats',
   [COINS.CRV]: 'curve-dao-token',
-  [COINS.PEOPLE]: 'people',
-  [COINS.NEW]: 'meow',
+  [COINS.MEW]: 'meow',
   [COINS.ETHFI]: 'ethfi',
   [COINS.BUSD]: 'binance-usd',
   [COINS.WBTC]: 'wrapped-bitcoin',

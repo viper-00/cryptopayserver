@@ -13,18 +13,19 @@ import {
   IconButton,
   Card,
   CardContent,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { QRCodeSVG } from 'qrcode.react';
-import { OmitMiddleString } from 'utils/strings';
-import { COINGECKO_IDS, ORDER_STATUS } from 'packages/constants';
-import { GetImgSrcByCrypto } from 'utils/qrcode';
-import Link from 'next/link';
-import { FindChainNamesByChains, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
+import { COINGECKO_IDS, INVOICE_SOURCE_TYPE } from 'packages/constants';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN } from 'packages/constants/blockchain';
 import Image from 'next/image';
@@ -33,6 +34,7 @@ import { BigDiv } from 'utils/number';
 type paymentRequestType = {
   userId: number;
   storeId: number;
+  paymentRequestId: number;
   network: number;
   title: string;
   amount: number;
@@ -45,6 +47,13 @@ type paymentRequestType = {
   email: string;
 };
 
+type InvoiceType = {
+  orderId: number;
+  amount: number;
+  currency: string;
+  orderStatus: string;
+};
+
 const PaymentRequestsDetails = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -52,8 +61,37 @@ const PaymentRequestsDetails = () => {
   const [page, setPage] = useState<number>(1);
 
   const [paymentRequestData, setPaymentRequestData] = useState<paymentRequestType>();
+  const [paymentRequestRows, setPaymentRequestRows] = useState<InvoiceType[]>([]);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  const getPaymentHistory = async (storeId: number, network: number, paymentRequestId: number) => {
+    try {
+      const response: any = await axios.get(Http.find_invoice_by_source_type, {
+        params: {
+          store_id: storeId,
+          network: network,
+          source_type: INVOICE_SOURCE_TYPE.PaymentRequest,
+          external_payment_id: paymentRequestId,
+        },
+      });
+
+      if (response.result && response.data.length > 0) {
+        let rt: InvoiceType[] = [];
+        response.data.forEach((item: any) => {
+          rt.push({
+            orderId: item.order_id,
+            amount: item.amount,
+            currency: item.currency,
+            orderStatus: item.order_status,
+          });
+        });
+        setPaymentRequestRows(rt);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const init = async (id: any) => {
     try {
@@ -69,6 +107,7 @@ const PaymentRequestsDetails = () => {
         setPaymentRequestData({
           userId: response.data[0].user_id,
           storeId: response.data[0].store_id,
+          paymentRequestId: response.data[0].payment_request_id,
           network: response.data[0].network,
           title: response.data[0].title,
           amount: response.data[0].amount,
@@ -80,6 +119,12 @@ const PaymentRequestsDetails = () => {
           showAllowCustomAmount: response.data[0].show_allow_customAmount === 1 ? true : false,
           email: response.data[0].email,
         });
+
+        await getPaymentHistory(
+          response.data[0].store_id,
+          response.data[0].network,
+          response.data[0].payment_request_id,
+        );
       }
     } catch (e) {
       console.error(e);
@@ -100,6 +145,7 @@ const PaymentRequestsDetails = () => {
         user_id: paymentRequestData?.userId,
         store_id: paymentRequestData?.storeId,
         chain_id: item.chainId,
+        payment_request_id: paymentRequestData?.paymentRequestId,
         network: paymentRequestData?.network,
         amount: paymentRequestData?.amount,
         currency: paymentRequestData?.currency,
@@ -113,6 +159,10 @@ const PaymentRequestsDetails = () => {
         setSnackSeverity('success');
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
+
+        setTimeout(() => {
+          window.location.href = '/invoices/' + create_invoice_resp.data.order_id;
+        }, 1000);
       }
     } catch (e) {
       console.error(e);
@@ -188,7 +238,45 @@ const PaymentRequestsDetails = () => {
               <Card>
                 <CardContent>
                   <Typography variant={'h6'}>Payment History</Typography>
-                  <Typography mt={2}>No payments have been made yet.</Typography>
+
+                  <Box mt={2}>
+                    {paymentRequestRows && paymentRequestRows.length > 0 ? (
+                      <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Invoice Id</TableCell>
+                              <TableCell>Amount</TableCell>
+                              <TableCell>Status</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {paymentRequestRows.map((row, index) => (
+                              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                <TableCell component="th" scope="row">
+                                  <Button
+                                    onClick={() => {
+                                      window.location.href = '/invoices/' + row.orderId;
+                                    }}
+                                  >
+                                    {row.orderId}
+                                  </Button>
+                                </TableCell>
+                                <TableCell>
+                                  {row.amount} {row.currency}
+                                </TableCell>
+                                <TableCell>
+                                  <Typography fontWeight={'bold'}>{row.orderStatus}</Typography>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    ) : (
+                      <Typography mt={2}>No payments have been made yet.</Typography>
+                    )}
+                  </Box>
                 </CardContent>
               </Card>
             </Box>
