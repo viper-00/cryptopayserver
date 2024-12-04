@@ -25,7 +25,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { COINGECKO_IDS, INVOICE_SOURCE_TYPE } from 'packages/constants';
+import { COINGECKO_IDS, INVOICE_SOURCE_TYPE, ORDER_STATUS } from 'packages/constants';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN } from 'packages/constants/blockchain';
 import Image from 'next/image';
@@ -62,6 +62,7 @@ const PaymentRequestsDetails = () => {
 
   const [paymentRequestData, setPaymentRequestData] = useState<paymentRequestType>();
   const [paymentRequestRows, setPaymentRequestRows] = useState<InvoiceType[]>([]);
+  const [paidAmount, setPaidAmount] = useState<number>(0);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
@@ -78,6 +79,7 @@ const PaymentRequestsDetails = () => {
 
       if (response.result && response.data.length > 0) {
         let rt: InvoiceType[] = [];
+        let paid = 0;
         response.data.forEach((item: any) => {
           rt.push({
             orderId: item.order_id,
@@ -85,8 +87,14 @@ const PaymentRequestsDetails = () => {
             currency: item.currency,
             orderStatus: item.order_status,
           });
+
+          if (item.order_status === ORDER_STATUS.Settled) {
+            paid += parseFloat(item.amount);
+          }
         });
         setPaymentRequestRows(rt);
+
+        setPaidAmount(paid);
       }
     } catch (e) {
       console.error(e);
@@ -178,6 +186,14 @@ const PaymentRequestsDetails = () => {
         <Typography textAlign={'center'} mt={2}>
           Invoice from store
         </Typography>
+
+        {paymentRequestData && paidAmount >= paymentRequestData?.amount && (
+          <Box mt={2}>
+            <Alert variant="filled" severity="success">
+              The payment request has reached its target, but you can continue to make payments.
+            </Alert>
+          </Box>
+        )}
 
         {page === 1 && (
           <Box mt={2}>
@@ -282,7 +298,6 @@ const PaymentRequestsDetails = () => {
             </Box>
           </Box>
         )}
-
         {page === 2 && (
           <Box mt={2}>
             <SelectChainAndCrypto

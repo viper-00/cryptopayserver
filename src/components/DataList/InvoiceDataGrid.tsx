@@ -11,6 +11,7 @@ type RowType = {
   id: number;
   chain: CHAINNAMES;
   orderId: number;
+  sourceType: string;
   amount: number;
   currency: string;
   cryptoAmount: number;
@@ -39,6 +40,11 @@ export default function InvoiceDataGrid(props: GridType) {
       field: 'orderId',
       headerName: 'Order Id',
       // editable: true,
+      width: 200,
+    },
+    {
+      field: 'sourceType',
+      headerName: 'Source Type',
       width: 200,
     },
     {
@@ -98,6 +104,7 @@ export default function InvoiceDataGrid(props: GridType) {
             rt.push({
               id: index + 1,
               orderId: item.order_id,
+              sourceType: item.source_type,
               amount: item.amount,
               currency: item.currency,
               cryptoAmount: item.crypto_amount,
