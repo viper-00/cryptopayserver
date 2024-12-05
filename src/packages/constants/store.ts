@@ -75,6 +75,14 @@ export const PAYMENT_REQUEST_STATUS = {
   Archived: 'Archived',
 };
 
+export const PULL_PAYMENT_STATUS = {
+  AwaitingApproval: 'Awaiting Approval',
+  AwaitingPayment: 'Awaiting Payment',
+  InProgress: 'In Progress',
+  Completed: 'Completed',
+  Cancelled: 'Cancelled',
+};
+
 export const ORDER_TIME = {
   AllTime: 'All Time',
   Last24Hours: 'Last 24 hours',

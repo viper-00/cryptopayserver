@@ -22,15 +22,96 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import PullPaymentActiveDataGrid from './Active';
+import { CURRENCY } from 'packages/constants';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 
 const Pullpayments = () => {
   const [openPullPayment, setOpenPullPayment] = useState<boolean>(false);
   const [openCreatePullPayment, setOpenCreatePullPayment] = useState<boolean>(false);
 
   const [value, setValue] = useState(0);
-
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+  };
+
+  const [name, setName] = useState<string>('');
+  const [amount, setAmount] = useState<number>(0);
+  const [currency, setCurrency] = useState<string>(CURRENCY[0]);
+  const [showAutoApproveClaim, setShowAutoApproveClaim] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>('');
+  const [showNameAlert, setShowNameAlert] = useState<boolean>(false);
+  const [showAmountAlert, setShowAmountAlert] = useState<boolean>(false);
+
+  const { getUserId, getNetwork } = useUserPresistStore((state) => state);
+  const { getStoreId } = useStorePresistStore((state) => state);
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+
+  const clearData = () => {
+    setName('');
+    setAmount(0);
+    setCurrency(CURRENCY[0]);
+    setShowAutoApproveClaim(false);
+    setDescription('');
+  };
+
+  const checkName = (): boolean => {
+    if (name && name != '') {
+      setShowNameAlert(false);
+      return true;
+    }
+
+    setShowNameAlert(true);
+    return false;
+  };
+
+  const checkAmount = (): boolean => {
+    if (amount && amount > 0) {
+      setShowAmountAlert(false);
+      return true;
+    }
+
+    setShowAmountAlert(true);
+    return false;
+  };
+
+  const onClickCreate = async () => {
+    try {
+      if (!checkName()) {
+        return;
+      }
+
+      if (!checkAmount()) {
+        return;
+      }
+
+      const response: any = await axios.post(Http.create_pull_payment, {
+        user_id: getUserId(),
+        store_id: getStoreId(),
+        network: getNetwork() === 'mainnet' ? 1 : 2,
+        name: name,
+        amount: amount,
+        currency: currency,
+        show_auto_approve_claim: showAutoApproveClaim ? 1 : 2,
+        description: description,
+      });
+
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Successful create!');
+        setSnackOpen(true);
+
+        clearData();
+        setOpenCreatePullPayment(false);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Something wrong, please try it again');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -39,13 +120,8 @@ const Pullpayments = () => {
         {openCreatePullPayment ? (
           <Box>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={5}>
-              <Typography variant="h6">New pull payment</Typography>
-              <Button
-                variant={'contained'}
-                onClick={() => {
-                  setOpenCreatePullPayment(true);
-                }}
-              >
+              <Typography variant="h6">Create pull payment</Typography>
+              <Button variant={'contained'} onClick={onClickCreate}>
                 Create
               </Button>
             </Stack>
@@ -60,9 +136,18 @@ const Pullpayments = () => {
                     inputProps={{
                       'aria-label': 'weight',
                     }}
+                    value={name}
+                    onChange={(e: any) => {
+                      setName(e.target.value);
+                    }}
                   />
                 </FormControl>
               </Box>
+              {showNameAlert && (
+                <Typography mt={1} color={'red'}>
+                  The Name field is required.
+                </Typography>
+              )}
             </Box>
 
             <Stack mt={4} alignItems={'baseline'} direction={'row'} gap={3}>
@@ -77,9 +162,18 @@ const Pullpayments = () => {
                       inputProps={{
                         'aria-label': 'weight',
                       }}
+                      value={amount}
+                      onChange={(e: any) => {
+                        setAmount(e.target.value);
+                      }}
                     />
                   </FormControl>
                 </Box>
+                {showAmountAlert && (
+                  <Typography mt={1} color={'red'}>
+                    Please provide an amount greater than 0
+                  </Typography>
+                )}
               </Box>
               <Box>
                 <Typography>Currency</Typography>
@@ -88,11 +182,18 @@ const Pullpayments = () => {
                     <Select
                       size={'small'}
                       inputProps={{ 'aria-label': 'Without label' }}
-                      defaultValue={0}
-                      //   value={age}
-                      //   onChange={handleChange}
+                      value={currency}
+                      onChange={(e: any) => {
+                        setCurrency(e.target.value);
+                      }}
                     >
-                      <MenuItem value={0}>USD</MenuItem>
+                      {CURRENCY &&
+                        CURRENCY.length > 0 &&
+                        CURRENCY.map((item, index) => (
+                          <MenuItem value={item} key={index}>
+                            {item}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Box>
@@ -100,47 +201,38 @@ const Pullpayments = () => {
             </Stack>
 
             <Box mt={4}>
-              <FormControlLabel control={<Checkbox defaultChecked />} label="Automatically approve claims" />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showAutoApproveClaim}
+                    onChange={() => {
+                      setShowAutoApproveClaim(!showAutoApproveClaim);
+                    }}
+                  />
+                }
+                label="Automatically approve claims"
+              />
             </Box>
 
-            <Box mt={4}>
-              <Typography>Payment Methods</Typography>
+            {/* <Box mt={4}>
+              <Typography>Payout Methods</Typography>
               <Box mt={1}>
-                <FormControlLabel control={<Checkbox defaultChecked />} label="BTC (On-Chain)" />
+                <FormControlLabel control={<Checkbox defaultChecked />} label="chain" />
               </Box>
-            </Box>
+            </Box> */}
 
             <Box mt={4}>
               <Typography>Description</Typography>
               <Box mt={1}>
-                <TextField multiline rows={8} fullWidth />
-              </Box>
-            </Box>
-
-            <Box mt={5}>
-              <Typography variant={'h6'}>Additional Options</Typography>
-              <Box mt={4}>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1-content">
-                    Lightning network settings
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>Minimum acceptable expiration time for BOLT11 for refunds</Typography>
-                    <Box mt={2}>
-                      <FormControl sx={{ width: '25ch' }} variant="outlined">
-                        <OutlinedInput
-                          size={'small'}
-                          type="number"
-                          endAdornment={<InputAdornment position="end">days</InputAdornment>}
-                          aria-describedby="outlined-weight-helper-text"
-                          inputProps={{
-                            'aria-label': 'weight',
-                          }}
-                        />
-                      </FormControl>
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
+                <TextField
+                  multiline
+                  rows={10}
+                  fullWidth
+                  value={description}
+                  onChange={(e: any) => {
+                    setDescription(e.target.value);
+                  }}
+                />
               </Box>
             </Box>
           </Box>

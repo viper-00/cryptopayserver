@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
-import { PAYMENT_REQUEST_STATUS } from 'packages/constants';
 import { GenerateOrderIDByTime } from 'utils/number';
+import { PULL_PAYMENT_STATUS } from 'packages/constants';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -15,33 +15,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const storeId = req.body.store_id;
         const network = req.body.network;
 
-        const paymentRequestId = GenerateOrderIDByTime();
-        const title = req.body.title;
+        const pullPaymentId = GenerateOrderIDByTime();
+        const name = req.body.name;
         const amount = req.body.amount;
         const currency = req.body.currency;
-        const showAllowCustomAmount = req.body.show_allow_custom_amount;
-        const expirationDate = req.body.expiration_date;
-        const email = req.body.email;
-        const requestCustomerData = req.body.request_customer_data;
-        const memo = req.body.memo;
+        const showAutoApproveClaim = req.body.show_auto_approve_claim;
+        const description = req.body.description;
         const createdDate = new Date().getTime();
 
         const createQuery =
-          'INSERT INTO payment_requests (user_id, store_id, network, payment_request_id, title, amount, currency, show_allow_custom_amount, expiration_date, email, request_customer_data, memo, payment_request_status, created_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+          'INSERT INTO pull_payments (user_id, store_id, network, pull_payment_id, name, amount, currency, show_auto_approve_claim, description, pull_payment_status, created_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const createValues = [
           userId,
           storeId,
           network,
-          paymentRequestId,
-          title,
+          pullPaymentId,
+          name,
           amount,
           currency,
-          showAllowCustomAmount,
-          expirationDate,
-          email,
-          requestCustomerData,
-          memo,
-          PAYMENT_REQUEST_STATUS.Pending,
+          showAutoApproveClaim,
+          description,
+          PULL_PAYMENT_STATUS.AwaitingApproval,
           createdDate,
           1,
         ];

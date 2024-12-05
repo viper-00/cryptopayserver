@@ -120,4 +120,11 @@ export class Http {
   static find_payment_request = this.httpPath + '/find_payment_request';
   static find_payment_request_by_id = this.httpPath + '/find_payment_request_by_id';
   static update_payment_request_by_id = this.httpPath + '/update_payment_request_by_id';
+
+  // pull payment
+  static create_pull_payment = this.httpPath + '/create_pull_payment';
+  static find_pull_payment = this.httpPath + '/find_pull_payment';
+  static find_pull_payment_by_id = this.httpPath + '/find_pull_payment_by_id';
+  static update_pull_payment_by_id = this.httpPath + '/update_pull_payment_by_id';
+
 }
