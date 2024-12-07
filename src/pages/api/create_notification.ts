@@ -26,7 +26,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           return res.status(200).json({ message: 'Something wrong', result: false, data: null });
         }
 
-        return res.status(200).json({ message: '', result: true, data: null });
+        return res.status(200).json({
+          message: '',
+          result: true,
+          data: {
+            id: id,
+          },
+        });
       default:
         throw 'no support the method of api';
     }

@@ -17,15 +17,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const createQuery = `INSERT INTO invoice_events (invoice_id, order_id, message, created_date, status) VALUES (?, ?, ?, ?, ?)`;
         const createValues = [invoiceId, orderId, message, createDate, 1];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
-        const eventId = ResultSetHeader.insertId;
-        if (eventId === 0) {
+        const id = ResultSetHeader.insertId;
+        if (id === 0) {
           return res.status(200).json({ message: 'Something wrong', result: false, data: null });
         }
 
         return res.status(200).json({
           message: '',
           result: true,
-          data: {},
+          data: {
+            id: id,
+          },
         });
 
       default:

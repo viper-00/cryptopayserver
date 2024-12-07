@@ -20,12 +20,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import PullPaymentActiveDataGrid from './Active';
-import { CURRENCY } from 'packages/constants';
+import { useEffect, useState } from 'react';
+import { CURRENCY, PULL_PAYMENT_STATUS } from 'packages/constants';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
+import PullPaymentDataGrid from 'components/DataList/PullPaymentDataGrid';
 
 const Pullpayments = () => {
   const [openPullPayment, setOpenPullPayment] = useState<boolean>(false);
@@ -261,30 +261,24 @@ const Pullpayments = () => {
 
             <Box mt={5}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="basic tabs example"
-                  variant="scrollable"
-                  scrollButtons="auto"
-                >
-                  <Tab label="Active" {...a11yProps(0)} />
-                  <Tab label="Expired" {...a11yProps(1)} />
-                  <Tab label="Archived" {...a11yProps(2)} />
-                  <Tab label="Future" {...a11yProps(3)} />
+                <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto">
+                  <Tab label={PULL_PAYMENT_STATUS.Active} {...a11yProps(0)} />
+                  <Tab label={PULL_PAYMENT_STATUS.Expired} {...a11yProps(1)} />
+                  <Tab label={PULL_PAYMENT_STATUS.Archived} {...a11yProps(2)} />
+                  <Tab label={PULL_PAYMENT_STATUS.Future} {...a11yProps(3)} />
                 </Tabs>
               </Box>
               <CustomTabPanel value={value} index={0}>
-                <PullPaymentActiveDataGrid />
+                <PullPaymentDataGrid status={'Active'} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
-                <Typography>There are no expired pull payments yet.</Typography>
+                <PullPaymentDataGrid status={'Expired'} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={2}>
-                <Typography>There are no expired pull payments yet.</Typography>
+                <PullPaymentDataGrid status={'Archived'} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={3}>
-                <Typography>There are no expired pull payments yet.</Typography>
+                <PullPaymentDataGrid status={'Future'} />
               </CustomTabPanel>
             </Box>
           </Box>

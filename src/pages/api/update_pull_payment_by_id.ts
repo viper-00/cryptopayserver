@@ -19,6 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const showAutoApproveClaim = req.body.show_auto_approve_claim;
         const description = req.body.description;
         const payoutMethod = req.body.payout_method;
+        const status = req.body.status;
+        const updatedDate = new Date().getTime();
 
         let updateQuery = 'UPDATE pull_payments SET ';
         let updateValues = [];
@@ -46,11 +48,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           updateQuery += 'payout_method = ?,';
           updateValues.push(payoutMethod);
         }
+        if (status) {
+          updateQuery += 'status = ?,';
+          updateValues.push(status);
+        }
+
+        updateQuery += 'updated_date = ?,';
+        updateValues.push(updatedDate);
 
         updateQuery = updateQuery.slice(0, -1);
 
-        updateQuery += ' WHERE pull_payment_id = ? and user_id = ? and store_id = ? and status = ?';
-        updateValues.push(pullPaymentId, userId, storeId, 1);
+        updateQuery += ' WHERE pull_payment_id = ? and user_id = ? and store_id = ? and updated_date and status = ?';
+        updateValues.push(pullPaymentId, userId, storeId, updatedDate, 1);
 
         await connection.query(updateQuery, updateValues);
 

@@ -67,6 +67,10 @@ export const INVOICE_SOURCE_TYPE = {
   Payout: 'Payout',
 };
 
+export const PAYOUT_SOURCE_TYPE = {
+  PullPayment: 'PullPayment',
+};
+
 export const PAYMENT_REQUEST_STATUS = {
   AllStatus: 'All Status',
   Pending: 'Pending',
@@ -76,6 +80,13 @@ export const PAYMENT_REQUEST_STATUS = {
 };
 
 export const PULL_PAYMENT_STATUS = {
+  Active: 'Active',
+  Expired: 'Expired',
+  Archived: 'Archived',
+  Future: 'Future',
+};
+
+export const PAYOUT_STATUS = {
   AwaitingApproval: 'Awaiting Approval',
   AwaitingPayment: 'Awaiting Payment',
   InProgress: 'In Progress',

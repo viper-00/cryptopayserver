@@ -127,4 +127,10 @@ export class Http {
   static find_pull_payment_by_id = this.httpPath + '/find_pull_payment_by_id';
   static update_pull_payment_by_id = this.httpPath + '/update_pull_payment_by_id';
 
+  // payout
+  static create_payout = this.httpPath + '/create_payout';
+  static find_payout = this.httpPath + '/find_payout';
+  static find_payout_by_id = this.httpPath + '/find_payout_by_id';
+  static update_payout_by_id = this.httpPath + '/update_payout_by_id';
+  static find_payout_by_source_type = this.httpPath + '/find_payout_by_source_type';
 }

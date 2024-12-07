@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectDatabase } from 'packages/db/mysql';
 import { ResponseData, CorsMiddleware, CorsMethod } from '.';
+import { PAYOUT_SOURCE_TYPE } from 'packages/constants';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
@@ -11,10 +12,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const connection = await connectDatabase();
         const storeId = req.query.store_id;
         const network = req.query.network;
-        const pullPaymentStatus = req.query.pull_payment_status 
+        const sourceType = req.query.source_type;
+        const externalPaymentId = req.query.external_payment_id;
 
-        const query = 'SELECT * FROM pull_payments where pull_payment_status = ? and store_id = ? and network = ? and status = ?';
-        const values = [pullPaymentStatus, storeId, network, 1];
+        // let queryTypeString = '';
+        // switch (sourceType) {
+        //   case PAYOUT_SOURCE_TYPE.PullPayment:
+        //     queryTypeString = 'payout_id';
+        //     break;
+        //   default:
+        //     return res.status(500).json({ message: '', result: false, data: '' });
+        // }
+
+        const query = `SELECT chain_id, address, amount, currency, payout_status FROM payouts where store_id = ? and network = ? and source_type = ? and external_payment_id = ? and status = ? order by id desc`;
+        const values = [storeId, network, sourceType, externalPaymentId, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });
       case 'POST':

@@ -11,10 +11,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const connection = await connectDatabase();
         const storeId = req.query.store_id;
         const network = req.query.network;
-        const pullPaymentStatus = req.query.pull_payment_status 
+        const payoutStatus = req.query.payout_status;
 
-        const query = 'SELECT * FROM pull_payments where pull_payment_status = ? and store_id = ? and network = ? and status = ?';
-        const values = [pullPaymentStatus, storeId, network, 1];
+        const query = 'SELECT * FROM payouts where payout_status = ? and store_id = ? and network = ? and status = ?';
+        const values = [payoutStatus, storeId, network, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });
       case 'POST':

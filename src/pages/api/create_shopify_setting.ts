@@ -20,12 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           'INSERT INTO shopify_settings (user_id, store_id, shop_name, api_key, admin_api_access_token, status) VALUES (?, ?, ?, ?, ?, ?)';
         const createValues = [userId, storeId, shopName, apiKey, adminApiAccessToken, 1];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
-        const walletId = ResultSetHeader.insertId;
-        if (walletId === 0) {
+        const id = ResultSetHeader.insertId;
+        if (id === 0) {
           return res.status(200).json({ message: 'Something wrong', result: false, data: null });
         }
 
-        return res.status(200).json({ message: '', result: true, data: null });
+        return res.status(200).json({
+          message: '',
+          result: true,
+          data: {
+            id: id,
+          },
+        });
       default:
         throw 'no support the method of api';
     }

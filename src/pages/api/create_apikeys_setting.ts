@@ -21,12 +21,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           'INSERT INTO api_key_settings (user_id, store_id, label, api_key, permissions, status) VALUES (?, ?, ?, ?, ?, ?)';
         const createValues = [userId, storeId, label, apiKey, permissions, 1];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);
-        const insertId = ResultSetHeader.insertId;
-        if (insertId === 0) {
+        const id = ResultSetHeader.insertId;
+        if (id === 0) {
           return res.status(200).json({ message: 'Something wrong', result: false, data: null });
         }
 
-        return res.status(200).json({ message: '', result: true, data: null });
+        return res.status(200).json({
+          message: '',
+          result: true,
+          data: {
+            id: id,
+          },
+        });
       default:
         throw 'no support the method of api';
     }
