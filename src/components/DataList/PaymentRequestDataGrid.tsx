@@ -149,6 +149,7 @@ export default function PaymentRequestDataGrid(props: GridType) {
   return (
     <Box>
       <DataGrid
+        autoHeight
         rows={rows}
         columns={columns}
         initialState={{

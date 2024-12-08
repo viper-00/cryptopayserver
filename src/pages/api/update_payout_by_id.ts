@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const payoutId = req.body.id;
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
-        const payoutStatus = req.body.payoutStatus;
+        const payoutStatus = req.body.payout_status;
         const status = req.body.status;
         const updatedDate = new Date().getTime();
 
@@ -33,9 +33,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         updateQuery = updateQuery.slice(0, -1);
 
-        updateQuery += ' WHERE payout_id = ? and user_id = ? and store_id = ? and updated_date and status = ?';
-        updateValues.push(payoutId, userId, storeId, updatedDate, 1);
+        updateQuery += ' WHERE payout_id = ? and user_id = ? and store_id = ? and status = ?';
+        updateValues.push(payoutId, userId, storeId, 1);
 
+        console.log('updateQuery', updateQuery)
         await connection.query(updateQuery, updateValues);
 
         return res.status(200).json({

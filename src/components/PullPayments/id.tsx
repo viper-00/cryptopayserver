@@ -1,4 +1,4 @@
-import { ContentCopy } from '@mui/icons-material';
+import { ContentCopy, CopyAll, QrCode } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -23,6 +23,9 @@ import {
   FormControl,
   OutlinedInput,
   InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib/store';
 import { useRouter } from 'next/router';
@@ -34,6 +37,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINS, COIN } from 'packages/constants/blockchain';
 import Image from 'next/image';
 import { FindChainNamesByChains } from 'utils/web3';
+import { QRCodeSVG } from 'qrcode.react';
+import { OmitMiddleString } from 'utils/strings';
 
 type pullPaymentType = {
   userId: number;
@@ -67,6 +72,7 @@ const PullPaymentsDetails = () => {
   const [pullPaymentData, setPullPaymentData] = useState<pullPaymentType>();
   const [payoutRows, setPayoutRows] = useState<PayoutType[]>([]);
   const [alreadyClaim, setAlreadyClaim] = useState<number>(0);
+  const [showQR, setShowQR] = useState<boolean>(false);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
@@ -143,7 +149,9 @@ const PullPaymentsDetails = () => {
     id && init(id);
   }, [id]);
 
-  const onClickShowQR = async () => {};
+  const onClickShowQR = async () => {
+    setShowQR(true);
+  };
 
   const onClickCoin = async (item: COIN, address: string, amount: number) => {
     try {
@@ -179,7 +187,7 @@ const PullPaymentsDetails = () => {
         {pullPaymentData && alreadyClaim >= pullPaymentData?.amount && (
           <Box mt={2}>
             <Alert variant="filled" severity="success">
-              The pull payment has reached its target, but you can continue to pull payments.
+              The pull payment has reached its limit, and you can read the detail of the payout.
             </Alert>
           </Box>
         )}
@@ -212,10 +220,16 @@ const PullPaymentsDetails = () => {
                         Copy Link
                       </Button>
                       <Box ml={1}>
-                        <IconButton onClick={onClickShowQR}>
-                          <ContentCopy fontSize={'small'} />
-                          <Typography pl={1}>Show QR</Typography>
-                        </IconButton>
+                        <Button
+                          component="label"
+                          role={undefined}
+                          variant={'outlined'}
+                          tabIndex={-1}
+                          startIcon={<QrCode />}
+                          onClick={onClickShowQR}
+                        >
+                          Show QR
+                        </Button>
                       </Box>
                     </Stack>
 
@@ -307,18 +321,20 @@ const PullPaymentsDetails = () => {
               </Card>
             </Box>
 
-            <Box mt={4}>
-              <Button
-                variant={'contained'}
-                fullWidth
-                size="large"
-                onClick={() => {
-                  setPage(2);
-                }}
-              >
-                Claim Funds
-              </Button>
-            </Box>
+            {pullPaymentData && alreadyClaim < pullPaymentData?.amount && (
+              <Box mt={4}>
+                <Button
+                  variant={'contained'}
+                  fullWidth
+                  size="large"
+                  onClick={() => {
+                    setPage(2);
+                  }}
+                >
+                  Claim Funds
+                </Button>
+              </Box>
+            )}
           </Box>
         )}
         {page === 2 && (
@@ -332,6 +348,53 @@ const PullPaymentsDetails = () => {
           </Box>
         )}
       </Container>
+
+      <Dialog
+        onClose={() => {
+          setShowQR(false);
+        }}
+        open={showQR}
+        fullWidth
+      >
+        <DialogTitle>Pull Payment QR</DialogTitle>
+        <DialogContent>
+          <Box mt={2} textAlign={'center'}>
+            <QRCodeSVG
+              value={window.location.href}
+              width={250}
+              height={250}
+              imageSettings={{
+                src: '',
+                width: 35,
+                height: 35,
+                excavate: false,
+              }}
+            />
+          </Box>
+
+          <Box mt={4}>
+            <Typography>PULL PAYMENT QR</Typography>
+            <Stack direction={'row'} alignItems={'center'}>
+              <Typography mr={1}>{OmitMiddleString(window.location.href, 20)}</Typography>
+              <IconButton
+                onClick={async () => {
+                  await navigator.clipboard.writeText(window.location.href);
+
+                  setSnackMessage('Successfully copy');
+                  setSnackSeverity('success');
+                  setSnackOpen(true);
+                }}
+              >
+                <CopyAll />
+              </IconButton>
+            </Stack>
+          </Box>
+
+          <Box mt={4}>
+            <Typography>Scan this QR code to open this page on your mobile device.</Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

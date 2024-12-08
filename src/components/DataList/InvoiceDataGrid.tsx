@@ -134,6 +134,7 @@ export default function InvoiceDataGrid(props: GridType) {
   return (
     <Box>
       <DataGrid
+        autoHeight
         rows={rows}
         columns={columns}
         initialState={{

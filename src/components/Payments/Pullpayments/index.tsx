@@ -269,16 +269,16 @@ const Pullpayments = () => {
                 </Tabs>
               </Box>
               <CustomTabPanel value={value} index={0}>
-                <PullPaymentDataGrid status={'Active'} />
+                <PullPaymentDataGrid status={PULL_PAYMENT_STATUS.Active} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
-                <PullPaymentDataGrid status={'Expired'} />
+                <PullPaymentDataGrid status={PULL_PAYMENT_STATUS.Expired} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={2}>
-                <PullPaymentDataGrid status={'Archived'} />
+                <PullPaymentDataGrid status={PULL_PAYMENT_STATUS.Archived} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={3}>
-                <PullPaymentDataGrid status={'Future'} />
+                <PullPaymentDataGrid status={PULL_PAYMENT_STATUS.Future} />
               </CustomTabPanel>
             </Box>
           </Box>

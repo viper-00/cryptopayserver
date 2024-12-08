@@ -58,8 +58,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         updateQuery = updateQuery.slice(0, -1);
 
-        updateQuery += ' WHERE pull_payment_id = ? and user_id = ? and store_id = ? and updated_date and status = ?';
-        updateValues.push(pullPaymentId, userId, storeId, updatedDate, 1);
+        updateQuery += ' WHERE pull_payment_id = ? and user_id = ? and store_id = ? and status = ?';
+        updateValues.push(pullPaymentId, userId, storeId, 1);
 
         await connection.query(updateQuery, updateValues);
 

@@ -17,7 +17,7 @@ type RowType = {
 };
 
 type GridType = {
-  status: keyof typeof PULL_PAYMENT_STATUS;
+  status: (typeof PULL_PAYMENT_STATUS)[keyof typeof PULL_PAYMENT_STATUS];
 };
 
 export default function PullPaymentDataGrid(props: GridType) {
@@ -28,7 +28,6 @@ export default function PullPaymentDataGrid(props: GridType) {
   const [rows, setRows] = useState<RowType[]>([]);
 
   const columns: GridColDef<(typeof rows)[number]>[] = [
-    // { field: 'id', headerName: 'ID', width: 90 },
     {
       field: 'createdDate',
       headerName: 'Start',
@@ -111,7 +110,7 @@ export default function PullPaymentDataGrid(props: GridType) {
     }
   };
 
-  const init = async (status: keyof typeof PULL_PAYMENT_STATUS) => {
+  const init = async (status: (typeof PULL_PAYMENT_STATUS)[keyof typeof PULL_PAYMENT_STATUS]) => {
     try {
       const response: any = await axios.get(Http.find_pull_payment, {
         params: {
@@ -146,6 +145,7 @@ export default function PullPaymentDataGrid(props: GridType) {
   return (
     <Box>
       <DataGrid
+        autoHeight
         rows={rows}
         columns={columns}
         initialState={{
