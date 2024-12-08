@@ -254,6 +254,8 @@ export default function PayoutDataGrid(props: GridType) {
           });
         });
         setRows(rt);
+      } else {
+        setRows([]);
       }
     } catch (e) {
       console.error(e);

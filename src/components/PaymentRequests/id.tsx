@@ -95,6 +95,8 @@ const PaymentRequestsDetails = () => {
         setPaymentRequestRows(rt);
 
         setPaidAmount(paid);
+      } else {
+        setPaymentRequestRows([]);
       }
     } catch (e) {
       console.error(e);

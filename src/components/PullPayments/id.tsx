@@ -106,6 +106,8 @@ const PullPaymentsDetails = () => {
         setPayoutRows(rt);
 
         setAlreadyClaim(paid);
+      } else {
+        setPayoutRows([]);
       }
     } catch (e) {
       console.error(e);
@@ -155,6 +157,21 @@ const PullPaymentsDetails = () => {
 
   const onClickCoin = async (item: COIN, address: string, amount: number) => {
     try {
+      const checkout_resp: any = await axios.get(Http.checkout_chain_address, {
+        params: {
+          chain_id: CHAINS.BITCOIN,
+          address: address,
+          network: pullPaymentData?.network,
+        },
+      });
+
+      if (!checkout_resp.result) {
+        setSnackSeverity('error');
+        setSnackMessage('The input address is invalid, please try it again!');
+        setSnackOpen(true);
+        return;
+      }
+
       const create_payout_resp: any = await axios.post(Http.create_payout, {
         user_id: pullPaymentData?.userId,
         store_id: pullPaymentData?.storeId,

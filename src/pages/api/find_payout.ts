@@ -18,9 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const values = [payoutStatus, storeId, network, 1];
         const [rows] = await connection.query(query, values);
 
-        console.log("111", storeId, network, payoutStatus, query)
-
-
         return res.status(200).json({ message: '', result: true, data: rows });
       case 'POST':
         break;

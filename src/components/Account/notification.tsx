@@ -41,6 +41,8 @@ const Notification = () => {
 
       setNotification(notification_list);
     } else {
+      setNotification([]);
+
       setSnackSeverity('error');
       setSnackMessage('Something wrong, please try it again');
       setSnackOpen(true);

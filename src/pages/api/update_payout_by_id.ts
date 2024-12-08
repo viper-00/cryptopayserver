@@ -36,7 +36,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         updateQuery += ' WHERE payout_id = ? and user_id = ? and store_id = ? and status = ?';
         updateValues.push(payoutId, userId, storeId, 1);
 
-        console.log('updateQuery', updateQuery)
         await connection.query(updateQuery, updateValues);
 
         return res.status(200).json({

@@ -132,6 +132,8 @@ export default function PullPaymentDataGrid(props: GridType) {
           });
         });
         setRows(rt);
+      } else {
+        setRows([]);
       }
     } catch (e) {
       console.error(e);

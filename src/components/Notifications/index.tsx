@@ -86,6 +86,8 @@ function NotificationsTab() {
           });
         });
         setRows(rt);
+      } else {
+        setRows([]);
       }
     } catch (e) {
       console.error(e);
