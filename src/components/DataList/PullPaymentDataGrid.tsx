@@ -127,7 +127,7 @@ export default function PullPaymentDataGrid(props: GridType) {
             pullPaymentId: item.pull_payment_id,
             name: item.name,
             createdDate: new Date(item.created_date).toLocaleString(),
-            showAutoApproveClaim: item.show_auto_approve_claim ? 'True' : 'False',
+            showAutoApproveClaim: item.show_auto_approve_claim  === 1 ? 'True' : 'False',
             refunded: 0,
           });
         });
