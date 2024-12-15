@@ -13,7 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const userId = req.body.user_id;
         const storeId = req.body.store_id;
         const payoutStatus = req.body.payout_status;
-        const status = req.body.status;
         const updatedDate = new Date().getTime();
 
         let updateQuery = 'UPDATE payouts SET ';
@@ -22,10 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (payoutStatus) {
           updateQuery += 'payout_status = ?,';
           updateValues.push(payoutStatus);
-        }
-        if (status) {
-          updateQuery += 'status = ?,';
-          updateValues.push(status);
         }
 
         updateQuery += 'updated_date = ?,';

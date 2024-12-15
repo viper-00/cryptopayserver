@@ -25,6 +25,8 @@ export default function PullPaymentDataGrid(props: GridType) {
   const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
+  const [actionWidth, setActionWidth] = useState<number>(400);
+
   const [rows, setRows] = useState<RowType[]>([]);
 
   const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -54,32 +56,34 @@ export default function PullPaymentDataGrid(props: GridType) {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      width: 300,
+      width: 400,
       align: 'right',
       headerAlign: 'right',
       getActions: ({ row }) => {
         return [
-          <Button
-            onClick={() => {
-              window.location.href = '/pull-payments/' + row.pullPaymentId;
-            }}
-          >
-            View
-          </Button>,
-          <Button
-            onClick={() => {
-              window.location.href = '/payments/payouts/' + row.pullPaymentId;
-            }}
-          >
-            Payouts
-          </Button>,
-          <Button
-            onClick={() => {
-              onClickArchive(row.pullPaymentId);
-            }}
-          >
-            Archive
-          </Button>,
+          <Box>
+            <Button
+              onClick={() => {
+                window.location.href = '/pull-payments/' + row.pullPaymentId;
+              }}
+            >
+              View
+            </Button>
+            <Button
+              onClick={() => {
+                window.location.href = '/payments/payouts';
+              }}
+            >
+              Payouts
+            </Button>
+            <Button
+              onClick={() => {
+                onClickArchive(row.pullPaymentId);
+              }}
+            >
+              Archive
+            </Button>
+          </Box>,
         ];
       },
     },
@@ -91,7 +95,7 @@ export default function PullPaymentDataGrid(props: GridType) {
         id: id,
         user_id: getUserId(),
         store_id: getStoreId(),
-        status: 3,
+        pull_payment_status: PULL_PAYMENT_STATUS.Archived,
       });
 
       if (response.result) {
@@ -127,7 +131,7 @@ export default function PullPaymentDataGrid(props: GridType) {
             pullPaymentId: item.pull_payment_id,
             name: item.name,
             createdDate: new Date(item.created_date).toLocaleString(),
-            showAutoApproveClaim: item.show_auto_approve_claim  === 1 ? 'True' : 'False',
+            showAutoApproveClaim: item.show_auto_approve_claim === 1 ? 'True' : 'False',
             refunded: 0,
           });
         });
