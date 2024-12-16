@@ -47,7 +47,8 @@ export class WEB3 {
     switch (chain) {
       case CHAINS.BITCOIN:
         return BTC.createAccountByPrivateKey(isMainnet, privateKey);
-      case (CHAINS.ETHEREUM, CHAINS.BSC):
+      case CHAINS.ETHEREUM:
+      case CHAINS.BSC:
         return Array<ChainAccountType>(ETH.createAccountByPrivateKey(isMainnet, privateKey));
       case CHAINS.SOLANA:
         return Array<ChainAccountType>(SOLANA.createAccountByPrivateKey(isMainnet, privateKey));
@@ -58,11 +59,13 @@ export class WEB3 {
     }
   }
 
-  static async checkAddress(isMainnet: boolean, chain: CHAINS, address: string): Promise<boolean> {
+  static checkAddress(isMainnet: boolean, chain: CHAINS, address: string): boolean {
+    console.log(chain);
     switch (chain) {
       case CHAINS.BITCOIN:
         return BTC.checkAddress(isMainnet, address);
-      case (CHAINS.ETHEREUM, CHAINS.BSC):
+      case CHAINS.ETHEREUM:
+      case CHAINS.BSC:
         return ETH.checkAddress(address);
       case CHAINS.SOLANA:
         return SOLANA.checkAddress(address);

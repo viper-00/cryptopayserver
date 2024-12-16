@@ -16,11 +16,11 @@ import {
   Typography,
 } from '@mui/material';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
-import { CHAINS } from 'packages/constants/blockchain';
+import { CHAINS, COINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { BigMul, GweiToEther, WeiToGwei } from 'utils/number';
+import { BigDiv, BigMul, GweiToEther, WeiToGwei } from 'utils/number';
 import EthereumSVG from 'assets/chain/ethereum.svg';
 import Image from 'next/image';
 import { OmitMiddleString } from 'utils/strings';
@@ -28,6 +28,8 @@ import { GetBlockchainTxUrl } from 'utils/chain/eth';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
+import { COINGECKO_IDS, PAYOUT_STATUS } from 'packages/constants';
+import { useRouter } from 'next/router';
 
 type feeType = {
   high: number;
@@ -46,6 +48,9 @@ type Coin = {
 };
 
 const EthereumSend = () => {
+  const router = useRouter();
+  const { payoutId } = router.query;
+
   const [alignment, setAlignment] = useState<'high' | 'average' | 'low'>('average');
   const [maxPriortyFeeAlignment, setMaxPriortyFeeAlignment] = useState<'fast' | 'normal' | 'slow'>('normal');
   const [feeObj, setFeeObj] = useState<feeType>();
@@ -66,6 +71,9 @@ const EthereumSend = () => {
   const [coin, setCoin] = useState<string>('ETH');
   const [displaySign, setDisplaySign] = useState<boolean>(false);
   const [amountRed, setAmountRed] = useState<boolean>(false);
+
+  const [isDisableDestinationAddress, setIsDisableDestinationAddress] = useState<boolean>(false);
+  const [isDisableAmount, setIsDisableAmount] = useState<boolean>(false);
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getWalletId } = useWalletPresistStore((state) => state);
@@ -204,6 +212,38 @@ const EthereumSend = () => {
       } catch (e) {
         console.error(e);
       }
+    }
+  };
+
+  const getPayoutInfo = async (id: any) => {
+    try {
+      const find_payout_resp: any = await axios.get(Http.find_payout_by_id, {
+        params: {
+          id: id,
+        },
+      });
+
+      if (find_payout_resp.result && find_payout_resp.data.length === 1) {
+        setDestinationAddress(find_payout_resp.data[0].address);
+
+        const ids = COINGECKO_IDS[find_payout_resp.data[0].crypto as COINS];
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids,
+            currency: find_payout_resp.data[0].currency,
+          },
+        });
+
+        const rate = rate_response.data[ids][find_payout_resp.data[0].currency.toLowerCase()];
+        const totalPrice = parseFloat(BigDiv((find_payout_resp.data[0].amount as number).toString(), rate)).toFixed(8);
+        setAmount(totalPrice);
+        setCoin(find_payout_resp.data[0].crypto);
+
+        setIsDisableDestinationAddress(true);
+        setIsDisableAmount(true);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -350,6 +390,24 @@ const EthereumSend = () => {
       });
 
       if (send_transaction_resp.result) {
+        // update payout order
+        if (payoutId) {
+          const update_payout_resp: any = await axios.put(Http.update_payout_by_id, {
+            user_id: getUserId(),
+            store_id: getStoreId(),
+            id: payoutId,
+            tx: send_transaction_resp.data.hash,
+            payout_status: PAYOUT_STATUS.Completed,
+          });
+
+          if (!update_payout_resp.result) {
+            setSnackSeverity('error');
+            setSnackMessage('Can not update the status of payout!');
+            setSnackOpen(true);
+            return;
+          }
+        }
+
         setSnackSeverity('success');
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
@@ -369,15 +427,19 @@ const EthereumSend = () => {
     }
   }, [maxFee, gasLimit]);
 
-  const init = async () => {
+  const init = async (payoutId: any) => {
     await getEthereum();
     await getEthereumFeeRate();
     await getEthereumMaxPriortyFee();
+
+    if (payoutId) {
+      await getPayoutInfo(payoutId);
+    }
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    init(payoutId);
+  }, [payoutId]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
@@ -422,6 +484,7 @@ const EthereumSend = () => {
                     onChange={(e: any) => {
                       setDestinationAddress(e.target.value);
                     }}
+                    disabled={isDisableDestinationAddress}
                   />
                 </FormControl>
               </Box>
@@ -472,6 +535,7 @@ const EthereumSend = () => {
                         setAmountRed(false);
                       }
                     }}
+                    disabled={isDisableAmount}
                   />
                 </FormControl>
               </Box>

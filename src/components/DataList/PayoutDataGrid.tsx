@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore } from 'lib/store';
 import { PAYOUT_STATUS } from 'packages/constants';
+import { CHAINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -10,9 +11,11 @@ import { FindChainNamesByChains } from 'utils/web3';
 
 type RowType = {
   id: number;
+  chainId: number;
   payoutId: number;
   address: string;
   createdDate: string;
+  crypto: string;
   refunded: string;
   sourceType: string;
   externalPaymentId: number;
@@ -54,6 +57,11 @@ export default function PayoutDataGrid(props: GridType) {
       field: 'refunded',
       headerName: 'Refunded',
       width: 200,
+    },
+    {
+      field: 'crypto',
+      headerName: 'Crypto',
+      width: 150,
     },
     {
       field: 'sourceType',
@@ -182,7 +190,55 @@ export default function PayoutDataGrid(props: GridType) {
       console.error(e);
     }
   };
-  const onClickSend = async (row: any) => {};
+  const onClickSend = async (row: any) => {
+    switch (row.chainId) {
+      case CHAINS.BITCOIN:
+        window.location.href = '/wallets/bitcoin/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.LITECOIN:
+        window.location.href = '/wallets/litecoin/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.XRP:
+        window.location.href = '/wallets/xrp/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.BITCOINCASH:
+        window.location.href = '/wallets/bitcoincash/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.ETHEREUM:
+        window.location.href = '/wallets/ethereum/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.TRON:
+        window.location.href = '/wallets/tron/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.SOLANA:
+        window.location.href = '/wallets/solana/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.BSC:
+        window.location.href = '/wallets/bsc/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.ARBITRUM:
+        window.location.href = '/wallets/arbitrum/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.AVALANCHE:
+        window.location.href = '/wallets/avalanche/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.POLYGON:
+        window.location.href = '/wallets/polygon/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.BASE:
+        window.location.href = '/wallets/base/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.OPTIMISM:
+        window.location.href = '/wallets/optimism/send?payoutId=' + row.payoutId;
+        return;
+      case CHAINS.TON:
+        window.location.href = '/wallets/ton/send?payoutId=' + row.payoutId;
+        return;
+      default:
+        console.error('No support right now!');
+    }
+  };
+
   const onClickCancel = async (row: any) => {
     try {
       const response: any = await axios.put(Http.update_payout_by_id, {
@@ -231,7 +287,6 @@ export default function PayoutDataGrid(props: GridType) {
   };
 
   const init = async (status: (typeof PAYOUT_STATUS)[keyof typeof PAYOUT_STATUS]) => {
-
     // switch (status) {
     //   case PAYOUT_STATUS.AwaitingApproval:
     //     setActionWidth(200);
@@ -255,9 +310,11 @@ export default function PayoutDataGrid(props: GridType) {
           rt.push({
             id: item.id,
             payoutId: item.payout_id,
+            chainId: item.chain_id,
             address: item.address,
             createdDate: new Date(item.created_date).toLocaleString(),
             refunded: item.amount + ' ' + item.currency,
+            crypto: item.crypto,
             sourceType: item.source_type,
             externalPaymentId: item.external_payment_id,
             chainName: FindChainNamesByChains(item.chain_id),

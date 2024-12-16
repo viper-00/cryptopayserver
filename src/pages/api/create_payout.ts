@@ -22,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const externalPaymentId = req.body.external_payment_id;
         const amount = req.body.amount;
         const currency = req.body.currency;
+        const crypto = req.body.crypto;
         const createdDate = new Date().getTime();
         const updatedDate = new Date().getTime();
 
@@ -42,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         }
 
         const createQuery =
-          'INSERT INTO payouts (user_id, store_id, network, chain_id, payout_id, address, source_type, currency, amount, external_payment_id, payout_status, created_date, updated_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+          'INSERT INTO payouts (user_id, store_id, network, chain_id, payout_id, address, source_type, currency, amount, crypto, external_payment_id, payout_status, created_date, updated_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const createValues = [
           userId,
           storeId,
@@ -53,6 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           sourceType,
           currency,
           amount,
+          crypto,
           externalPaymentId,
           status,
           createdDate,

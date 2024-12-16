@@ -24,6 +24,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
 import { GetBlockchainAddressUrl, GetBlockchainTxUrl } from 'utils/chain/btc';
+import { useRouter } from 'next/router';
+import { COINGECKO_IDS } from 'packages/constants';
+import { BigDiv } from 'utils/number';
 
 const fee_byte_length = 140;
 
@@ -36,6 +39,9 @@ type feeType = {
 };
 
 const BitcoinSend = () => {
+  const router = useRouter();
+  const { payoutId } = router.query;
+
   const [alignment, setAlignment] = useState<'fastest' | 'halfHour' | 'hour' | 'economy' | 'minimum'>('fastest');
   const [feeObj, setFeeObj] = useState<feeType>();
   const [addressAlert, setAddressAlert] = useState<boolean>(false);
@@ -46,10 +52,13 @@ const BitcoinSend = () => {
   const [fromAddress, setFromAddress] = useState<string>('');
   const [balance, setBalance] = useState<string>('');
   const [destinationAddress, setDestinationAddress] = useState<string>('');
-  const [amount, setAmount] = useState<string>();
-  const [feeRate, setFeeRate] = useState<number>();
-  const [networkFee, setNetworkFee] = useState<number>();
+  const [amount, setAmount] = useState<string>('');
+  const [feeRate, setFeeRate] = useState<number>(0);
+  const [networkFee, setNetworkFee] = useState<number>(0);
   const [blockExplorerLink, setBlockExplorerLink] = useState<string>('');
+
+  const [isDisableDestinationAddress, setIsDisableDestinationAddress] = useState<boolean>(false);
+  const [isDisableAmount, setIsDisableAmount] = useState<boolean>(false);
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getWalletId } = useWalletPresistStore((state) => state);
@@ -65,19 +74,19 @@ const BitcoinSend = () => {
   const handleChangeFees = (e: any) => {
     switch (e.target.value) {
       case 'fastest':
-        setFeeRate(feeObj?.fastest);
+        setFeeRate(feeObj?.fastest as number);
         break;
       case 'halfHour':
-        setFeeRate(feeObj?.halfHour);
+        setFeeRate(feeObj?.halfHour as number);
         break;
       case 'hour':
-        setFeeRate(feeObj?.hour);
+        setFeeRate(feeObj?.hour as number);
         break;
       case 'economy':
-        setFeeRate(feeObj?.economy);
+        setFeeRate(feeObj?.economy as number);
         break;
       case 'minimum':
-        setFeeRate(feeObj?.minimum);
+        setFeeRate(feeObj?.minimum as number);
         break;
     }
     setAlignment(e.target.value);
@@ -119,6 +128,37 @@ const BitcoinSend = () => {
           minimum: find_fee_resp.data.minimum,
         });
         setFeeRate(find_fee_resp.data.fastest);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getPayoutInfo = async (id: any) => {
+    try {
+      const find_payout_resp: any = await axios.get(Http.find_payout_by_id, {
+        params: {
+          id: id,
+        },
+      });
+
+      if (find_payout_resp.result && find_payout_resp.data.length === 1) {
+        setDestinationAddress(find_payout_resp.data[0].address);
+
+        const ids = COINGECKO_IDS[find_payout_resp.data[0].crypto as COINS];
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids,
+            currency: find_payout_resp.data[0].currency,
+          },
+        });
+
+        const rate = rate_response.data[ids][find_payout_resp.data[0].currency.toLowerCase()];
+        const totalPrice = parseFloat(BigDiv((find_payout_resp.data[0].amount as number).toString(), rate)).toFixed(8);
+        setAmount(totalPrice);
+
+        setIsDisableDestinationAddress(true);
+        setIsDisableAmount(true);
       }
     } catch (e) {
       console.error(e);
@@ -188,14 +228,18 @@ const BitcoinSend = () => {
     setPage(2);
   };
 
-  const init = async () => {
+  const init = async (payoutId: any) => {
     await getBitcoin();
     await getBitcoinFeeRate();
+
+    if (payoutId) {
+      await getPayoutInfo(payoutId);
+    }
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    init(payoutId);
+  }, [payoutId]);
 
   const onClickSignAndPay = async () => {
     try {
@@ -212,6 +256,23 @@ const BitcoinSend = () => {
       });
 
       if (send_transaction_resp.result) {
+        // update payout order
+        if (payoutId) {
+          const update_payout_resp: any = await axios.put(Http.update_payout_by_id, {
+            id: payoutId,
+            tx: send_transaction_resp.data.hash,
+            user_id: getUserId(),
+            store_id: getStoreId(),
+          });
+
+          if (!update_payout_resp.result) {
+            setSnackSeverity('error');
+            setSnackMessage('Can not update the status of payout!');
+            setSnackOpen(true);
+            return;
+          }
+        }
+
         setSnackSeverity('success');
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
@@ -275,6 +336,7 @@ const BitcoinSend = () => {
                     onChange={(e: any) => {
                       setDestinationAddress(e.target.value);
                     }}
+                    disabled={isDisableDestinationAddress}
                   />
                 </FormControl>
               </Box>
@@ -303,6 +365,7 @@ const BitcoinSend = () => {
                         setAmountRed(false);
                       }
                     }}
+                    disabled={isDisableAmount}
                   />
                 </FormControl>
               </Box>

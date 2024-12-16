@@ -58,6 +58,7 @@ type pullPaymentType = {
 type PayoutType = {
   address: string;
   chainName: string;
+  crypto: string;
   amount: number;
   currency: string;
   status: string;
@@ -95,6 +96,7 @@ const PullPaymentsDetails = () => {
             chainName: FindChainNamesByChains(item.chain_id as CHAINS),
             address: item.address,
             amount: item.amount,
+            crypto: item.crypto,
             currency: item.currency,
             status: item.payout_status,
           });
@@ -159,7 +161,7 @@ const PullPaymentsDetails = () => {
     try {
       const checkout_resp: any = await axios.get(Http.checkout_chain_address, {
         params: {
-          chain_id: CHAINS.BITCOIN,
+          chain_id: item.chainId,
           address: address,
           network: pullPaymentData?.network,
         },
@@ -181,6 +183,7 @@ const PullPaymentsDetails = () => {
         source_type: PAYOUT_SOURCE_TYPE.PullPayment,
         amount: amount,
         currency: pullPaymentData?.currency,
+        crypto: item.name,
         external_payment_id: pullPaymentData?.pullPaymentId,
       });
 
@@ -306,6 +309,7 @@ const PullPaymentsDetails = () => {
                             <TableRow>
                               <TableCell>Destination</TableCell>
                               <TableCell>Method</TableCell>
+                              <TableCell>Crypto</TableCell>
                               <TableCell>Amount requested</TableCell>
                               <TableCell>Status</TableCell>
                             </TableRow>
@@ -317,6 +321,7 @@ const PullPaymentsDetails = () => {
                                   {row.address}
                                 </TableCell>
                                 <TableCell>{row.chainName}</TableCell>
+                                <TableCell>{row.crypto}</TableCell>
                                 <TableCell>
                                   <Typography>
                                     {row.amount} {row.currency}

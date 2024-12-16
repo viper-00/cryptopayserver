@@ -25,9 +25,9 @@ const Payout = () => {
   const [isConfigure, setIsConfigure] = useState<boolean>(false);
   const [configureChain, setConfigureChain] = useState<CHAINS>(CHAINS.BITCOIN);
   const [showApprovePayoutProcess, setShowApprovePayoutProcess] = useState<boolean>();
-  const [interval, setInterval] = useState<number>();
-  const [feeBlockTarget, setFeeBlockTarget] = useState<number>();
-  const [threshold, setThreshold] = useState<number>();
+  const [interval, setInterval] = useState<number>(0);
+  const [feeBlockTarget, setFeeBlockTarget] = useState<number>(0);
+  const [threshold, setThreshold] = useState<number>(0);
 
   const { getStoreId } = useStorePresistStore((state) => state);
   const { getUserId, getNetwork } = useUserPresistStore((state) => state);

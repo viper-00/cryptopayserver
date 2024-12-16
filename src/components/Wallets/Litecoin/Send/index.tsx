@@ -46,9 +46,9 @@ const LitecoinSend = () => {
   const [fromAddress, setFromAddress] = useState<string>('');
   const [balance, setBalance] = useState<string>('');
   const [destinationAddress, setDestinationAddress] = useState<string>('');
-  const [amount, setAmount] = useState<string>();
-  const [feeRate, setFeeRate] = useState<number>();
-  const [networkFee, setNetworkFee] = useState<number>();
+  const [amount, setAmount] = useState<string>('');
+  const [feeRate, setFeeRate] = useState<number>(0);
+  const [networkFee, setNetworkFee] = useState<number>(0);
   const [blockExplorerLink, setBlockExplorerLink] = useState<string>('');
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
@@ -65,19 +65,19 @@ const LitecoinSend = () => {
   const handleChangeFees = (e: any) => {
     switch (e.target.value) {
       case 'fastest':
-        setFeeRate(feeObj?.fastest);
+        setFeeRate(feeObj?.fastest as number);
         break;
       case 'halfHour':
-        setFeeRate(feeObj?.halfHour);
+        setFeeRate(feeObj?.halfHour as number);
         break;
       case 'hour':
-        setFeeRate(feeObj?.hour);
+        setFeeRate(feeObj?.hour as number);
         break;
       case 'economy':
-        setFeeRate(feeObj?.economy);
+        setFeeRate(feeObj?.economy as number);
         break;
       case 'minimum':
-        setFeeRate(feeObj?.minimum);
+        setFeeRate(feeObj?.minimum as number);
         break;
     }
     setAlignment(e.target.value);

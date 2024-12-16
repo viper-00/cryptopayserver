@@ -23,16 +23,16 @@ import { Http } from 'utils/http/http';
 
 const Emails = () => {
   const [isConfigure, setIsConfigure] = useState<boolean>(false);
-  const [id, setId] = useState<number>();
+  const [id, setId] = useState<number>(0);
   const [smtpServer, setSmtpServer] = useState<string>('');
-  const [port, setPort] = useState<number>();
+  const [port, setPort] = useState<number>(0);
   const [senderEmailAddress, setSenderEmailAddress] = useState<string>('');
   const [login, setLogin] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showTls, setShowTls] = useState<boolean>(false);
   const [testEmail, setTestEmail] = useState<string>('');
 
-  const [ruleId, setRuleId] = useState<number>();
+  const [ruleId, setRuleId] = useState<number>(0);
   const [tigger, setTigger] = useState<number>(1);
   const [recipients, setRecipients] = useState<string>('');
   const [subject, setSubject] = useState<string>('');

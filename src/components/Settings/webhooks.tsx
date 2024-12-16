@@ -40,7 +40,7 @@ const Webhooks = () => {
     event.preventDefault();
   };
 
-  const [modifyId, setModifyId] = useState<number>();
+  const [modifyId, setModifyId] = useState<number>(0);
   const [payloadUrl, setPayloadUrl] = useState<string>('');
   const [secret, setSecret] = useState<string>('');
   const [showAutomaticRedelivery, setShowAutomaticRedelivery] = useState<boolean>(false);

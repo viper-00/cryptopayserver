@@ -37,7 +37,7 @@ const PaymentInvoices = () => {
   const [cryptoList, setCryptoList] = useState<COIN[]>([]);
   const [crypto, setCrypto] = useState<COINS>(COINS.BTC);
   const [cryptoAmount, setCryptoAmount] = useState<string>('');
-  const [rate, setRate] = useState<number>();
+  const [rate, setRate] = useState<number>(0);
   const [description, setDescription] = useState<string>('');
   const [buyerEmail, setBuyerEmail] = useState<string>('');
   const [metadata, setMetadata] = useState<string>('');

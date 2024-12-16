@@ -38,9 +38,9 @@ const General = () => {
   const [currency, setCurrency] = useState<string>(CURRENCY[0]);
   const [allowAnyoneCreateInvoice, setAllowAnyoneCreateInvoice] = useState<boolean>(false);
   const [addAdditionalFeeToInvoice, setAddAdditionalFeeToInvoice] = useState<number>(1 || 2 || 3);
-  const [invoiceExpiresIfNotPaidFullAmount, setInvoiceExpiresIfNotPaidFullAmount] = useState<number>();
-  const [invoicePaidLessThanPrecent, setInvoicePaidLessThanPrecent] = useState<number>();
-  const [minimumExpiraionTimeForRefund, setMinimumExpiraionTimeForRefund] = useState<number>();
+  const [invoiceExpiresIfNotPaidFullAmount, setInvoiceExpiresIfNotPaidFullAmount] = useState<number>(0);
+  const [invoicePaidLessThanPrecent, setInvoicePaidLessThanPrecent] = useState<number>(0);
+  const [minimumExpiraionTimeForRefund, setMinimumExpiraionTimeForRefund] = useState<number>(0);
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
