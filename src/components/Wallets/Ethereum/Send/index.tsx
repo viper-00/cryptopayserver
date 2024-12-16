@@ -397,6 +397,7 @@ const EthereumSend = () => {
             store_id: getStoreId(),
             id: payoutId,
             tx: send_transaction_resp.data.hash,
+            crypto_amount: amount,
             payout_status: PAYOUT_STATUS.Completed,
           });
 

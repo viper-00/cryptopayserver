@@ -14,6 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const storeId = req.body.store_id;
         const payoutStatus = req.body.payout_status;
         const tx = req.body.tx;
+        const cryptoAmount = req.body.crypto_amount
         const updatedDate = new Date().getTime();
 
         let updateQuery = 'UPDATE payouts SET ';
@@ -27,6 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         if (tx) {
           updateQuery += 'tx = ?,';
           updateValues.push(tx);
+        }
+
+        if (cryptoAmount) {
+          updateQuery += 'crypto_amount = ?,';
+          updateValues.push(cryptoAmount);
         }
 
         updateQuery += 'updated_date = ?,';

@@ -7,6 +7,7 @@ import { CHAINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { OmitMiddleString } from 'utils/strings';
 import { FindChainNamesByChains } from 'utils/web3';
 
 type RowType = {
@@ -51,7 +52,8 @@ export default function PayoutDataGrid(props: GridType) {
     {
       field: 'address',
       headerName: 'Address',
-      width: 250,
+      width: 200,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'refunded',
@@ -77,6 +79,7 @@ export default function PayoutDataGrid(props: GridType) {
       field: 'transaction',
       headerName: 'Transaction',
       width: 200,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'actions',

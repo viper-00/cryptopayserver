@@ -25,7 +25,7 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
 import { GetBlockchainAddressUrl, GetBlockchainTxUrl } from 'utils/chain/btc';
 import { useRouter } from 'next/router';
-import { COINGECKO_IDS } from 'packages/constants';
+import { COINGECKO_IDS, PAYOUT_STATUS } from 'packages/constants';
 import { BigDiv } from 'utils/number';
 
 const fee_byte_length = 140;
@@ -259,10 +259,12 @@ const BitcoinSend = () => {
         // update payout order
         if (payoutId) {
           const update_payout_resp: any = await axios.put(Http.update_payout_by_id, {
-            id: payoutId,
-            tx: send_transaction_resp.data.hash,
             user_id: getUserId(),
             store_id: getStoreId(),
+            id: payoutId,
+            tx: send_transaction_resp.data.hash,
+            crypto_amount: amount,
+            payout_status: PAYOUT_STATUS.Completed,
           });
 
           if (!update_payout_resp.result) {
