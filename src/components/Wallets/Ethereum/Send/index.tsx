@@ -4,7 +4,6 @@ import {
   Container,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Icon,
   InputAdornment,
   OutlinedInput,

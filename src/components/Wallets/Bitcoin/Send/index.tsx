@@ -1,4 +1,3 @@
-import { Add } from '@mui/icons-material';
 import {
   Box,
   Icon,
@@ -23,7 +22,7 @@ import { OmitMiddleString } from 'utils/strings';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
-import { GetBlockchainAddressUrl, GetBlockchainTxUrl } from 'utils/chain/btc';
+import { GetBlockchainTxUrl } from 'utils/chain/btc';
 import { useRouter } from 'next/router';
 import { COINGECKO_IDS, PAYOUT_STATUS } from 'packages/constants';
 import { BigDiv } from 'utils/number';

@@ -4,19 +4,15 @@ import {
   Container,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Icon,
-  InputAdornment,
   OutlinedInput,
   Radio,
   RadioGroup,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import { useSnackPresistStore, useStorePresistStore, useUserPresistStore, useWalletPresistStore } from 'lib/store';
-import { CHAINS } from 'packages/constants/blockchain';
+import { CHAINS, COINS } from 'packages/constants/blockchain';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -27,12 +23,18 @@ import { GetBlockchainTxUrl } from 'utils/chain/solana';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
+import { COINGECKO_IDS, PAYOUT_STATUS } from 'packages/constants';
+import { useRouter } from 'next/router';
+import { BigDiv } from 'utils/number';
 
 type Coin = {
   [currency: string]: string;
 };
 
 const SolanaSend = () => {
+  const router = useRouter();
+  const { payoutId } = router.query;
+
   const [page, setPage] = useState<number>(1);
   const [fromAddress, setFromAddress] = useState<string>('');
   const [balance, setBalance] = useState<Coin>({});
@@ -42,6 +44,9 @@ const SolanaSend = () => {
   const [blockExplorerLink, setBlockExplorerLink] = useState<string>('');
   const [coin, setCoin] = useState<string>('SOL');
   const [amountRed, setAmountRed] = useState<boolean>(false);
+
+  const [isDisableDestinationAddress, setIsDisableDestinationAddress] = useState<boolean>(false);
+  const [isDisableAmount, setIsDisableAmount] = useState<boolean>(false);
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getWalletId } = useWalletPresistStore((state) => state);
@@ -117,6 +122,38 @@ const SolanaSend = () => {
     setPage(2);
   };
 
+  const getPayoutInfo = async (id: any) => {
+    try {
+      const find_payout_resp: any = await axios.get(Http.find_payout_by_id, {
+        params: {
+          id: id,
+        },
+      });
+
+      if (find_payout_resp.result && find_payout_resp.data.length === 1) {
+        setDestinationAddress(find_payout_resp.data[0].address);
+
+        const ids = COINGECKO_IDS[find_payout_resp.data[0].crypto as COINS];
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids,
+            currency: find_payout_resp.data[0].currency,
+          },
+        });
+
+        const rate = rate_response.data[ids][find_payout_resp.data[0].currency.toLowerCase()];
+        const totalPrice = parseFloat(BigDiv((find_payout_resp.data[0].amount as number).toString(), rate)).toFixed(8);
+        setAmount(totalPrice);
+        setCoin(find_payout_resp.data[0].crypto);
+
+        setIsDisableDestinationAddress(true);
+        setIsDisableAmount(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const onClickSignAndPay = async () => {
     try {
       const send_transaction_resp: any = await axios.post(Http.send_transaction, {
@@ -131,6 +168,25 @@ const SolanaSend = () => {
       });
 
       if (send_transaction_resp.result) {
+        // update payout order
+        if (payoutId) {
+          const update_payout_resp: any = await axios.put(Http.update_payout_by_id, {
+            user_id: getUserId(),
+            store_id: getStoreId(),
+            id: payoutId,
+            tx: send_transaction_resp.data.hash,
+            crypto_amount: amount,
+            payout_status: PAYOUT_STATUS.Completed,
+          });
+
+          if (!update_payout_resp.result) {
+            setSnackSeverity('error');
+            setSnackMessage('Can not update the status of payout!');
+            setSnackOpen(true);
+            return;
+          }
+        }
+
         setSnackSeverity('success');
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
@@ -144,13 +200,17 @@ const SolanaSend = () => {
     }
   };
 
-  const init = async () => {
+  const init = async (payoutId: any) => {
     await getSolana();
+
+    if (payoutId) {
+      await getPayoutInfo(payoutId);
+    }
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    init(payoutId);
+  }, [payoutId]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
@@ -195,6 +255,7 @@ const SolanaSend = () => {
                     onChange={(e: any) => {
                       setDestinationAddress(e.target.value);
                     }}
+                    disabled={isDisableDestinationAddress}
                   />
                 </FormControl>
               </Box>
@@ -245,6 +306,7 @@ const SolanaSend = () => {
                         setAmountRed(false);
                       }
                     }}
+                    disabled={isDisableAmount}
                   />
                 </FormControl>
               </Box>

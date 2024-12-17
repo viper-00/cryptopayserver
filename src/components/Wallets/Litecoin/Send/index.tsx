@@ -1,4 +1,3 @@
-import { Add } from '@mui/icons-material';
 import {
   Box,
   Icon,
@@ -23,7 +22,10 @@ import { OmitMiddleString } from 'utils/strings';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import Link from 'next/link';
-import { GetBlockchainAddressUrl, GetBlockchainTxUrl } from 'utils/chain/ltc';
+import { GetBlockchainTxUrl } from 'utils/chain/ltc';
+import { COINGECKO_IDS, PAYOUT_STATUS } from 'packages/constants';
+import { useRouter } from 'next/router';
+import { BigDiv } from 'utils/number';
 
 const fee_byte_length = 140;
 
@@ -36,6 +38,9 @@ type feeType = {
 };
 
 const LitecoinSend = () => {
+  const router = useRouter();
+  const { payoutId } = router.query;
+
   const [alignment, setAlignment] = useState<'fastest' | 'halfHour' | 'hour' | 'economy' | 'minimum'>('fastest');
   const [feeObj, setFeeObj] = useState<feeType>();
   const [addressAlert, setAddressAlert] = useState<boolean>(false);
@@ -50,6 +55,9 @@ const LitecoinSend = () => {
   const [feeRate, setFeeRate] = useState<number>(0);
   const [networkFee, setNetworkFee] = useState<number>(0);
   const [blockExplorerLink, setBlockExplorerLink] = useState<string>('');
+
+  const [isDisableDestinationAddress, setIsDisableDestinationAddress] = useState<boolean>(false);
+  const [isDisableAmount, setIsDisableAmount] = useState<boolean>(false);
 
   const { getNetwork, getUserId } = useUserPresistStore((state) => state);
   const { getWalletId } = useWalletPresistStore((state) => state);
@@ -188,14 +196,36 @@ const LitecoinSend = () => {
     setPage(2);
   };
 
-  const init = async () => {
-    await getLitecoin();
-    await getLitecoinFeeRate();
-  };
+  const getPayoutInfo = async (id: any) => {
+    try {
+      const find_payout_resp: any = await axios.get(Http.find_payout_by_id, {
+        params: {
+          id: id,
+        },
+      });
 
-  useEffect(() => {
-    init();
-  }, []);
+      if (find_payout_resp.result && find_payout_resp.data.length === 1) {
+        setDestinationAddress(find_payout_resp.data[0].address);
+
+        const ids = COINGECKO_IDS[find_payout_resp.data[0].crypto as COINS];
+        const rate_response: any = await axios.get(Http.find_crypto_price, {
+          params: {
+            ids: ids,
+            currency: find_payout_resp.data[0].currency,
+          },
+        });
+
+        const rate = rate_response.data[ids][find_payout_resp.data[0].currency.toLowerCase()];
+        const totalPrice = parseFloat(BigDiv((find_payout_resp.data[0].amount as number).toString(), rate)).toFixed(8);
+        setAmount(totalPrice);
+
+        setIsDisableDestinationAddress(true);
+        setIsDisableAmount(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const onClickSignAndPay = async () => {
     try {
@@ -212,6 +242,25 @@ const LitecoinSend = () => {
       });
 
       if (send_transaction_resp.result) {
+        // update payout order
+        if (payoutId) {
+          const update_payout_resp: any = await axios.put(Http.update_payout_by_id, {
+            user_id: getUserId(),
+            store_id: getStoreId(),
+            id: payoutId,
+            tx: send_transaction_resp.data.hash,
+            crypto_amount: amount,
+            payout_status: PAYOUT_STATUS.Completed,
+          });
+
+          if (!update_payout_resp.result) {
+            setSnackSeverity('error');
+            setSnackMessage('Can not update the status of payout!');
+            setSnackOpen(true);
+            return;
+          }
+        }
+
         setSnackSeverity('success');
         setSnackMessage('Successful creation!');
         setSnackOpen(true);
@@ -224,6 +273,19 @@ const LitecoinSend = () => {
       console.error(e);
     }
   };
+
+  const init = async (payoutId: any) => {
+    await getLitecoin();
+    await getLitecoinFeeRate();
+
+    if (payoutId) {
+      await getPayoutInfo(payoutId);
+    }
+  };
+
+  useEffect(() => {
+    init(payoutId);
+  }, [payoutId]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mb={10}>
@@ -275,6 +337,7 @@ const LitecoinSend = () => {
                     onChange={(e: any) => {
                       setDestinationAddress(e.target.value);
                     }}
+                    disabled={isDisableDestinationAddress}
                   />
                 </FormControl>
               </Box>
@@ -303,6 +366,7 @@ const LitecoinSend = () => {
                         setAmountRed(false);
                       }
                     }}
+                    disabled={isDisableAmount}
                   />
                 </FormControl>
               </Box>
