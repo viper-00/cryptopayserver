@@ -21,10 +21,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const currency = req.body.currency;
         const showAutoApproveClaim = req.body.show_auto_approve_claim;
         const description = req.body.description;
-        const createdDate = new Date().getTime();
+        const currentDate = new Date();
+        const createdDate = currentDate.getTime();
+
+        currentDate.setDate(currentDate.getDate() + 7);
+        const expirationDate = currentDate.getTime();
 
         const createQuery =
-          'INSERT INTO pull_payments (user_id, store_id, network, pull_payment_id, name, amount, currency, show_auto_approve_claim, description, pull_payment_status, created_date, updated_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+          'INSERT INTO pull_payments (user_id, store_id, network, pull_payment_id, name, amount, currency, show_auto_approve_claim, description, pull_payment_status, created_date, updated_date, expiration_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const createValues = [
           userId,
           storeId,
@@ -38,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           PULL_PAYMENT_STATUS.Active,
           createdDate,
           createdDate,
+          expirationDate,
           1,
         ];
         const [ResultSetHeader]: any = await connection.query(createQuery, createValues);

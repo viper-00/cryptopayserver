@@ -12,6 +12,7 @@ type RowType = {
   pullPaymentId: number;
   name: string;
   createdDate: string;
+  expirationDate: string;
   showAutoApproveClaim: string;
   refunded: number;
 };
@@ -25,7 +26,7 @@ export default function PullPaymentDataGrid(props: GridType) {
   const { getStoreId } = useStorePresistStore((state) => state);
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
 
-  const [actionWidth, setActionWidth] = useState<number>(400);
+  const [actionWidth, setActionWidth] = useState<number>(300);
 
   const [rows, setRows] = useState<RowType[]>([]);
 
@@ -33,6 +34,11 @@ export default function PullPaymentDataGrid(props: GridType) {
     {
       field: 'createdDate',
       headerName: 'Start',
+      width: 200,
+    },
+    {
+      field: 'expirationDate',
+      headerName: 'End',
       width: 200,
     },
     {
@@ -56,35 +62,84 @@ export default function PullPaymentDataGrid(props: GridType) {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      width: 400,
+      width: actionWidth,
       align: 'right',
       headerAlign: 'right',
       getActions: ({ row }) => {
-        return [
-          <Box>
-            <Button
-              onClick={() => {
-                window.location.href = '/pull-payments/' + row.pullPaymentId;
-              }}
-            >
-              View
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = '/payments/payouts';
-              }}
-            >
-              Payouts
-            </Button>
-            <Button
-              onClick={() => {
-                onClickArchive(row.pullPaymentId);
-              }}
-            >
-              Archive
-            </Button>
-          </Box>,
-        ];
+        switch (props.status) {
+          case PULL_PAYMENT_STATUS.Active:
+            setActionWidth(300);
+            return [
+              <Box>
+                <Button
+                  onClick={() => {
+                    window.location.href = '/pull-payments/' + row.pullPaymentId;
+                  }}
+                >
+                  View
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.location.href = '/payments/payouts';
+                  }}
+                >
+                  Payouts
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickArchive(row.pullPaymentId);
+                  }}
+                >
+                  Archive
+                </Button>
+              </Box>,
+            ];
+          case PULL_PAYMENT_STATUS.Expired:
+            setActionWidth(200);
+            return [
+              <Box>
+                <Button
+                  onClick={() => {
+                    window.location.href = '/pull-payments/' + row.pullPaymentId;
+                  }}
+                >
+                  View
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickArchive(row.pullPaymentId);
+                  }}
+                >
+                  Archive
+                </Button>
+              </Box>,
+            ];
+          case PULL_PAYMENT_STATUS.Archived:
+            setActionWidth(200);
+            return [
+              <Box>
+                <Button
+                  onClick={() => {
+                    window.location.href = '/pull-payments/' + row.pullPaymentId;
+                  }}
+                >
+                  View
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.location.href = '/payments/payouts';
+                  }}
+                >
+                  Payouts
+                </Button>
+              </Box>,
+            ];
+          case PULL_PAYMENT_STATUS.Future:
+            setActionWidth(200);
+            return [];
+          default:
+            return [];
+        }
       },
     },
   ];
@@ -131,8 +186,9 @@ export default function PullPaymentDataGrid(props: GridType) {
             pullPaymentId: item.pull_payment_id,
             name: item.name,
             createdDate: new Date(item.created_date).toLocaleString(),
+            expirationDate: new Date(item.expiration_date).toLocaleString(),
             showAutoApproveClaim: item.show_auto_approve_claim === 1 ? 'True' : 'False',
-            refunded: 0,
+            refunded: item.refunded,
           });
         });
         setRows(rt);

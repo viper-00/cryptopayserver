@@ -32,7 +32,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { PAYOUT_SOURCE_TYPE, PAYOUT_STATUS } from 'packages/constants';
+import { PAYOUT_SOURCE_TYPE, PAYOUT_STATUS, PULL_PAYMENT_STATUS } from 'packages/constants';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINS, COIN } from 'packages/constants/blockchain';
 import Image from 'next/image';
@@ -53,14 +53,17 @@ type pullPaymentType = {
   pullPaymentStatus: string;
   createdDate: string;
   updateDate: string;
+  expirationDate: string;
 };
 
 type PayoutType = {
   address: string;
   chainName: string;
   crypto: string;
+  cryptoAmount: string;
   amount: number;
   currency: string;
+  tx: string;
   status: string;
 };
 
@@ -96,8 +99,10 @@ const PullPaymentsDetails = () => {
             chainName: FindChainNamesByChains(item.chain_id as CHAINS),
             address: item.address,
             amount: item.amount,
+            cryptoAmount: item.crypto_amount,
             crypto: item.crypto,
             currency: item.currency,
+            tx: item.tx,
             status: item.payout_status,
           });
 
@@ -139,7 +144,8 @@ const PullPaymentsDetails = () => {
           showAutoApproveClaim: response.data[0].show_auto_approve_claim === 1 ? true : false,
           createdDate: new Date(response.data[0].created_date).toLocaleString(),
           updateDate: new Date(response.data[0].created_date).toLocaleString(),
-          pullPaymentStatus: response.data[0].status,
+          expirationDate: new Date(response.data[0].expiration_date).toLocaleString(),
+          pullPaymentStatus: response.data[0].pull_payment_status,
         });
 
         await getClaimsHistory(response.data[0].store_id, response.data[0].network, response.data[0].pull_payment_id);
@@ -212,6 +218,14 @@ const PullPaymentsDetails = () => {
           </Box>
         )}
 
+        {pullPaymentData && pullPaymentData?.pullPaymentStatus !== PULL_PAYMENT_STATUS.Active && (
+          <Box mt={2}>
+            <Alert variant="filled" severity="success">
+              The pull payment has been {pullPaymentData?.pullPaymentStatus}, and you can read the detail of the payout.
+            </Alert>
+          </Box>
+        )}
+
         {page === 1 && (
           <Box>
             <Grid container spacing={2} mt={2}>
@@ -225,6 +239,10 @@ const PullPaymentsDetails = () => {
                     <Stack direction={'row'} alignItems={'center'} mt={1}>
                       <Typography>Last Updated</Typography>
                       <Typography ml={1}>{pullPaymentData?.updateDate}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} mt={1}>
+                      <Typography>Expiration Date</Typography>
+                      <Typography ml={1}>{pullPaymentData?.expirationDate}</Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} mt={2}>
                       <Button
@@ -308,27 +326,32 @@ const PullPaymentsDetails = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell>Destination</TableCell>
-                              <TableCell>Method</TableCell>
-                              <TableCell>Crypto</TableCell>
+                              <TableCell>Chain</TableCell>
                               <TableCell>Amount requested</TableCell>
+                              <TableCell>Crypto</TableCell>
+                              <TableCell>Crypto Amount</TableCell>
+                              <TableCell>Transaction</TableCell>
                               <TableCell>Status</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
                             {payoutRows.map((row, index) => (
                               <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                <TableCell component="th" scope="row">
-                                  {row.address}
-                                </TableCell>
+                                <TableCell>{row.address}</TableCell>
                                 <TableCell>{row.chainName}</TableCell>
+                                <TableCell>
+                                  <Stack direction={'row'} alignItems={'center'} width={150}>
+                                    <Typography>{row.amount}</Typography>
+                                    <Typography ml={1}>{row.currency}</Typography>
+                                  </Stack>
+                                </TableCell>
                                 <TableCell>{row.crypto}</TableCell>
                                 <TableCell>
-                                  <Typography>
-                                    {row.amount} {row.currency}
-                                  </Typography>
+                                  <Typography width={150}>{row.cryptoAmount}</Typography>
                                 </TableCell>
+                                <TableCell>{row.tx}</TableCell>
                                 <TableCell>
-                                  <Typography>{row.status}</Typography>
+                                  <Typography width={150}>{row.status}</Typography>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -343,20 +366,22 @@ const PullPaymentsDetails = () => {
               </Card>
             </Box>
 
-            {pullPaymentData && alreadyClaim < pullPaymentData?.amount && (
-              <Box mt={4}>
-                <Button
-                  variant={'contained'}
-                  fullWidth
-                  size="large"
-                  onClick={() => {
-                    setPage(2);
-                  }}
-                >
-                  Claim Funds
-                </Button>
-              </Box>
-            )}
+            {pullPaymentData &&
+              alreadyClaim < pullPaymentData?.amount &&
+              pullPaymentData?.pullPaymentStatus === PULL_PAYMENT_STATUS.Active && (
+                <Box mt={4}>
+                  <Button
+                    variant={'contained'}
+                    fullWidth
+                    size="large"
+                    onClick={() => {
+                      setPage(2);
+                    }}
+                  >
+                    Claim Funds
+                  </Button>
+                </Box>
+              )}
           </Box>
         )}
         {page === 2 && (

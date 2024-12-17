@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         //     return res.status(500).json({ message: '', result: false, data: '' });
         // }
 
-        const query = `SELECT chain_id, address, crypto, amount, currency, payout_status FROM payouts where store_id = ? and network = ? and source_type = ? and external_payment_id = ? and status = ? order by id desc`;
+        const query = `SELECT chain_id, address, crypto, crypto_amount, currency, amount, payout_status, tx FROM payouts where store_id = ? and network = ? and source_type = ? and external_payment_id = ? and status = ? order by id desc`;
         const values = [storeId, network, sourceType, externalPaymentId, 1];
         const [rows] = await connection.query(query, values);
         return res.status(200).json({ message: '', result: true, data: rows });

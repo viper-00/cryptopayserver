@@ -47,23 +47,23 @@ export default function PayoutDataGrid(props: GridType) {
     {
       field: 'chainName',
       headerName: 'Chain',
-      width: 200,
-    },
-    {
-      field: 'address',
-      headerName: 'Address',
-      width: 200,
-      valueGetter: (value, row) => OmitMiddleString(value, 10),
-    },
-    {
-      field: 'refunded',
-      headerName: 'Refunded',
-      width: 200,
+      width: 150,
     },
     {
       field: 'crypto',
       headerName: 'Crypto',
       width: 150,
+    },
+    {
+      field: 'refunded',
+      headerName: 'Refunded',
+      width: 150,
+    },
+    {
+      field: 'address',
+      headerName: 'Address',
+      width: 250,
+      valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'sourceType',
@@ -78,68 +78,94 @@ export default function PayoutDataGrid(props: GridType) {
     {
       field: 'transaction',
       headerName: 'Transaction',
-      width: 200,
+      width: 250,
       valueGetter: (value, row) => OmitMiddleString(value, 10),
     },
     {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      width: 600,
+      width: actionWidth,
       align: 'right',
       headerAlign: 'right',
       getActions: ({ row }) => {
         switch (props.status) {
           case PAYOUT_STATUS.AwaitingApproval:
+            setActionWidth(200);
             return [
-              <Button
-                onClick={() => {
-                  onClickApprove(row);
-                }}
-              >
-                Approve
-              </Button>,
-              <Button
-                onClick={() => {
-                  onClickCancel(row);
-                }}
-              >
-                Cancel
-              </Button>,
+              <Box>
+                <Button
+                  onClick={() => {
+                    onClickApprove(row);
+                  }}
+                >
+                  Approve
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickCancel(row);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>,
             ];
           case PAYOUT_STATUS.AwaitingPayment:
+            setActionWidth(600);
             return [
-              <Button
-                onClick={() => {
-                  onClickReject(row);
-                }}
-              >
-                Reject payout transaction
-              </Button>,
-              <Button
-                onClick={() => {
-                  onClickSend(row);
-                }}
-              >
-                Send
-              </Button>,
-              <Button
-                onClick={() => {
-                  onClickCancel(row);
-                }}
-              >
-                Cancel
-              </Button>,
-              <Button
-                onClick={() => {
-                  onClickMarkPaid(row);
-                }}
-              >
-                Mark as already paid
-              </Button>,
+              <Box>
+                <Button
+                  onClick={() => {
+                    onClickReject(row);
+                  }}
+                >
+                  Reject payout transaction
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickSend(row);
+                  }}
+                >
+                  Send
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickCancel(row);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickMarkPaid(row);
+                  }}
+                >
+                  Mark as already paid
+                </Button>
+              </Box>,
             ];
-
+          case PAYOUT_STATUS.InProgress:
+            setActionWidth(300);
+            return [
+              <Box>
+                <Button
+                  onClick={() => {
+                    onClickCancel(row);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    onClickMarkPaid(row);
+                  }}
+                >
+                  Mark as already paid
+                </Button>
+              </Box>,
+            ];
           default:
+            setActionWidth(200);
             return [];
         }
       },

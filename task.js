@@ -18,3 +18,11 @@
 //     console.error(e);
 //   }
 // });
+
+// cron.schedule('*/60 * * * * *', async () => {
+//   try {
+//     await axios.get(baseUrl + '/scheduler_pull_payment_expired');
+//   } catch (e) {
+//     console.error(e);
+//   }
+// });
