@@ -9,7 +9,7 @@ import Shopify from 'components/Plugins/Shopify';
 import Pointofsale from 'components/Plugins/Pointofsale';
 import Paybutton from 'components/Plugins/Paybutton';
 import Crowdfund from 'components/Plugins/Crowdfund';
-import { Alert, Box, IconButton, Snackbar, Stack } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, IconButton, Snackbar, Stack, Typography } from '@mui/material';
 import Footer from './Footer';
 import Account from 'components/Account';
 import Notifications from 'components/Notifications';
@@ -55,6 +55,8 @@ import Pullpayments from 'components/Payments/Pullpayments';
 import Payouts from 'components/Payments/Payouts';
 import PaymentRequestsDetails from 'components/PaymentRequests/id';
 import PullPaymentsDetails from 'components/PullPayments/id';
+import Link from 'next/link';
+import FreeCoin from 'components/FreeCoin';
 
 const Home = () => {
   const router = useRouter();
@@ -102,6 +104,7 @@ const Home = () => {
     '/invoices/[id]': <InvoicesDetails />,
     '/payment-requests/[id]': <PaymentRequestsDetails />,
     '/pull-payments/[id]': <PullPaymentsDetails />,
+    '/freecoin': <FreeCoin />,
   };
 
   const dashboardWhiteList: any = {
@@ -155,6 +158,7 @@ const Home = () => {
     '/invoices/[id]': <InvoicesDetails />,
     '/payment-requests/[id]': <PaymentRequestsDetails />,
     '/pull-payments/[id]': <PullPaymentsDetails />,
+    '/freecoin': <FreeCoin />,
   };
 
   useEffect(() => {
@@ -224,8 +228,17 @@ const Home = () => {
 
             <Box>
               {getNetwork() === 'testnet' && (
-                <Box p={2}>
-                  <Alert severity="warning">This is a test network. The currency has no value.</Alert>
+                <Box>
+                  <Alert severity="warning">
+                    <AlertTitle>Warning</AlertTitle>
+                    <Typography>
+                      This is a test network, and the currency has no real value. If you need free coins, you can get
+                      them&nbsp;
+                      <Link href={'/freecoin'} target="_blank">
+                        here.
+                      </Link>
+                    </Typography>
+                  </Alert>
                 </Box>
               )}
 

@@ -37,4 +37,16 @@ export class BLOCKSCAN {
       return false;
     }
   }
+
+  static async getFreeCoin(coin: string, amount: string): Promise<boolean> {
+    try {
+      const url = this.baseUrl + 'get'
+      
+
+      return false;
+    } catch(e) {
+      console.error(e)
+      return false
+    }
+  }
 }
