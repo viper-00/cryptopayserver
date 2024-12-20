@@ -133,4 +133,7 @@ export class Http {
   static find_payout_by_id = this.httpPath + '/find_payout_by_id';
   static update_payout_by_id = this.httpPath + '/update_payout_by_id';
   static find_payout_by_source_type = this.httpPath + '/find_payout_by_source_type';
+
+  // free coin
+  static get_free_coin = this.httpPath + '/get_free_coin';
 }

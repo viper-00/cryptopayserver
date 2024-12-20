@@ -24,9 +24,20 @@ import { Http } from 'utils/http/http';
 const FreeCoin = () => {
   const onClickCoin = async (item: COIN, address: string, amount: number) => {
     try {
-        const resp: any = await axios.get(Http.get_free_coin)
-    } catch(e) {
-        console.error(e)
+      const response: any = await axios.get(Http.get_free_coin, {
+        params: {
+          amount: amount,
+          chain_id: item.chainId,
+          coin: item.name,
+          address: address,
+        },
+      });
+
+      if (response.result && response.data && response.data.hash) {
+        console.log('resp', response.data.hash);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
